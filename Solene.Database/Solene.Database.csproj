@@ -4,4 +4,13 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.CosmosDB.Table" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Azure.Storage.Common" Version="9.0.0.1-preview" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Solene.Models\Solene.Models.csproj" />
+  </ItemGroup>
+
 </Project>
