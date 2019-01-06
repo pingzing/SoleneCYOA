@@ -8,7 +8,7 @@ namespace Solene.Database.ExtensionMethods
 {
     public static class CloudTableExtensions
     {
-        public static async Task<IEnumerable<T>> ExecuteQueryAsync<T>(this CloudTable table, TableQuery<T> query, CancellationToken ct = default(CancellationToken), Action<IEnumerable<T>> onProgress = null) 
+        public static async Task<IEnumerable<T>> ExecuteQueryAsync<T>(this CloudTable table, TableQuery<T> query, CancellationToken ct = default(CancellationToken), Action<IEnumerable<T>> onProgress = null)
             where T : ITableEntity, new()
         {
             var items = new List<T>();
