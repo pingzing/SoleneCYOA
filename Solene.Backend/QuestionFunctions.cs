@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Solene.Backend
 {
-    public static class QuestionFunctions
+    public static class QuestionFunctions 
     {
         [FunctionName("AddQuestion")]
         public static async Task<IActionResult> AddQuestion(
