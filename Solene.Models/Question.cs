@@ -6,6 +6,7 @@ namespace Solene.Models
     public class Question
     {
         public Guid Id { get; set; }
+
         public Guid PlayerId { get; set; }
         public string Text { get; set; }
         public List<string> PrefilledAnswers { get; set; }

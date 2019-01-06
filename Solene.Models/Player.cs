@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Solene.Models
 {
@@ -8,6 +7,5 @@ namespace Solene.Models
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Gender { get; set; }
-        public List<Question> Questions { get; set; }
     }
 }
