@@ -21,12 +21,12 @@ namespace Solene.MobileApp.Core.Services
         public NetworkService()
         {
             _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri("https://solene.azurewebsites.net");
+            _httpClient.BaseAddress = new Uri("https://solene.azurewebsites.net/api/");
         }
 
         public async Task<Player> CreatePlayer(Player player)
         {
-            var response = await _httpClient.PostAsJsonAsync($"/player{GetFunctionCode()}", player);
+            var response = await _httpClient.PostAsJsonAsync($"player?{GetFunctionCode()}", player);
             if (!response.IsSuccessStatusCode)
             {
                 Debug.WriteLine($"CreatePlayer failed: HTTP {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");
@@ -39,7 +39,7 @@ namespace Solene.MobileApp.Core.Services
 
         private string GetFunctionCode()
         {
-            return Consts.Secrets.AzureFunctionsCode;
+            return $"code={Consts.Secrets.AzureFunctionsCode}";
         }
     }
 }
