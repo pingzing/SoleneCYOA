@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Solene.MobileApp.Core.Views.PlayerCreation.PlayerGenderPage"
+             
+             Title="Player Creation"
+             BindingContext="{Binding Source={StaticResource Locator}, Path=PlayerGenderPage}">
+
+    <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Padding="50, 0">
+        <Label LineBreakMode="WordWrap">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span Text="Okay! Hi, "/>
+                    <Span Text="{Binding PlayerName, Mode=OneWay}"/>
+                    <Span Text="! Now, we just need to know your gender, and then we'll be able to get to the interesting stuff."/>
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+
+        <Button Text="Male" HorizontalOptions="FillAndExpand" Command="{Binding MaleClickCommand}"/>
+        <Button Text="Female" HorizontalOptions="FillAndExpand" Command="{Binding FemaleClickCommand}"/>
+        <Label Text="Something else" HorizontalTextAlignment="Center"/>
+        <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+            <Entry Placeholder="Gender" 
+                   HorizontalOptions="FillAndExpand"                     
+                   Text="{Binding CustomPlayerGender, Mode=TwoWay}"/>
+            <Button Text="->" Command="{Binding CustomGenderClickCommand}"/>
+        </StackLayout>
+    </StackLayout>
+
+</ContentPage>

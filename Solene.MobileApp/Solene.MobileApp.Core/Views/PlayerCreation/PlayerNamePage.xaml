@@ -1,0 +1,15 @@
+﻿<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Solene.MobileApp.Core.Views.PlayerCreation.PlayerNamePage"
+             
+             BindingContext="{Binding Source={StaticResource Locator}, Path=PlayerNamePage}"
+             Title="Player Creation">
+    
+    <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Padding="50, 0">
+        <Label LineBreakMode="WordWrap"
+            Text="Welcome! You're about to embark on an adventure in the twin cities of Aurinsol and Kuulene. Why don't you tell us a little bit more about yourself?"/>
+        <Label Text="What's your name?" LineBreakMode="WordWrap"/>
+        <Entry Placeholder="Character's first name" Text="{Binding EnteredName, Mode=TwoWay}"/>
+        <Button Text="Next" HorizontalOptions="FillAndExpand" Command="{Binding NextCommand}"/>
+    </StackLayout>
+</ContentPage>
