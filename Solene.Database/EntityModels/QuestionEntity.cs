@@ -15,6 +15,7 @@ namespace Solene.Database.EntityModels
             PartitionKey = PartitionKeys.Question;
             RowKey = question.Id.ToString("N");
             PlayerId = question.PlayerId;
+            Title = question.Title,
             Text = question.Text;
             PrefilledAnswersJson = JsonConvert.SerializeObject(question.PrefilledAnswers);
             SequenceNumber = (int)question.SequenceNumber;
@@ -22,6 +23,7 @@ namespace Solene.Database.EntityModels
         }
 
         public Guid PlayerId { get; set; }
+        public string Title { get; set; }
         public string Text { get; set; }
         public string PrefilledAnswersJson { get; set; }
         public int SequenceNumber { get; set; }
@@ -33,6 +35,7 @@ namespace Solene.Database.EntityModels
             {
                 Id = Guid.Parse(RowKey),
                 PlayerId = PlayerId,
+                Title = Title,
                 Text = Text,
                 PrefilledAnswers = JsonConvert.DeserializeObject<List<string>>(PrefilledAnswersJson),
                 ChosenAnswer = ChosenAnswer,

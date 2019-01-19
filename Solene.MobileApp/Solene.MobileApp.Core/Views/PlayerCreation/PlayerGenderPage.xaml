@@ -26,6 +26,8 @@
                    Text="{Binding CustomPlayerGender, Mode=TwoWay}"/>
             <Button Text="->" Command="{Binding CustomGenderClickCommand}"/>
         </StackLayout>
+
+        <ActivityIndicator IsRunning="{Binding IsLoading}"/>
     </StackLayout>
 
 </ContentPage>

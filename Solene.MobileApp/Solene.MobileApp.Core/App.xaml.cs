@@ -1,10 +1,12 @@
 ﻿using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
+using Solene.MobileApp.Core.Consts;
 using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Views;
 using Solene.MobileApp.Core.Views.PlayerCreation;
 using System.Diagnostics;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
@@ -37,10 +39,10 @@ namespace Solene.MobileApp.Core
 
         protected override async void OnStart()
         {
-            AppCenter.Start($"android={Consts.Secrets.AndroidAppCenterKey};" +
-                $"uwp={Consts.Secrets.UwpAppCenterKey}", 
+            AppCenter.Start($"android={Secrets.AndroidAppCenterKey};" +
+                $"uwp={Secrets.UwpAppCenterKey}", 
                 typeof(Analytics), typeof(Crashes));
-            if (false) //todo: any saved characters
+            if (Preferences.Get(PreferencesKeys.FirstCharacterCreationComplete, false)) //todo: any saved characters
             {
                 await MainNavigationHost.NavigateToAsync(new MainPage(), false);
             }

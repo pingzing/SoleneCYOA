@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+﻿using GalaSoft.MvvmLight.Command;
 using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Services;
 
@@ -9,7 +6,9 @@ namespace Solene.MobileApp.Core.ViewModels.PlayerCreation
 {
     public class PlayerNameViewModel : NavigableViewModelBase
     {
-        private string _enteredName;        
+        private string _enteredName;
+        private readonly IProfileService _profileService;
+
         public string EnteredName
         {
             get => _enteredName;
@@ -20,11 +19,12 @@ namespace Solene.MobileApp.Core.ViewModels.PlayerCreation
             }
         }
 
-        public RelayCommand NextCommand { get; private set; }        
+        public RelayCommand NextCommand { get; private set; }
 
-        public PlayerNameViewModel(INavigationService navService) : base(navService)
+        public PlayerNameViewModel(INavigationService navService, IProfileService profileService) : base(navService)
         {
             NextCommand = new RelayCommand(NextClicked, CanClickNext);
+            _profileService = profileService;
         }
 
         private async void NextClicked()
