@@ -1,4 +1,5 @@
-﻿namespace Solene.MobileApp.Core.Consts
+﻿
+namespace Solene.MobileApp.Core.Consts
 {
 
     /// <summary>
@@ -18,6 +19,9 @@
         public static string AndroidAppCenterKey => "<AndroidReplaceMe>";
 
         // <AzureFunctionsReplaceMe>
-        public static string AzureFunctionsCode => "<AzureFunctionsReplaceMe>";
+        public static string CreatePlayerFunctionCode => "<CreatePlayerFunctionCodeFunctionsReplaceMe>";
+        public static string GetPlayerFunctionCode => "<GetPlayerFunctionCodeReplaceMe>";
+        public static string GetPlayerQuestionsFunctionCode => "<GetPlayerQuestionsFunctionCodeReplaceMe>";
+        public static string AnswerQuestionFunctionCode => "<AnswerQuestionFunctionCodeReplaceMe>";
     }
 }

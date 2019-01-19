@@ -52,7 +52,7 @@ namespace Solene.MobileApp.Core.Services
 
         private string GetFunctionCode()
         {
-            return $"code={Consts.Secrets.AzureFunctionsCode}";
+            return $"code={Consts.Secrets.CreatePlayerFunctionCode}";
         }
     }
 }
