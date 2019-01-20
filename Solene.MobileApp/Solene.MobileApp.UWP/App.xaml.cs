@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Networking.PushNotifications;
@@ -29,7 +30,7 @@ namespace Solene.MobileApp.UWP
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     //TODO: Load state from previously suspended application
-                }
+                }                
 
                 Window.Current.Content = rootFrame;
             }            

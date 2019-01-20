@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Solene.MobileApp.Core.Models"
+             x:Class="Solene.MobileApp.Core.Views.ProfileSelectPage"
+             
+             Title="Solene CYOA: Characters"
+             BindingContext="{Binding Source={StaticResource Locator}, Path=ProfileSelect}">
+
+    <ListView ItemsSource="{Binding CharacterList}"
+              ItemTapped="ListView_ItemTapped">
+        <ListView.ItemTemplate>
+            <DataTemplate x:DataType="models:ProfileMoniker">
+                <TextCell Text="{Binding CharacterName, Mode=OneTime}" 
+                          Detail="{Binding Id, Mode=OneTime, StringFormat='={0:N}'}"/>
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>              
+
+
+</ContentPage>

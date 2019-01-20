@@ -111,7 +111,9 @@ namespace Solene.MobileApp.Core.ViewModels.PlayerCreation
             
             if (createdPlayer.IsError)
             {
-                // todo: show error message                
+                // todo: show error message      
+                IsLoading = false;
+                return;
             }
 
             var questions = await _networkService.GetPlayerQuestions(createdPlayer.Unwrap().Id);
@@ -136,6 +138,7 @@ namespace Solene.MobileApp.Core.ViewModels.PlayerCreation
             Preferences.Set(PreferencesKeys.FirstCharacterCreationComplete, true);
 
             await _navigationService.NavigateToViewModelAsync<ProfileSelectViewModel>();
+            _navigationService.ClearBackStack();
         }
     }
 }

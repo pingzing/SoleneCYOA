@@ -4,7 +4,7 @@
              x:Class="Solene.MobileApp.Core.Views.PlayerCreation.PlayerGenderPage"
              
              Title="Player Creation"
-             BindingContext="{Binding Source={StaticResource Locator}, Path=PlayerGenderPage}">
+             BindingContext="{Binding Source={StaticResource Locator}, Path=PlayerGender}">
 
     <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Padding="50, 0">
         <Label LineBreakMode="WordWrap">

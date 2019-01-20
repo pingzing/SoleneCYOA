@@ -15,7 +15,7 @@ namespace Solene.MobileApp.Core.Services
 {
     public interface IProfileService
     {
-        Task<IEnumerable<ProfileMoniker>> GetSavedProfileNames();
+        IEnumerable<ProfileMoniker> GetSavedProfileNames();
         Task<MaybeResult<PlayerProfile, GenericErrorResult>> GetProfile(Guid id);
         Task SaveProfile(PlayerProfile profile);
     }
@@ -24,25 +24,21 @@ namespace Solene.MobileApp.Core.Services
     {
         private static readonly string _appDataDir = FileSystem.AppDataDirectory;
 
-        public ProfileService()
-        {
-
-        }
-
-        public async Task<IEnumerable<ProfileMoniker>> GetSavedProfileNames()
+        public IEnumerable<ProfileMoniker> GetSavedProfileNames()
         {
             return Directory.EnumerateFiles(_appDataDir, "*.json", SearchOption.TopDirectoryOnly)
                 .Select(Path.GetFileName)
                 .Select(x =>
                 {
                     var idAndName = x.Split('_');
-                    return new ProfileMoniker { Id = idAndName[0], CharacterName = idAndName[1] };
+                    return new ProfileMoniker { Id = Guid.Parse(idAndName[0]), CharacterName = idAndName[1] };
                 });
         }
 
         public async Task<MaybeResult<PlayerProfile, GenericErrorResult>> GetProfile(Guid id)
         {
             var profilePath = Directory.EnumerateFiles(_appDataDir, "*.json", SearchOption.TopDirectoryOnly)
+                .Select(Path.GetFileName)
                 .FirstOrDefault(x =>
                 {
                     var idAndName = x.Split('_');
@@ -54,7 +50,7 @@ namespace Solene.MobileApp.Core.Services
                 return MaybeResult<PlayerProfile, GenericErrorResult>.CreateError(GenericErrorResult.NotFound);
             }
 
-            var profile = (await FileSystem.OpenAppPackageFileAsync(profilePath))
+            var profile = File.OpenRead(Path.Combine(_appDataDir, profilePath))
                 .DeserializeJsonFromStream<PlayerProfile>();
 
             return MaybeResult<PlayerProfile, GenericErrorResult>.CreateOk(profile);            

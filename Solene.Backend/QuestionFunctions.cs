@@ -4,11 +4,14 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 using Solene.Database;
 using Solene.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Solene.Backend
@@ -128,9 +131,28 @@ namespace Solene.Backend
                 return new BadRequestResult();
             }
 
-            //TODO: Send notification to game admin somehow. Email? Pusn notif to some kind of admin app?
+            await SendEmailToAdmin(question.PlayerId, question, log);
 
             return new OkResult();
+        }
+
+        private static async Task SendEmailToAdmin(Guid playerId, Question question, ILogger logger)
+        {
+            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY", EnvironmentVariableTarget.Process);
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress("donotreply@solene.com", "Solene Admin Automated Sender");
+            string subject = $"Player {playerId} has answered {question.Title} with: '{question.ChosenAnswer}'";
+            subject = subject.Substring(0, Math.Min(subject.Length, 78)); // Truncate subject to 78 chars.
+            string gameAdmin = Environment.GetEnvironmentVariable("GAME_ADMIN_EMAIL", EnvironmentVariableTarget.Process);
+            var to = new EmailAddress(gameAdmin);
+            string body = $"Player with ID {playerId} has answered question {question.SequenceNumber} with:\n" +
+                $"'{question.ChosenAnswer}'";
+            var email = MailHelper.CreateSingleEmail(from, to, subject, body, null);
+            var response = await client.SendEmailAsync(email);
+            if (response.StatusCode != HttpStatusCode.Accepted)
+            {
+                logger.LogError($"Failed to send email {gameAdmin}. Error: {await response.Body.ReadAsStringAsync()}");                
+            }            
         }
     }
 }

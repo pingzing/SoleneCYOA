@@ -23,23 +23,26 @@ namespace Solene.MobileApp.Core.Mvvm
             SimpleIoc.Default.Register<IProfileService, ProfileService>();
             SimpleIoc.Default.Register<INotificationService, NotificationService>();
 
-            //Register your ViewModels here    
+            //Register ViewModels here    
             SimpleIoc.Default.Register<ProfileSelectViewModel>();
             SimpleIoc.Default.Register<PlayerNameViewModel>();
             SimpleIoc.Default.Register<PlayerGenderViewModel>();
+            SimpleIoc.Default.Register<ProfileOverviewViewModel>();
         }
 
         // Page ViewModel properties, for XAML-y access
-        public ProfileSelectViewModel ProfileSelectPage => SimpleIoc.Default.GetInstance<ProfileSelectViewModel>();
-        public PlayerNameViewModel PlayerNamePage => SimpleIoc.Default.GetInstance<PlayerNameViewModel>();
-        public PlayerGenderViewModel PlayerGenderPage => SimpleIoc.Default.GetInstance<PlayerGenderViewModel>();
+        public ProfileSelectViewModel ProfileSelect => SimpleIoc.Default.GetInstance<ProfileSelectViewModel>();
+        public PlayerNameViewModel PlayerName => SimpleIoc.Default.GetInstance<PlayerNameViewModel>();
+        public PlayerGenderViewModel PlayerGender => SimpleIoc.Default.GetInstance<PlayerGenderViewModel>();
+        public ProfileOverviewViewModel ProfileOverview => SimpleIoc.Default.GetInstance<ProfileOverviewViewModel>();
 
         private INavigationService InitializeNavigationService()
         {
             NavigationService navService = new NavigationService(((App)Application.Current).MainNavigationHost)
                 .Configure(typeof(ProfileSelectViewModel), typeof(ProfileSelectPage))
                 .Configure(typeof(PlayerNameViewModel), typeof(PlayerNamePage))
-                .Configure(typeof(PlayerGenderViewModel), typeof(PlayerGenderPage));
+                .Configure(typeof(PlayerGenderViewModel), typeof(PlayerGenderPage))
+                .Configure(typeof(ProfileOverviewViewModel), typeof(ProfileOverviewPage));
 
             return navService;
         }

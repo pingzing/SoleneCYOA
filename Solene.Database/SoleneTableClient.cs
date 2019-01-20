@@ -37,7 +37,7 @@ namespace Solene.Database
                 {
                     x.Id = Guid.NewGuid();
                     x.PlayerId = player.Id;
-                    x.SequenceNumber = (uint)index;
+                    x.SequenceNumber = (uint)index + 1;
                     return new QuestionEntity(x);
                 });
 

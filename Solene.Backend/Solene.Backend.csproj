@@ -7,6 +7,7 @@
     <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.24" />
+    <PackageReference Include="Sendgrid" Version="9.10.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Solene.Database\Solene.Database.csproj" />

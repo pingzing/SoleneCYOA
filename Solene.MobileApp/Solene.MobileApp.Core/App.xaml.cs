@@ -4,10 +4,13 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Solene.MobileApp.Core.Consts;
 using Solene.MobileApp.Core.Mvvm;
+using Solene.MobileApp.Core.Services;
 using Solene.MobileApp.Core.Services.CrossplatInterfaces;
 using Solene.MobileApp.Core.Views;
 using Solene.MobileApp.Core.Views.PlayerCreation;
+using System;
 using System.Diagnostics;
+using System.Linq;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -41,21 +44,28 @@ namespace Solene.MobileApp.Core
 
         protected override async void OnStart()
         {
+            var profileService = SimpleIoc.Default.GetInstance<IProfileService>();
+            var savedProfileNames = profileService.GetSavedProfileNames();
+
             AppCenter.Start($"android={Secrets.AndroidAppCenterKey};" +
                 $"uwp={Secrets.UwpAppCenterKey}", 
                 typeof(Analytics), typeof(Crashes));
-            if (Preferences.Get(PreferencesKeys.FirstCharacterCreationComplete, false)) //todo: any saved characters
+            if (Preferences.Get(PreferencesKeys.FirstCharacterCreationComplete, false))
             {
-                await MainNavigationHost.NavigateToAsync(new ProfileSelectPage(), false);
+                if (savedProfileNames.Count() > 1)
+                {
+                    await MainNavigationHost.NavigateToAsync(new ProfileSelectPage(), false);
+                }
+                else
+                {
+                    var onlyProfile = await profileService.GetProfile(savedProfileNames.First().Id);
+                    await MainNavigationHost.NavigateToAsync(new ProfileOverviewPage(onlyProfile.Unwrap()), false);
+                }
             }
             else
             {
                 await MainNavigationHost.NavigateToAsync(new PlayerNamePage(), false);
             }
-
-            // TODO: Fire a message that notifies the rest of the app that we've started,
-            // so we can handle it
-            // THe notificationservices need to be (re)initialzied.
         }
 
         protected override void OnSleep()

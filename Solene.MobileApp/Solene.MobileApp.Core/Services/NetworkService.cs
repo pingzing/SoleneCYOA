@@ -35,7 +35,7 @@ namespace Solene.MobileApp.Core.Services
             if (!response.IsSuccessStatusCode)
             {
                 Debug.WriteLine($"CreatePlayer failed: HTTP {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");
-                return NetworkMaybeResult.Failure<Player>(GenericErrorResult.NoResponse);
+                return NetworkMaybeResult.Failure<Player>(response.StatusCode.ToErrorCode());
             }
 
             var createdPlayer = JsonConvert.DeserializeObject<Player>(await response.Content.ReadAsStringAsync());
@@ -48,7 +48,7 @@ namespace Solene.MobileApp.Core.Services
             if (!response.IsSuccessStatusCode)
             {
                 Debug.WriteLine($"GetPlayerQuestions for {id} failed: HTTP {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");
-                return NetworkMaybeResult.Failure<List<Question>>(GenericErrorResult.NoResponse);
+                return NetworkMaybeResult.Failure<List<Question>>(response.StatusCode.ToErrorCode());
             }
 
             var questionsList = JsonConvert.DeserializeObject<List<Question>>(await response.Content.ReadAsStringAsync());
@@ -61,7 +61,7 @@ namespace Solene.MobileApp.Core.Services
             if (!response.IsSuccessStatusCode)
             {
                 Debug.WriteLine($"Failed to register push notifications.");
-                return NetworkMaybeResult.Failure<bool>(GenericErrorResult.BadRequest);
+                return NetworkMaybeResult.Failure<bool>(response.StatusCode.ToErrorCode());
             }
 
             return NetworkMaybeResult.Success(true);
@@ -79,7 +79,7 @@ namespace Solene.MobileApp.Core.Services
             }
             else
             {
-                return await _httpClient.PostAsJsonAsync<T>(requestUri, value);
+                return await _httpClient.PostAsJsonAsync(requestUri, value);
             }
         }
 
