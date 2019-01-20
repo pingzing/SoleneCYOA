@@ -1,4 +1,8 @@
-﻿namespace Solene.MobileApp.UWP
+﻿using GalaSoft.MvvmLight.Ioc;
+using Solene.MobileApp.Core.Services.CrossplatInterfaces;
+using Solene.MobileApp.UWP.Services;
+
+namespace Solene.MobileApp.UWP
 {
     public sealed partial class MainPage
     {
@@ -6,7 +10,14 @@
         {
             this.InitializeComponent();
 
-            LoadApplication(new Core.App());
+            var app = new Core.App();
+            RegisterNativeServices();
+            LoadApplication(app);
+        }
+
+        private void RegisterNativeServices()
+        {
+            SimpleIoc.Default.Register<IPlatformNotificationSerice, PlatformNotificationService>();
         }
     }
 }

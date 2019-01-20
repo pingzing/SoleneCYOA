@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Solene.MobileApp.Core.Services
@@ -50,9 +51,29 @@ namespace Solene.MobileApp.Core.Services
             return NetworkMaybeResult.Success(questionsList);            
         }
 
-        private string GetFunctionCode()
+        public async Task<MaybeResult<bool, GenericErrorResult>> RegisterPushNotifications(PushRegistrationRequest pushRegistration)
         {
-            return $"code={Consts.Secrets.CreatePlayerFunctionCode}";
+            var response = await _httpClient.PostAsJsonAsync($"player{GetFunctionCode()}", pushRegistration);
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.WriteLine($"Failed to register push notifications.");
+                return NetworkMaybeResult.Failure<bool>(GenericErrorResult.BadRequest);
+            }
+
+            return NetworkMaybeResult.Success(true);
+        }
+
+        private string GetFunctionCode([CallerMemberName]string functionName = null)
+        {
+            switch (functionName)
+            {
+                case nameof(CreatePlayer):
+                    return $"code={Consts.Secrets.CreatePlayerFunctionCode}";
+                case nameof(GetPlayerQuestions):
+                    return $"code={Consts.Secrets.GetPlayerQuestionsFunctionCode}";
+                default:
+                    throw new ArgumentOutOfRangeException($"No function code found for {functionName}");
+            }
         }
     }
 }

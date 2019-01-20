@@ -1,7 +1,11 @@
-﻿using Android.App;
+﻿using System;
+using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
+using GalaSoft.MvvmLight.Ioc;
+using Solene.MobileApp.Core.Services.CrossplatInterfaces;
+using Solene.MobileApp.Droid.Services;
 using Xamarin.Forms;
 
 namespace Solene.MobileApp.Droid
@@ -17,7 +21,14 @@ namespace Solene.MobileApp.Droid
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             Forms.Init(this, savedInstanceState);
-            LoadApplication(new MobileApp.Core.App());
+            var app = new Core.App();
+            RegisterNativeServices();
+            LoadApplication(app);
+        }
+
+        private void RegisterNativeServices()
+        {
+            SimpleIoc.Default.Register<IPlatformNotificationSerice, PlatformNotificationService>();
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)

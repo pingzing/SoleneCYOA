@@ -104,5 +104,39 @@ namespace Solene.Backend
 
             return new OkObjectResult(getResult);
         }
+
+        [FunctionName("RegisterPush")]
+        public static async Task<IActionResult> RegisterPushNotifications(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "player/{playerId}/push")]HttpRequest req,
+            string playerId,
+            ILogger log)
+        {
+            if (String.IsNullOrWhiteSpace(playerId))
+            {
+                log.LogError($"{DateTime.UtcNow}: Player ID was null or empty.");
+                return new BadRequestObjectResult("Player ID must not be null or empty.");
+            }
+
+            if (!Guid.TryParse(playerId, out Guid playerGuidId))
+            {
+                log.LogError($"Player ID ({playerId}) was not a valid GUID.");
+                return new BadRequestObjectResult("Invalid Player ID.");
+            }
+
+            PushRegistrationRequest pushRegistration = JsonConvert.DeserializeObject<PushRegistrationRequest>(await req.ReadAsStringAsync());
+
+            bool success = await PushNotifications.Register(playerGuidId, 
+                pushRegistration.PushPlatform, 
+                pushRegistration.PnsToken, 
+                pushRegistration.PlatformPushTemplate, 
+                log);
+
+            if (!success)
+            {
+                return new BadRequestResult();
+            }
+
+            return new CreatedResult("", "");
+        }
     }
 }

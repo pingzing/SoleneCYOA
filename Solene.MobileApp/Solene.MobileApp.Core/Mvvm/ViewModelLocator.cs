@@ -21,6 +21,7 @@ namespace Solene.MobileApp.Core.Mvvm
             SimpleIoc.Default.Register<INavigationService>(() => InitializeNavigationService());
             SimpleIoc.Default.Register<INetworkService, NetworkService>();
             SimpleIoc.Default.Register<IProfileService, ProfileService>();
+            SimpleIoc.Default.Register<INotificationService, NotificationService>();
 
             //Register your ViewModels here    
             SimpleIoc.Default.Register<MainViewModel>();

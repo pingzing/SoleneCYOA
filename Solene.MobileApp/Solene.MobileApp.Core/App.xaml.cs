@@ -1,8 +1,10 @@
-﻿using Microsoft.AppCenter;
+﻿using GalaSoft.MvvmLight.Ioc;
+using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Solene.MobileApp.Core.Consts;
 using Solene.MobileApp.Core.Mvvm;
+using Solene.MobileApp.Core.Services.CrossplatInterfaces;
 using Solene.MobileApp.Core.Views;
 using Solene.MobileApp.Core.Views.PlayerCreation;
 using System.Diagnostics;
@@ -50,6 +52,10 @@ namespace Solene.MobileApp.Core
             {
                 await MainNavigationHost.NavigateToAsync(new PlayerNamePage(), false);
             }
+
+            // TODO: Fire a message that notifies the rest of the app that we've started,
+            // so we can handle it
+            // THe notificationservices need to be (re)initialzied.
         }
 
         protected override void OnSleep()
@@ -59,7 +65,7 @@ namespace Solene.MobileApp.Core
 
         protected override void OnResume()
         {
-            // Handle when your app resumes
+
         }
     }
 }

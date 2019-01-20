@@ -54,7 +54,7 @@ namespace Solene.Backend
                 return new BadRequestResult();
             }
 
-            //TODO: Fire push notification to player with Question Text as content
+            await PushNotifications.SendPushNotification(playerGuidId, question.Title, question.Text, log);
 
             return new CreatedResult("", addedQuestion);
         }
