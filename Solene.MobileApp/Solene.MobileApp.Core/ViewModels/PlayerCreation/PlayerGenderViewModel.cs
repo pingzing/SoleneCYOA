@@ -135,7 +135,7 @@ namespace Solene.MobileApp.Core.ViewModels.PlayerCreation
             await _profileService.SaveProfile(profile);
             Preferences.Set(PreferencesKeys.FirstCharacterCreationComplete, true);
 
-            await _navigationService.NavigateToViewModelAsync<MainViewModel>();
+            await _navigationService.NavigateToViewModelAsync<ProfileSelectViewModel>();
         }
     }
 }

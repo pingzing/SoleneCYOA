@@ -24,20 +24,20 @@ namespace Solene.MobileApp.Core.Mvvm
             SimpleIoc.Default.Register<INotificationService, NotificationService>();
 
             //Register your ViewModels here    
-            SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register<ProfileSelectViewModel>();
             SimpleIoc.Default.Register<PlayerNameViewModel>();
             SimpleIoc.Default.Register<PlayerGenderViewModel>();
         }
 
         // Page ViewModel properties, for XAML-y access
-        public MainViewModel MainPage => SimpleIoc.Default.GetInstance<MainViewModel>();
+        public ProfileSelectViewModel ProfileSelectPage => SimpleIoc.Default.GetInstance<ProfileSelectViewModel>();
         public PlayerNameViewModel PlayerNamePage => SimpleIoc.Default.GetInstance<PlayerNameViewModel>();
         public PlayerGenderViewModel PlayerGenderPage => SimpleIoc.Default.GetInstance<PlayerGenderViewModel>();
 
         private INavigationService InitializeNavigationService()
         {
             NavigationService navService = new NavigationService(((App)Application.Current).MainNavigationHost)
-                .Configure(typeof(MainViewModel), typeof(MainPage))
+                .Configure(typeof(ProfileSelectViewModel), typeof(ProfileSelectPage))
                 .Configure(typeof(PlayerNameViewModel), typeof(PlayerNamePage))
                 .Configure(typeof(PlayerGenderViewModel), typeof(PlayerGenderPage));
 

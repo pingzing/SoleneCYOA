@@ -42,7 +42,7 @@ namespace Solene.Database
                 });
 
                 var questionsResult = await AddQuestionsToPlayer(questionEntities);
-                if (questionsResult.Any(x => x.HttpStatusCode != 204))
+                if (questionsResult.Any(x => x.HttpStatusCode != 201))
                 {
                     _logger.LogError($"Failed to add at least one starting question when creating player {player.Id}");
                 }

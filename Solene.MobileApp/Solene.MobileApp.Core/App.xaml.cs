@@ -46,7 +46,7 @@ namespace Solene.MobileApp.Core
                 typeof(Analytics), typeof(Crashes));
             if (Preferences.Get(PreferencesKeys.FirstCharacterCreationComplete, false)) //todo: any saved characters
             {
-                await MainNavigationHost.NavigateToAsync(new MainPage(), false);
+                await MainNavigationHost.NavigateToAsync(new ProfileSelectPage(), false);
             }
             else
             {
