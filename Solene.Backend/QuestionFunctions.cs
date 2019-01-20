@@ -136,7 +136,7 @@ namespace Solene.Backend
 
         [FunctionName("AnswerQuestion")]
         public static async Task<IActionResult> AnswerQuestion(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "question/{questionId}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "question/answer/{questionId}")] HttpRequest req,
             string questionId,
             ILogger log)
         {
