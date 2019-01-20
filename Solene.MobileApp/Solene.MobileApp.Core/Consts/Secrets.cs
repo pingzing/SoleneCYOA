@@ -1,5 +1,4 @@
-﻿
-namespace Solene.MobileApp.Core.Consts
+﻿namespace Solene.MobileApp.Core.Consts
 {
 
     /// <summary>
@@ -23,5 +22,6 @@ namespace Solene.MobileApp.Core.Consts
         public static string GetPlayerFunctionCode => "<GetPlayerFunctionCodeReplaceMe>";
         public static string GetPlayerQuestionsFunctionCode => "<GetPlayerQuestionsFunctionCodeReplaceMe>";
         public static string AnswerQuestionFunctionCode => "<AnswerQuestionFunctionCodeReplaceMe>";
+        public static string RegisterPushNotificationsCode => "<RegisterPushNotificationsCodeReplaceMe>";
     }
 }
