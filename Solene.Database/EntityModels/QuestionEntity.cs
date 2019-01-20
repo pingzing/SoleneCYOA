@@ -15,7 +15,7 @@ namespace Solene.Database.EntityModels
             PartitionKey = PartitionKeys.Question;
             RowKey = question.Id.ToString("N");
             PlayerId = question.PlayerId;
-            Title = question.Title,
+            Title = question.Title;
             Text = question.Text;
             PrefilledAnswersJson = JsonConvert.SerializeObject(question.PrefilledAnswers);
             SequenceNumber = (int)question.SequenceNumber;
