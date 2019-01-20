@@ -8,9 +8,18 @@ namespace Solene.MobileApp.UWP.Services
     public class PlatformNotificationService : IPlatformNotificationSerice
     {
         public async Task<string> GetPnsToken()
-        {            
-            var channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
-            return channel.Uri.ToString();
+        {
+            try
+            {
+                var channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
+                return channel.Uri.ToString();
+            }
+            catch(Exception ex)
+            {
+                return null;
+            }            
         }
+
+        public string GetPushTemplate() => @"<toast><visual><binding template=""ToastGeneric""><text>$(title)</text><text>$(body)</text></binding></visual></toast>";
     }
 }

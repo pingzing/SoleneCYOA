@@ -1,6 +1,7 @@
 ﻿using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.Networking.PushNotifications;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -15,7 +16,7 @@ namespace Solene.MobileApp.UWP
             Suspending += OnSuspending;
         }
 
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
             Frame rootFrame = Window.Current.Content as Frame;
             if (rootFrame == null)
@@ -31,12 +32,13 @@ namespace Solene.MobileApp.UWP
                 }
 
                 Window.Current.Content = rootFrame;
-            }
+            }            
 
             if (rootFrame.Content == null)
             {
                 rootFrame.Navigate(typeof(MainPage), e.Arguments);
-            }
+            }            
+
             Window.Current.Activate();
         }
 

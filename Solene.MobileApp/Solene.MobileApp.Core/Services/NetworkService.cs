@@ -13,6 +13,7 @@ namespace Solene.MobileApp.Core.Services
     {
         Task<MaybeResult<Player, GenericErrorResult>> CreatePlayer(Player player);
         Task<MaybeResult<List<Question>, GenericErrorResult>> GetPlayerQuestions(Guid id);
+        Task<MaybeResult<bool, GenericErrorResult>> RegisterPushNotifications(Guid id, PushRegistrationRequest pushRegistration);
     }
 
     public class NetworkService : INetworkService
@@ -51,9 +52,9 @@ namespace Solene.MobileApp.Core.Services
             return NetworkMaybeResult.Success(questionsList);            
         }
 
-        public async Task<MaybeResult<bool, GenericErrorResult>> RegisterPushNotifications(PushRegistrationRequest pushRegistration)
+        public async Task<MaybeResult<bool, GenericErrorResult>> RegisterPushNotifications(Guid id, PushRegistrationRequest pushRegistration)
         {
-            var response = await _httpClient.PostAsJsonAsync($"player{GetFunctionCode()}", pushRegistration);
+            var response = await _httpClient.PostAsJsonAsync($"player/{id.ToString("N")}/push?{GetFunctionCode()}", pushRegistration);
             if (!response.IsSuccessStatusCode)
             {
                 Debug.WriteLine($"Failed to register push notifications.");
@@ -71,6 +72,8 @@ namespace Solene.MobileApp.Core.Services
                     return $"code={Consts.Secrets.CreatePlayerFunctionCode}";
                 case nameof(GetPlayerQuestions):
                     return $"code={Consts.Secrets.GetPlayerQuestionsFunctionCode}";
+                case nameof(RegisterPushNotifications):
+                    return $"code={Consts.Secrets.RegisterPushNotificationsCode}";                
                 default:
                     throw new ArgumentOutOfRangeException($"No function code found for {functionName}");
             }

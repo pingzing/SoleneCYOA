@@ -51,6 +51,11 @@ namespace Solene.MobileApp.Droid.Services
             }
         }
 
+        public string GetPushTemplate()
+        {
+            return "";
+        }
+
         public override void OnTokenRefresh()
         {
             var refreshedtoken = FirebaseInstanceId.Instance.Token;
