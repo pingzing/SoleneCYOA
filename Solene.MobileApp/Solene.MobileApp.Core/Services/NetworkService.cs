@@ -71,7 +71,7 @@ namespace Solene.MobileApp.Core.Services
         public async Task<bool> AnswerQuestion(Guid questionId, string answer)
         {
             QuestionAnswerRequest request = new QuestionAnswerRequest { Answer = answer };
-            var response = await PostAsJsonAsync($"question{questionId.ToString("N")}?{GetFunctionCode()}", request);
+            var response = await PostAsJsonAsync($"question/answer/{questionId.ToString("N")}?{GetFunctionCode()}", request);
             if (!response.IsSuccessStatusCode)
             {
                 Debug.WriteLine($"Attempt to answer question failed.");
