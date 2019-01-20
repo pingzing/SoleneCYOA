@@ -102,7 +102,7 @@ namespace Solene.Backend
 
         [FunctionName("UpdateQuestion")]
         public static async Task<IActionResult> UpdateQuestion(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "question/{questionId}")]HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "question/{questionId}")]HttpRequest req,
             string questionId,
             ILogger log)
         {
@@ -121,7 +121,7 @@ namespace Solene.Backend
             string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
             var dbClient = new SoleneTableClient(connectionString, log);
 
-            log.LogInformation($"{DateTime.UtcNow}: UpdateQuestion called for player with ID {questionGuidId}");
+            log.LogInformation($"{DateTime.UtcNow}: UpdateQuestion called for question with ID {questionGuidId}");
 
             Question question = JsonConvert.DeserializeObject<Question>(await req.ReadAsStringAsync());
 
@@ -129,23 +129,64 @@ namespace Solene.Backend
             if (!success)
             {
                 return new BadRequestResult();
-            }
-
-            await SendEmailToAdmin(question.PlayerId, question, log);
+            }            
 
             return new OkResult();
         }
 
-        private static async Task SendEmailToAdmin(Guid playerId, Question question, ILogger logger)
+        [FunctionName("AnswerQuestion")]
+        public static async Task<IActionResult> AnswerQuestion(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "question/{questionId}")] HttpRequest req,
+            string questionId,
+            ILogger log)
         {
+            if (String.IsNullOrWhiteSpace(questionId))
+            {
+                log.LogError($"{DateTime.UtcNow}: Question ID was null or empty.");
+                return new BadRequestObjectResult("Question ID must not be null or empty.");
+            }
+
+            if (!Guid.TryParse(questionId, out Guid questionGuidId))
+            {
+                log.LogError($"Question ID ({questionId}) was not a valid GUID.");
+                return new BadRequestObjectResult("Invalid Question ID.");
+            }
+
+            string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
+            var dbClient = new SoleneTableClient(connectionString, log);
+
+            log.LogInformation($"{DateTime.UtcNow}: AnswerQuestion called for question with ID {questionGuidId}");
+
+            var answerRequest = JsonConvert.DeserializeObject<QuestionAnswerRequest>(await req.ReadAsStringAsync());
+
+            bool success = await dbClient.AnswerQuestion(questionGuidId, answerRequest.Answer);
+            if (!success)
+            {
+                return new BadRequestResult();
+            }
+
+            await SendEmailToAdmin(dbClient, questionGuidId, log);
+
+            return new OkResult();
+        }
+
+        private static async Task SendEmailToAdmin(SoleneTableClient dbClient, Guid questionId, ILogger logger)
+        {
+            var question = await dbClient.GetQuestion(questionId);
+            if (question == null)
+            {
+                logger.LogError($"Unable to send email: no question with the ID {questionId} exists.");
+                return;
+            }
+
             var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY", EnvironmentVariableTarget.Process);
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress("donotreply@solene.com", "Solene Admin Automated Sender");
-            string subject = $"Player {playerId} has answered {question.Title} with: '{question.ChosenAnswer}'";
+            string subject = $"Player {question.PlayerId} has answered {question.Title} with: '{question.ChosenAnswer}'";
             subject = subject.Substring(0, Math.Min(subject.Length, 78)); // Truncate subject to 78 chars.
             string gameAdmin = Environment.GetEnvironmentVariable("GAME_ADMIN_EMAIL", EnvironmentVariableTarget.Process);
             var to = new EmailAddress(gameAdmin);
-            string body = $"Player with ID {playerId} has answered question {question.SequenceNumber} with:\n" +
+            string body = $"Player with ID {question.PlayerId} has answered question {question.SequenceNumber} with:\n" +
                 $"'{question.ChosenAnswer}'";
             var email = MailHelper.CreateSingleEmail(from, to, subject, body, null);
             var response = await client.SendEmailAsync(email);

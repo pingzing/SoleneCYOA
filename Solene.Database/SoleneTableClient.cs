@@ -110,12 +110,35 @@ namespace Solene.Database
             return (await GetPlayerQuestionEntities(playerId))?.Select(x => x.ToQuestion());
         }
 
+        public async Task<bool> AnswerQuestion(Guid questionId, string answer)
+        {
+            var table = _tableClient.GetTableReference(TableNames.Player);
+
+            QuestionEntity oldQuestionEntity = await GetQuestionEntity(questionId);
+            if (oldQuestionEntity == null)
+            {
+                _logger.LogError($"Could not answer question with '${answer}', no question with ID {questionId} found.");
+                return false;
+            }
+
+            oldQuestionEntity.ChosenAnswer = answer;
+
+            TableOperation updateOperation = TableOperation.Merge(oldQuestionEntity);
+            TableResult result = await table.ExecuteAsync(updateOperation);
+            if (result.HttpStatusCode != 204)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public async Task<bool> UpdateQuestion(Question question)
         {
             var table = _tableClient.GetTableReference(TableNames.Player);
 
             // Get old entity
-            QuestionEntity oldEntity = await GetQuestion(question.Id);
+            QuestionEntity oldEntity = await GetQuestionEntity(question.Id);
             if (oldEntity == null)
             {
                 _logger.LogError($"Could not update question, no question with ID {question.Id} found.");
@@ -150,7 +173,13 @@ namespace Solene.Database
             }
         }
 
-        private async Task<QuestionEntity> GetQuestion(Guid questionId)
+        public async Task<Question> GetQuestion(Guid questionId)
+        {
+            var questionEntity = await GetQuestionEntity(questionId);
+            return questionEntity?.ToQuestion();
+        }
+
+        private async Task<QuestionEntity> GetQuestionEntity(Guid questionId)
         {
             var table = _tableClient.GetTableReference(TableNames.Player);
 

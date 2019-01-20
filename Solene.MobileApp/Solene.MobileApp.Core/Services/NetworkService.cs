@@ -17,6 +17,7 @@ namespace Solene.MobileApp.Core.Services
         Task<MaybeResult<Player, GenericErrorResult>> CreatePlayer(Player player);
         Task<MaybeResult<List<Question>, GenericErrorResult>> GetPlayerQuestions(Guid id);
         Task<MaybeResult<bool, GenericErrorResult>> RegisterPushNotifications(Guid id, PushRegistrationRequest pushRegistration);
+        Task<bool> AnswerQuestion(Guid questionId, string answer);
     }
 
     public class NetworkService : INetworkService
@@ -67,10 +68,23 @@ namespace Solene.MobileApp.Core.Services
             return NetworkMaybeResult.Success(true);
         }
 
+        public async Task<bool> AnswerQuestion(Guid questionId, string answer)
+        {
+            QuestionAnswerRequest request = new QuestionAnswerRequest { Answer = answer };
+            var response = await PostAsJsonAsync($"question{questionId.ToString("N")}?{GetFunctionCode()}", request);
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.WriteLine($"Attempt to answer question failed.");
+                return false;
+            }
+
+            return true;
+        }
+
         private async Task<HttpResponseMessage> PostAsJsonAsync<T>(string requestUri, T value)
         {
             // Android doesn't seem to understand the PostAsJsonAsync extension method, and always sends an empty body
-            // unless we send it up manually. Shrug.
+            // unless we send it up manually. Shrug. Not gonna troubleshoot that Nuget mess...
             if(Device.RuntimePlatform == Device.Android)
             {
                 var content = new ObjectContent<T>(value, new JsonMediaTypeFormatter());
@@ -92,7 +106,9 @@ namespace Solene.MobileApp.Core.Services
                 case nameof(GetPlayerQuestions):
                     return $"code={Consts.Secrets.GetPlayerQuestionsFunctionCode}";
                 case nameof(RegisterPushNotifications):
-                    return $"code={Consts.Secrets.RegisterPushNotificationsCode}";                
+                    return $"code={Consts.Secrets.RegisterPushNotificationsCode}";
+                case nameof(AnswerQuestion):
+                    return $"code={Consts.Secrets.AnswerQuestionFunctionCode}";
                 default:
                     throw new ArgumentOutOfRangeException($"No function code found for {functionName}");
             }
