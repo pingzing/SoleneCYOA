@@ -54,11 +54,12 @@ namespace Solene.Backend
                     }
                 });
 
+                logger.LogInformation($"Registered user {ToInstallId(userId, platform)} for push notifications.");
                 return true;
             }
             catch(Exception ex)
             {
-                logger.LogError($"Failed to register push notifications for {userId}. Error: {ex.Message}");
+                logger.LogError(ex, $"Failed to register push notifications for {userId}.", null);
                 return false;
             }
         }

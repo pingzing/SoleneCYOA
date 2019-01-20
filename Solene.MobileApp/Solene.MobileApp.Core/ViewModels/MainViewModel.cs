@@ -32,5 +32,10 @@ namespace Solene.MobileApp.Core.ViewModels
 
             bool success = await _notificationService.Register(Guid.Parse(CharacterList[0].Id));
         }
+
+        public async Task DEBUG_Thing()
+        {
+            bool success = await _notificationService.Register(Guid.Parse(CharacterList[0].Id));
+        }
     }
 }

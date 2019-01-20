@@ -7,7 +7,8 @@
              Title="Solene CYOA: Characters"
              BindingContext="{Binding Source={StaticResource Locator}, Path=MainPage}">
 
-    <ListView ItemsSource="{Binding CharacterList}">
+    <ListView ItemsSource="{Binding CharacterList}"
+              ItemTapped="ListView_ItemTapped">
         <ListView.ItemTemplate>
             <DataTemplate x:DataType="models:ProfileMoniker">
                 <TextCell Text="{Binding CharacterName, Mode=OneTime}" 
