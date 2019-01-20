@@ -7,11 +7,13 @@
              BindingContext="{Binding Source={StaticResource Locator}, Path=ProfileOverview}"
              Title="{Binding TitleString}">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Refresh" Command="{Binding RefreshCommand}"/>
+        <ToolbarItem Order="Secondary" Text="Refresh" Command="{Binding RefreshCommand}"/>
     </ContentPage.ToolbarItems>
 
     <ListView ItemsSource="{Binding Questions}"
+              ItemTapped="ListView_ItemTapped"
               CachingStrategy="RecycleElement">
+        <!--Todo: Hide items with no answers unless they're the last element in the list.-->
         <ListView.ItemTemplate>
             <DataTemplate x:DataType="models:Question">
                 <ViewCell>

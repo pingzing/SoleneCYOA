@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Solene.MobileApp.Core.Views.QuestionPage"
+             
+             Title="{Binding Title}"
+             BindingContext="{Binding Source={StaticResource Locator}, Path=Question}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ScrollView Grid.Row="0">
+            <Grid Padding="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" 
+                       Style="{DynamicResource SubtitleStyle}"
+                       Text="{Binding CurrentQuestion.Title}"/>
+                <Label Grid.Row="1"
+                       Style="{DynamicResource BodyStyle}"
+                       Text="{Binding CurrentQuestion.Text}"/>
+                <StackLayout x:Name="ButtonsStack" Grid.Row="2"
+                             BindableLayout.ItemsSource="{Binding CurrentQuestion.PrefilledAnswers}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Button Text="{Binding}" 
+                                    Command="{Binding Source={x:Reference ButtonsStack}, Path=BindingContext.AnswerQuestionCommand}"
+                                    CommandParameter="{Binding}"/>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </StackLayout>
+
+                <!--Todo: Show freeform question box and its button-->
+                <!--Todo: show answer, if any exists-->
+            </Grid>
+        </ScrollView>
+        <Grid Grid.Row="1" Padding="5, 0, 5, 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0"
+                    Command="{Binding PreviousCommand}"
+                    Text="Previous"
+                    IsVisible="{Binding IsPreviousVisible}"/>
+            <Button Grid.Column="1"
+                    Command="{Binding NextCommand}"
+                    Text="Next"
+                    IsVisible="{Binding IsNextVisible}"/>
+        </Grid>
+    </Grid>
+
+</ContentPage>

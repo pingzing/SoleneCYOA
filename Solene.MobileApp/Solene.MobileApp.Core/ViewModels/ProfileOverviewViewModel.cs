@@ -58,6 +58,16 @@ namespace Solene.MobileApp.Core.ViewModels
             await Refresh();
         }
 
+        public async Task QuestionSelected(Question selected)
+        {
+            ChosenQuestionRequest request = new ChosenQuestionRequest
+            {
+                ChosenIndex = Questions.IndexOf(selected),
+                Profile = _profile
+            };
+            await _navigationService.NavigateToViewModelAsync<QuestionViewModel>(request);
+        }
+
         private async void RefreshClicked()
         {
             await Refresh();
