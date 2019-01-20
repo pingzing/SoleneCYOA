@@ -22,17 +22,31 @@ namespace Solene.Database
             _tableClient = storageAccount.CreateCloudTableClient();
         }
 
-        public async Task<Player> CreatePlayer(Player player)
+        public async Task<Player> CreatePlayer(Player player, IEnumerable<Question> startingQuestions)
         {
             var table = _tableClient.GetTableReference(TableNames.Player);
-
-            // TODO: Prefill all new players with starting questions
+            
             player.Id = Guid.NewGuid();
 
             TableOperation insertOperation = TableOperation.Insert(new PlayerEntity(player), true);
             TableResult result = await table.ExecuteAsync(insertOperation);
             if (result.Result is PlayerEntity newPlayerEntity)
             {
+                // Create starting questions
+                var questionEntities = startingQuestions.Select((x, index) =>
+                {
+                    x.Id = Guid.NewGuid();
+                    x.PlayerId = player.Id;
+                    x.SequenceNumber = (uint)index;
+                    return new QuestionEntity(x);
+                });
+
+                var questionsResult = await AddQuestionsToPlayer(questionEntities);
+                if (questionsResult.Any(x => x.HttpStatusCode != 204))
+                {
+                    _logger.LogError($"Failed to add at least one starting question when creating player {player.Id}");
+                }
+
                 return newPlayerEntity.ToPlayer();
             }
             else
@@ -89,7 +103,7 @@ namespace Solene.Database
                 _logger.LogError($"Failed to add question with text {question.Text} for player with ID: {playerId}. DB Status code: {result.HttpStatusCode}");
                 return null;
             }
-        }
+        }        
 
         public async Task<IEnumerable<Question>> GetPlayerQuestions(Guid playerId)
         {
@@ -119,21 +133,6 @@ namespace Solene.Database
             return true;
         }
 
-        internal async Task<QuestionEntity> GetQuestion(Guid questionId)
-        {
-            var table = _tableClient.GetTableReference(TableNames.Player);
-
-            TableOperation retrieveOperation = TableOperation.Retrieve<QuestionEntity>(PartitionKeys.Question, questionId.ToString("N"));
-            TableResult retrieveResult = await table.ExecuteAsync(retrieveOperation);
-            if (!(retrieveResult.Result is QuestionEntity questionEntity))
-            {
-                _logger.LogError($"Failed to find any Question with ID {questionId}.");
-                return null;
-            }
-
-            return questionEntity;
-        }
-
         public async Task<TableResult> DeletePlayer(Guid playerId)
         {
             var table = _tableClient.GetTableReference(TableNames.Player);
@@ -151,6 +150,21 @@ namespace Solene.Database
             }
         }
 
+        private async Task<QuestionEntity> GetQuestion(Guid questionId)
+        {
+            var table = _tableClient.GetTableReference(TableNames.Player);
+
+            TableOperation retrieveOperation = TableOperation.Retrieve<QuestionEntity>(PartitionKeys.Question, questionId.ToString("N"));
+            TableResult retrieveResult = await table.ExecuteAsync(retrieveOperation);
+            if (!(retrieveResult.Result is QuestionEntity questionEntity))
+            {
+                _logger.LogError($"Failed to find any Question with ID {questionId}.");
+                return null;
+            }
+
+            return questionEntity;
+        }
+
         private async Task<IEnumerable<QuestionEntity>> GetPlayerQuestionEntities(Guid playerId)
         {
             var table = _tableClient.GetTableReference(TableNames.Player);
@@ -161,6 +175,18 @@ namespace Solene.Database
                     TableQuery.GenerateFilterConditionForGuid("PlayerId", QueryComparisons.Equal, playerId)));
 
             return await table.ExecuteQueryAsync(questionsForPlayerQuery);
+        }
+
+        private async Task<IList<TableResult>> AddQuestionsToPlayer(IEnumerable<QuestionEntity> questions)
+        {
+            var table = _tableClient.GetTableReference(TableNames.Player);
+            TableBatchOperation insertBatch = new TableBatchOperation();
+            foreach(var question in questions)
+            {
+                insertBatch.Insert(question);
+            }
+
+            return await table.ExecuteBatchAsync(insertBatch);
         }
     }
 }

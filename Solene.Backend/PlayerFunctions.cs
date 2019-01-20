@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Solene.Database;
 using Solene.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Solene.Backend
@@ -31,7 +32,7 @@ namespace Solene.Backend
 
             log.LogInformation($"{DateTime.UtcNow}: Creating player with name {player.Name} and gender {player.Gender}");
 
-            Player newPlayer = await dbClient.CreatePlayer(player);
+            Player newPlayer = await dbClient.CreatePlayer(player, GetStartingQuestions());
             if (newPlayer == null)
             {
                 log.LogError($"DB could not create new player.");
@@ -137,6 +138,31 @@ namespace Solene.Backend
             }
 
             return new CreatedResult("", "");
+        }
+
+        private static IEnumerable<Question> GetStartingQuestions()
+        {
+            return new[]
+            {
+                new Question
+                {
+                    Title = "Test Question 1",
+                    Text = "This is the body of test question number one.",
+                    PrefilledAnswers = new List<string> {"It has two prefilled answers", "The second of which is this one"},
+                },
+                new Question
+                {
+                    Title = "Test Question 2",
+                    Text = "This is the body of TWOOO",
+                    PrefilledAnswers = new List<string> {"Three answers!", "Two", "Treeeee"},
+                },
+                new Question
+                {
+                    Title = "Test Question Thuh-ree",
+                    Text = "Question numbah three represent!",
+                    PrefilledAnswers = new List<string> {"Only one prefilled this time!"},
+                }
+            };
         }
     }
 }
