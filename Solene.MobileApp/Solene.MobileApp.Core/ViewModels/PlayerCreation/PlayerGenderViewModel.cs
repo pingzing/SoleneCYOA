@@ -4,7 +4,8 @@ using Solene.MobileApp.Core.Models;
 using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Services;
 using Solene.Models;
-using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 
@@ -107,37 +108,45 @@ namespace Solene.MobileApp.Core.ViewModels.PlayerCreation
         private async Task CreatePlayer(Player player)
         {
             IsLoading = true;
-            var createdPlayer = await _networkService.CreatePlayer(player);
-            
-            if (createdPlayer.IsError)
+            var playerResult = await _networkService.CreatePlayer(player);
+
+            if (playerResult.IsError)
             {
                 // todo: show error message      
                 IsLoading = false;
                 return;
             }
 
-            var questions = await _networkService.GetPlayerQuestions(createdPlayer.Unwrap().Id);
+            var createdPlayer = playerResult.Unwrap();
+            var questions = await _networkService.GetPlayerQuestions(createdPlayer.Id);
             if (questions.IsError)
             {
                 // todo: this isn't actually fatal, just annoying. Just have to
                 // make sure we get the inital questions later
+                Debug.WriteLine($"Unable to fetch player questions for {player.Name}: {player.Id}");
             }
             IsLoading = false;
 
             PlayerProfile profile = new PlayerProfile
             {
-                PlayerInfo = createdPlayer.Unwrap(),
+                PlayerInfo = createdPlayer,
+                Questions = questions.UnwrapOr(null),
             };
-
-            if (questions.IsOk)
-            {
-                profile.Questions = questions.Unwrap();
-            }
 
             await _profileService.SaveProfile(profile);
             Preferences.Set(PreferencesKeys.FirstCharacterCreationComplete, true);
 
-            await _navigationService.NavigateToViewModelAsync<ProfileSelectViewModel>();
+            int profileCount = _profileService.GetSavedProfileNames().Count();
+            if (profileCount > 1)
+            {
+                await _navigationService.NavigateToViewModelAsync<ProfileSelectViewModel>();
+
+            }
+            else
+            {
+                await _navigationService.NavigateToViewModelAsync<ProfileOverviewViewModel>(profile);
+            }
+
             _navigationService.ClearBackStack();
         }
     }

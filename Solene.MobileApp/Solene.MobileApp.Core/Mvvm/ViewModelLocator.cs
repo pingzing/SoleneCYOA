@@ -29,6 +29,7 @@ namespace Solene.MobileApp.Core.Mvvm
             SimpleIoc.Default.Register<PlayerGenderViewModel>();
             SimpleIoc.Default.Register<ProfileOverviewViewModel>();
             SimpleIoc.Default.Register<QuestionViewModel>();
+            SimpleIoc.Default.Register<ImportProfileViewModel>();
         }
 
         // Page ViewModel properties, for XAML-y access
@@ -37,6 +38,7 @@ namespace Solene.MobileApp.Core.Mvvm
         public PlayerGenderViewModel PlayerGender => SimpleIoc.Default.GetInstance<PlayerGenderViewModel>();
         public ProfileOverviewViewModel ProfileOverview => SimpleIoc.Default.GetInstance<ProfileOverviewViewModel>();
         public QuestionViewModel Question => SimpleIoc.Default.GetInstance<QuestionViewModel>();
+        public ImportProfileViewModel ImportProfile => SimpleIoc.Default.GetInstance<ImportProfileViewModel>();
 
         private INavigationService InitializeNavigationService()
         {
@@ -45,7 +47,8 @@ namespace Solene.MobileApp.Core.Mvvm
                 .Configure(typeof(PlayerNameViewModel), typeof(PlayerNamePage))
                 .Configure(typeof(PlayerGenderViewModel), typeof(PlayerGenderPage))
                 .Configure(typeof(ProfileOverviewViewModel), typeof(ProfileOverviewPage))
-                .Configure(typeof(QuestionViewModel), typeof(QuestionPage));
+                .Configure(typeof(QuestionViewModel), typeof(QuestionPage))
+                .Configure(typeof(ImportProfileViewModel), typeof(ImportProfilePage));
 
             return navService;
         }

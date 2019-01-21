@@ -4,12 +4,39 @@
              
              BindingContext="{Binding Source={StaticResource Locator}, Path=PlayerName}"
              Title="Player Creation">
-    
-    <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Padding="50, 0">
-        <Label LineBreakMode="WordWrap"
+
+    <Grid HorizontalOptions="CenterAndExpand" 
+          VerticalOptions="CenterAndExpand"
+          Padding="50, 0, 50, 10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackLayout Grid.Row="0" 
+                     HorizontalOptions="CenterAndExpand" 
+                     VerticalOptions="CenterAndExpand">
+            <Label LineBreakMode="WordWrap"
             Text="Welcome! You're about to embark on an adventure in the twin cities of Aurinsol and Kuulene. Why don't you tell us a little bit more about yourself?"/>
-        <Label Text="What's your name?" LineBreakMode="WordWrap"/>
-        <Entry Placeholder="Character's first name" Text="{Binding EnteredName, Mode=TwoWay}"/>
-        <Button Text="Next" HorizontalOptions="FillAndExpand" Command="{Binding NextCommand}"/>
-    </StackLayout>
+            <Label Text="What's your name?" LineBreakMode="WordWrap"/>
+            <Entry Placeholder="Character's first name" Text="{Binding EnteredName, Mode=TwoWay}"/>
+            <Button Text="Next" HorizontalOptions="FillAndExpand" Command="{Binding NextCommand}"/>
+        </StackLayout>
+
+        <Label Grid.Row="1"  HorizontalOptions="Center"
+               HorizontalTextAlignment="Center">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span Text="Or, "/>
+                    <Span TextColor="Blue" TextDecorations="Underline"
+                          Text="click here to import an existing profile!">
+                        <Span.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ImportProfileCommand}"/>
+                        </Span.GestureRecognizers>
+                    </Span>
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+
+    </Grid>
 </ContentPage>

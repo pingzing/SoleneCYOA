@@ -3,6 +3,7 @@ using Solene.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Runtime.CompilerServices;
@@ -18,6 +19,7 @@ namespace Solene.MobileApp.Core.Services
         Task<MaybeResult<List<Question>, GenericErrorResult>> GetPlayerQuestions(Guid id);
         Task<MaybeResult<bool, GenericErrorResult>> RegisterPushNotifications(Guid id, PushRegistrationRequest pushRegistration);
         Task<bool> AnswerQuestion(Guid questionId, string answer);
+        Task<MaybeResult<Player, GenericErrorResult>> GetPlayer(Guid playerId);
     }
 
     public class NetworkService : INetworkService
@@ -43,6 +45,19 @@ namespace Solene.MobileApp.Core.Services
             return NetworkMaybeResult.Success(createdPlayer);
         }
 
+        public async Task<MaybeResult<Player, GenericErrorResult>> GetPlayer(Guid playerId)
+        {
+            var response = await _httpClient.GetAsync($"player/{playerId.ToString("N")}?{GetFunctionCode()}");
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.WriteLine($"GetPlayer failed: HTTP {response.StatusCode}: {await response.Content.ReadAsStringAsync()}");
+                return NetworkMaybeResult.Failure<Player>(response.StatusCode.ToErrorCode());
+            }
+
+            var player = JsonConvert.DeserializeObject<Player>(await response.Content.ReadAsStringAsync());
+            return NetworkMaybeResult.Success(player);
+        }
+
         public async Task<MaybeResult<List<Question>, GenericErrorResult>> GetPlayerQuestions(Guid id)
         {
             var response = await _httpClient.GetAsync($"player/{id.ToString("N")}/questions?{GetFunctionCode()}");
@@ -52,7 +67,9 @@ namespace Solene.MobileApp.Core.Services
                 return NetworkMaybeResult.Failure<List<Question>>(response.StatusCode.ToErrorCode());
             }
 
-            var questionsList = JsonConvert.DeserializeObject<List<Question>>(await response.Content.ReadAsStringAsync());
+            var questionsList = JsonConvert.DeserializeObject<List<Question>>(await response.Content.ReadAsStringAsync())
+                .OrderBy(x => x.SequenceNumber)
+                .ToList();
             return NetworkMaybeResult.Success(questionsList);            
         }
 
@@ -103,6 +120,8 @@ namespace Solene.MobileApp.Core.Services
             {
                 case nameof(CreatePlayer):
                     return $"code={Consts.Secrets.CreatePlayerFunctionCode}";
+                case nameof(GetPlayer):
+                    return $"code={Consts.Secrets.GetPlayerFunctionCode}";
                 case nameof(GetPlayerQuestions):
                     return $"code={Consts.Secrets.GetPlayerQuestionsFunctionCode}";
                 case nameof(RegisterPushNotifications):

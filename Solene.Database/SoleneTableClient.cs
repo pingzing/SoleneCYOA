@@ -19,7 +19,7 @@ namespace Solene.Database
         {
             _logger = logger;
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
-            _tableClient = storageAccount.CreateCloudTableClient();
+            _tableClient = storageAccount.CreateCloudTableClient();            
         }
 
         public async Task<Player> CreatePlayer(Player player, IEnumerable<Question> startingQuestions)

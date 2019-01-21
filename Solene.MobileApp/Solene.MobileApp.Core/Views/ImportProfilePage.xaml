@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Solene.MobileApp.Core.Views.ImportProfilePage"
+             
+             BindingContext="{Binding Source={StaticResource Locator}, Path=ImportProfile}"
+             Title="Import Profile">
+
+    <StackLayout Padding="50, 0"
+                 HorizontalOptions="CenterAndExpand"
+                 VerticalOptions="CenterAndExpand">
+        <Label Text="Want to import a profile you made on another device? Just enter the 32-digit ID below!"/>
+        <Entry x:Name="InputGuidEntry" 
+               Placeholder="32-digit profile ID" 
+               MaxLength="38"/>
+        <Button HorizontalOptions="FillAndExpand" 
+                Text="Submit"
+                Command="{Binding SubmitCommand}"
+                CommandParameter="{Binding Source={x:Reference InputGuidEntry}, Path=Text}"/>
+        <ActivityIndicator IsRunning="{Binding IsLoading}"/>
+        <Label Text="{Binding InvalidIdErrorText}" 
+               IsVisible="{Binding IsInvalidIdErrorVisible}"
+               TextColor="Red"/>
+        <Label Text="{Binding NetworkErrorText}"
+               IsVisible="{Binding IsNetworkErrorVisible}"
+               TextColor="Red"/>
+    </StackLayout>
+
+</ContentPage>

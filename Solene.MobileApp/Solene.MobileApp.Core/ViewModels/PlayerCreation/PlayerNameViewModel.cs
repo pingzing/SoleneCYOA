@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight.Command;
+﻿using System;
+using GalaSoft.MvvmLight.Command;
 using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Services;
 
@@ -20,11 +21,18 @@ namespace Solene.MobileApp.Core.ViewModels.PlayerCreation
         }
 
         public RelayCommand NextCommand { get; private set; }
+        public RelayCommand ImportProfileCommand { get; private set; }
 
         public PlayerNameViewModel(INavigationService navService, IProfileService profileService) : base(navService)
         {
             NextCommand = new RelayCommand(NextClicked, CanClickNext);
+            ImportProfileCommand = new RelayCommand(ImportProfileClicked);
             _profileService = profileService;
+        }
+
+        private async void ImportProfileClicked()
+        {
+            await _navigationService.NavigateToViewModelAsync<ImportProfileViewModel>();
         }
 
         private async void NextClicked()
