@@ -3,6 +3,7 @@ using Solene.MobileApp.Core.Models;
 using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Services;
 using Solene.Models;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,6 +33,7 @@ namespace Solene.MobileApp.Core.ViewModels
         }
 
         public RelayCommand RefreshCommand { get; private set; }
+        public RelayCommand ImportProfileCommand { get; private set;}
 
         public ProfileOverviewViewModel(INavigationService navService,
             INetworkService networkService,
@@ -39,6 +41,7 @@ namespace Solene.MobileApp.Core.ViewModels
             INotificationService notificationService) : base(navService)
         {
             RefreshCommand = new RelayCommand(RefreshClicked);
+            ImportProfileCommand = new RelayCommand(ImportProfileClicked);
             _networkService = networkService;
             _profileService = profileService;
             _notificationService = notificationService;
@@ -51,7 +54,10 @@ namespace Solene.MobileApp.Core.ViewModels
                 _profile = (PlayerProfile)Parameter;
                 TitleString = $"{_profile.PlayerInfo.Name}'s Profile";
 
-                Questions = new ObservableCollection<Question>(_profile.Questions);
+                if (_profile.Questions != null)
+                {
+                    Questions = new ObservableCollection<Question>(_profile.Questions);
+                }
                 await _notificationService.Register(_profile.PlayerInfo.Id);
             }
 
@@ -90,6 +96,11 @@ namespace Solene.MobileApp.Core.ViewModels
                 await _profileService.SaveProfile(_profile);
                 Questions = new ObservableCollection<Question>(_profile.Questions);
             }
+        }
+
+        private async void ImportProfileClicked()
+        {
+            await _navigationService.NavigateToViewModelAsync<ImportProfileViewModel>();
         }
     }
 }

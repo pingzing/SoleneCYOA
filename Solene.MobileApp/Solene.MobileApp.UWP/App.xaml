@@ -2,6 +2,19 @@
     x:Class="Solene.MobileApp.UWP.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Solene.MobileApp.UWP">
-
+    xmlns:local="using:Solene.MobileApp.UWP"
+    RequestedTheme="Dark">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Dark">
+                    <Color x:Key="SystemAccentColor">#800080</Color>
+                    <SolidColorBrush x:Key="ButtonBackground" Color="Purple" Opacity="0.7"/>
+                    <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="Purple" Opacity="0.8"/>
+                    <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="Purple"/>
+                    <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="Purple" Opacity="0.3"/>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>

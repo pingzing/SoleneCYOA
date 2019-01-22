@@ -6,7 +6,7 @@
              Title="Player Creation">
 
     <Grid HorizontalOptions="CenterAndExpand" 
-          VerticalOptions="CenterAndExpand"
+          VerticalOptions="FillAndExpand"
           Padding="50, 0, 50, 10">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -28,7 +28,7 @@
             <Label.FormattedText>
                 <FormattedString>
                     <Span Text="Or, "/>
-                    <Span TextColor="Blue" TextDecorations="Underline"
+                    <Span TextColor="Orange" TextDecorations="Underline"
                           Text="click here to import an existing profile!">
                         <Span.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding ImportProfileCommand}"/>

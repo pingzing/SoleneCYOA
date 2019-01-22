@@ -7,6 +7,7 @@
              BindingContext="{Binding Source={StaticResource Locator}, Path=ProfileOverview}"
              Title="{Binding TitleString}">
     <ContentPage.ToolbarItems>
+        <ToolbarItem Order="Secondary" Text="Import profile" Command="{Binding ImportProfileCommand}"/>
         <ToolbarItem Order="Secondary" Text="Refresh" Command="{Binding RefreshCommand}"/>
     </ContentPage.ToolbarItems>
 
