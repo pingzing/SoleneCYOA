@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Command;
 using Solene.MobileApp.Core.Models;
 using Solene.MobileApp.Core.Mvvm;
@@ -30,9 +27,9 @@ namespace Solene.MobileApp.Core.ViewModels
             set
             {
                 Set(ref _currentQuestion, value);
-                // TODO: Clear Freeform input, once implemented
                 RaisePropertyChanged(nameof(IsNextVisible));
                 RaisePropertyChanged(nameof(IsPreviousVisible));
+                RaisePropertyChanged(nameof(IsFreeFormEntryEnabled));
                 PreviousCommand.RaiseCanExecuteChanged();
                 NextCommand.RaiseCanExecuteChanged();
                 AnswerFreeFormQuestionCommand.RaiseCanExecuteChanged();
@@ -69,8 +66,11 @@ namespace Solene.MobileApp.Core.ViewModels
                 Set(ref _isLoading, value);
                 AnswerQuestionCommand.RaiseCanExecuteChanged();
                 AnswerFreeFormQuestionCommand.RaiseCanExecuteChanged();
+                RaisePropertyChanged(nameof(IsFreeFormEntryEnabled));
             }
         }
+
+        public bool IsFreeFormEntryEnabled => !IsLoading && CurrentQuestion.ChosenAnswer == null;
 
         public RelayCommand NextCommand { get; private set; }
         public RelayCommand PreviousCommand { get; private set; }

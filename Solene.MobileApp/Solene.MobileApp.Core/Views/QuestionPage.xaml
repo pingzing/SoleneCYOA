@@ -17,6 +17,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0" 
                        Style="{DynamicResource SubtitleStyle}"
@@ -34,6 +35,19 @@
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </StackLayout>
+                <Grid Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Entry x:Name="FreeformEntry" Grid.Column="0"
+                           IsEnabled="{Binding IsFreeFormEntryEnabled}"
+                           Text="{Binding CurrentQuestion.ChosenAnswer}"/>
+                    <Button Grid.Column="1"
+                            Command="{Binding AnswerFreeFormQuestionCommand}"
+                            CommandParameter="{Binding Source={x:Reference FreeformEntry}, Path=Text}"
+                            Text="▶"/>
+                </Grid>
 
                 <!--Todo: Show freeform question box and its button-->
                 <!--Todo: show answer, if any exists-->

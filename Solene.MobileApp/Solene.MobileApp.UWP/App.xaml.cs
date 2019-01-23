@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Networking.PushNotifications;
@@ -18,27 +19,45 @@ namespace Solene.MobileApp.UWP
         }
 
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
+        {            
+            await OnLaunchedOrActivated(e);
+        }
+
+        protected override async void OnActivated(IActivatedEventArgs args)
+        {
+            await OnLaunchedOrActivated(args);
+        }
+
+        private async Task OnLaunchedOrActivated(IActivatedEventArgs args)
         {
             Frame rootFrame = Window.Current.Content as Frame;
             if (rootFrame == null)
-            {                
+            {
                 rootFrame = new Frame();
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
-                Xamarin.Forms.Forms.Init(e);
+                Xamarin.Forms.Forms.Init(args);
 
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+                if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     //TODO: Load state from previously suspended application
-                }                
+                }
 
                 Window.Current.Content = rootFrame;
-            }            
+            }
 
             if (rootFrame.Content == null)
             {
-                rootFrame.Navigate(typeof(MainPage), e.Arguments);
-            }            
+                object mainPageArgs = (args as LaunchActivatedEventArgs)?.Arguments;
+                rootFrame.Navigate(typeof(MainPage), mainPageArgs);
+            }
+
+            if (args.Kind == ActivationKind.ToastNotification)
+            {
+                var activatedArgs = args as ToastNotificationActivatedEventArgs;
+                string base64Question = activatedArgs.Argument;
+                // TODO: Pass this on to the crossplat app
+            }
 
             Window.Current.Activate();
         }

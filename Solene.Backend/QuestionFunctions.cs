@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Solene.Backend
@@ -47,7 +48,8 @@ namespace Solene.Backend
 
             log.LogInformation($"{DateTime.UtcNow}: AddQuestion called for player with ID {playerGuidId}");
 
-            Question question = JsonConvert.DeserializeObject<Question>(await req.ReadAsStringAsync());
+            string questionJson = await req.ReadAsStringAsync();
+            Question question = JsonConvert.DeserializeObject<Question>(questionJson);
 
             log.LogInformation($"{DateTime.UtcNow}: Adding question with text {question.Text} to player with ID {playerGuidId}");
 
@@ -57,7 +59,16 @@ namespace Solene.Backend
                 return new BadRequestResult();
             }
 
-            await PushNotifications.SendPushNotification(playerGuidId, question.Title, question.Text, log);
+            // FCM and WNS both enforce size limits on data payloads. We're fudging this a bit because
+            // calculating the actual final size of the payload is tricky.
+            // FCM is 4062 (for notification + data payload TOTAL)
+            // WNS is 5KB total.
+            string base64Question = null;
+            if (questionJson.Length < 2500)
+            {
+                base64Question = Convert.ToBase64String(Encoding.UTF8.GetBytes(questionJson));
+            }            
+            await PushNotifications.SendPushNotification(playerGuidId, question.Title, question.Text, base64Question, log);
 
             return new CreatedResult("", addedQuestion);
         }
@@ -194,6 +205,6 @@ namespace Solene.Backend
             {
                 logger.LogError($"Failed to send email {gameAdmin}. Error: {await response.Body.ReadAsStringAsync()}");                
             }            
-        }
+        }        
     }
 }

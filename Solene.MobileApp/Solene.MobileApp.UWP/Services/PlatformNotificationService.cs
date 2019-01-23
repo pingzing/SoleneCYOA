@@ -20,6 +20,13 @@ namespace Solene.MobileApp.UWP.Services
             }            
         }
 
-        public string GetPushTemplate() => @"<toast><visual><binding template=""ToastGeneric""><text>$(title)</text><text>$(body)</text></binding></visual></toast>";
+        public string GetPushTemplate() => @"<toast launch =""$(question)"">
+    <visual>
+        <binding template=""ToastGeneric"">
+            <text>$(title)</text>
+            <text>$(body)</text>
+        </binding>
+    </visual>
+</toast>";
     }
 }

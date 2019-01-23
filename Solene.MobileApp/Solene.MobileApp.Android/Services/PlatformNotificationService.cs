@@ -61,7 +61,10 @@ namespace Solene.MobileApp.Droid.Services
             return @"{  
     ""notification"": {
         ""title"" : ""$(title)"",
-        ""body"": ""$(body)""
+        ""body"": ""$(body)"",
+        ""data"": {
+            ""question"": ""$(question)""
+        }
     }    
 }";
         }
