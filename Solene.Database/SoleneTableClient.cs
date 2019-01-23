@@ -89,7 +89,7 @@ namespace Solene.Database
 
             question.Id = Guid.NewGuid();
             question.PlayerId = playerId;
-            question.SequenceNumber = (uint)playerQuestions.Count(); // SequenceNumber is zero-indexed.            
+            question.SequenceNumber = (uint)playerQuestions.Count() + 1;
 
             QuestionEntity questionEntity = new QuestionEntity(question);
             TableOperation insertOperation = TableOperation.Insert(questionEntity, true);

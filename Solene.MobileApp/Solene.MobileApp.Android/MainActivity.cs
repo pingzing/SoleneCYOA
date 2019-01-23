@@ -41,6 +41,12 @@ namespace Solene.MobileApp.Droid
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-        }        
+        }
+
+        protected override void OnNewIntent(Intent intent)
+        {
+            base.OnNewIntent(intent);
+            // TODO: Handle tap from a local notification (and maybe background one too?)
+        }
     }
 }

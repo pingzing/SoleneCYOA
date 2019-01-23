@@ -30,11 +30,14 @@ namespace Solene.MobileApp.Core.ViewModels
                 RaisePropertyChanged(nameof(IsNextVisible));
                 RaisePropertyChanged(nameof(IsPreviousVisible));
                 RaisePropertyChanged(nameof(IsFreeFormEntryEnabled));
+                RaisePropertyChanged(nameof(ChosenAnswer));
                 PreviousCommand.RaiseCanExecuteChanged();
                 NextCommand.RaiseCanExecuteChanged();
                 AnswerFreeFormQuestionCommand.RaiseCanExecuteChanged();
             }
         }
+
+        public string ChosenAnswer => CurrentQuestion?.ChosenAnswer;        
 
         // Do we have a next question?        
         public bool IsNextVisible
@@ -70,7 +73,7 @@ namespace Solene.MobileApp.Core.ViewModels
             }
         }
 
-        public bool IsFreeFormEntryEnabled => !IsLoading && CurrentQuestion?.ChosenAnswer == null;
+        public bool IsFreeFormEntryEnabled => !IsLoading && ChosenAnswer == null;
 
         public RelayCommand NextCommand { get; private set; }
         public RelayCommand PreviousCommand { get; private set; }
@@ -112,7 +115,7 @@ namespace Solene.MobileApp.Core.ViewModels
             // Do we have a next question?
             // If so, does our current question have an answer?
             int index = _backingProfile.Questions.IndexOf(CurrentQuestion);
-            bool currentAnswered = CurrentQuestion.ChosenAnswer != null;
+            bool currentAnswered = ChosenAnswer != null;
             return index + 1 < _backingProfile.Questions.Count
                 && currentAnswered;
         }
@@ -128,7 +131,6 @@ namespace Solene.MobileApp.Core.ViewModels
             int currentIndex = _backingProfile.Questions.IndexOf(CurrentQuestion);
             CurrentQuestion = _backingProfile.Questions[currentIndex - 1];
         }
-
 
         private async void AnswerQuestionClicked(string answer)
         {
@@ -147,7 +149,8 @@ namespace Solene.MobileApp.Core.ViewModels
             //  - Update this question
             int index = _backingProfile.Questions.IndexOf(questionAnswered);
             _backingProfile.Questions[index].ChosenAnswer = answer;
-
+            RaisePropertyChanged(nameof(ChosenAnswer));
+            
             //  - Update and save the current profile.
             await _profileService.SaveProfile(_backingProfile);
 
@@ -161,14 +164,14 @@ namespace Solene.MobileApp.Core.ViewModels
         private bool CanClickAnswers(string answer)
         {
             // Not loading, and not already answered.
-            return !IsLoading && CurrentQuestion?.ChosenAnswer == null;
+            return !IsLoading && ChosenAnswer == null;
         }
 
         private bool CanClickFreeForm(string answer)
         {
             // Not loading, not already answered, and has a valid answer.
             return !IsLoading 
-                && CurrentQuestion?.ChosenAnswer == null 
+                && ChosenAnswer == null 
                 && !string.IsNullOrWhiteSpace(answer);
         }
     }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Ioc;
+using GalaSoft.MvvmLight.Messaging;
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
@@ -30,6 +32,14 @@ namespace Solene.MobileApp.UWP
 
         private async Task OnLaunchedOrActivated(IActivatedEventArgs args)
         {
+            string base64Question = null;
+            if (args.Kind == ActivationKind.ToastNotification)
+            {
+                var activatedArgs = args as ToastNotificationActivatedEventArgs;
+                base64Question = activatedArgs.Argument;
+                Resources["launchedQuestion"] = base64Question;
+            }
+
             Frame rootFrame = Window.Current.Content as Frame;
             if (rootFrame == null)
             {
@@ -51,12 +61,12 @@ namespace Solene.MobileApp.UWP
                 object mainPageArgs = (args as LaunchActivatedEventArgs)?.Arguments;
                 rootFrame.Navigate(typeof(MainPage), mainPageArgs);
             }
-
-            if (args.Kind == ActivationKind.ToastNotification)
+            else if(base64Question != null)
             {
-                var activatedArgs = args as ToastNotificationActivatedEventArgs;
-                string base64Question = activatedArgs.Argument;
-                // TODO: Pass this on to the crossplat app
+                // This happened because we clicked on a notification and the app is active
+                // Use the Messenger to send it down to the either the QuestionViewModel,
+                // or maybe the profile service (which would in turn fire a "hey, I updated"
+                // event).
             }
 
             Window.Current.Activate();

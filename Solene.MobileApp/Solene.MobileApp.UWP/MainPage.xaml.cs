@@ -10,7 +10,13 @@ namespace Solene.MobileApp.UWP
         {
             this.InitializeComponent();
 
-            var app = new Core.App();
+            if (App.Current.Resources.TryGetValue("launchedQuestion", out object launchedQuestion))
+            {
+                // if it exists, clear it after reading it
+                App.Current.Resources.Remove("launchedQuestion");
+            }
+
+            var app = new Core.App((string)launchedQuestion);
             RegisterNativeServices();
             LoadApplication(app);
         }

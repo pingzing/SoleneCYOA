@@ -2,9 +2,16 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Solene.MobileApp.Core.Views.QuestionPage"
+             xmlns:conv="clr-namespace:Solene.MobileApp.Core.Converters"
              
              Title="{Binding Title}"
              BindingContext="{Binding Source={StaticResource Locator}, Path=Question}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:NullToVisConverter x:Key="NullToVisConverter"/>
+            <x:Boolean x:Key="False">False</x:Boolean>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -16,8 +23,9 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0" 
                        Style="{DynamicResource SubtitleStyle}"
@@ -26,7 +34,10 @@
                        Style="{DynamicResource BodyStyle}"
                        Text="{Binding CurrentQuestion.Text}"/>
                 <StackLayout x:Name="ButtonsStack" Grid.Row="2"
-                             BindableLayout.ItemsSource="{Binding CurrentQuestion.PrefilledAnswers}">
+                             BindableLayout.ItemsSource="{Binding CurrentQuestion.PrefilledAnswers}"
+                             IsVisible="{Binding ChosenAnswer, 
+                                Converter={StaticResource NullToVisConverter}, 
+                                ConverterParameter={StaticResource False}}">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate>
                             <Button Text="{Binding}" 
@@ -35,22 +46,25 @@
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </StackLayout>
-                <Grid Grid.Row="3">
+                <Grid Grid.Row="3" 
+                      IsVisible="{Binding ChosenAnswer, 
+                                Converter={StaticResource NullToVisConverter}, 
+                                ConverterParameter={StaticResource False}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Entry x:Name="FreeformEntry" Grid.Column="0"
-                           IsEnabled="{Binding IsFreeFormEntryEnabled}"
-                           Text="{Binding CurrentQuestion.ChosenAnswer}"/>
+                           IsEnabled="{Binding IsFreeFormEntryEnabled}"/>
                     <Button Grid.Column="1"
                             Command="{Binding AnswerFreeFormQuestionCommand}"
                             CommandParameter="{Binding Source={x:Reference FreeformEntry}, Path=Text}"
                             Text="▶"/>
                 </Grid>
-
-                <!--Todo: Show freeform question box and its button-->
-                <!--Todo: show answer, if any exists-->
+                
+                <!--TODO: Make this prettier. It's where we show the answer after the player has answered-->
+                <Label Grid.Row="4" Text="{Binding ChosenAnswer}"/>
+                
             </Grid>
         </ScrollView>
         <Grid Grid.Row="1" Padding="5, 0, 5, 5">

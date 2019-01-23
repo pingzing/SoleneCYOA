@@ -25,7 +25,7 @@ namespace Solene.MobileApp.Core
 
         // Guard against resuming reinitializing on Android.
         private static bool _initialized = false;
-        public App()
+        public App(string launchedBase64Question = null)
         {
             if (_initialized)
             {                
@@ -37,6 +37,10 @@ namespace Solene.MobileApp.Core
             // Report binding failures ✨
             Log.Listeners.Add(new DelegateLogListener((arg1, arg2) => Debug.WriteLine(arg2)));
             InitializeComponent();
+
+            // TODO: If launchedQuestion isn't null, then the app was started by tapping on
+            // a toast notification that contained a question. 
+            // Hold onto that, and pass it down to the ProfileService.
 
             MainNavigationHost = new NavigationHost();            
             MainPage = MainNavigationHost;
