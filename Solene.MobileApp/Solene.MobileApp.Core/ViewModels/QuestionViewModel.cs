@@ -70,7 +70,7 @@ namespace Solene.MobileApp.Core.ViewModels
             }
         }
 
-        public bool IsFreeFormEntryEnabled => !IsLoading && CurrentQuestion.ChosenAnswer == null;
+        public bool IsFreeFormEntryEnabled => !IsLoading && CurrentQuestion?.ChosenAnswer == null;
 
         public RelayCommand NextCommand { get; private set; }
         public RelayCommand PreviousCommand { get; private set; }
@@ -161,14 +161,14 @@ namespace Solene.MobileApp.Core.ViewModels
         private bool CanClickAnswers(string answer)
         {
             // Not loading, and not already answered.
-            return !IsLoading && CurrentQuestion.ChosenAnswer == null;
+            return !IsLoading && CurrentQuestion?.ChosenAnswer == null;
         }
 
         private bool CanClickFreeForm(string answer)
         {
             // Not loading, not already answered, and has a valid answer.
             return !IsLoading 
-                && CurrentQuestion.ChosenAnswer == null 
+                && CurrentQuestion?.ChosenAnswer == null 
                 && !string.IsNullOrWhiteSpace(answer);
         }
     }

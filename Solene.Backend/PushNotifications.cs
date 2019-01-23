@@ -17,7 +17,8 @@ namespace Solene.Backend
             NotificationHubClient hub = NotificationHubClient.CreateClientFromConnectionString(connectionString, "solene-mobile-app");
             NotificationOutcome result = await hub.SendTemplateNotificationAsync(new Dictionary<string, string>
                 { {"title", title }, {"body", body }, {"question", base64Question} }, 
-                userId.ToString("N"));
+                userId.ToString("N"));            
+
             logger.LogInformation($"Notification sent to {userId}. Outcome of push ID {result.TrackingId}: {result.State}.");
         }
 
@@ -28,12 +29,7 @@ namespace Solene.Backend
             ILogger logger)
         {
             string connectionString = Environment.GetEnvironmentVariable("SOLENE_NOTIFICATION_CONNECTION_STRING", EnvironmentVariableTarget.Process);
-            NotificationHubClient hub = NotificationHubClient.CreateClientFromConnectionString(connectionString, "solene-mobile-app");
-
-            if (await hub.InstallationExistsAsync(ToInstallId(userId, platform)))
-            {
-                return true;
-            }
+            NotificationHubClient hub = NotificationHubClient.CreateClientFromConnectionString(connectionString, "solene-mobile-app");            
 
             try
             {

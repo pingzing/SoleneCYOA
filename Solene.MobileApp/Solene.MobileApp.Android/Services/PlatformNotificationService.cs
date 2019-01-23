@@ -73,6 +73,6 @@ namespace Solene.MobileApp.Droid.Services
         {
             var refreshedtoken = FirebaseInstanceId.Instance.Token;
             _getFirebaseTokenTask.SetResult(refreshedtoken);
-        }
+        }        
     }
 }

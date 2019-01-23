@@ -29,7 +29,7 @@ namespace Solene.MobileApp.Core.Services
         public NetworkService()
         {
             _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri("https://solene.azurewebsites.net/api/");
+            _httpClient.BaseAddress = new Uri("http://localhost:7071/api/");
         }
 
         public async Task<MaybeResult<Player, GenericErrorResult>> CreatePlayer(Player player)
