@@ -1,7 +1,7 @@
-﻿using Solene.MobileApp.Core.ViewModels.PlayerCreation;
+﻿using Solene.MobileApp.Core.ViewModels;
 using Xamarin.Forms;
 
-namespace Solene.MobileApp.Core.Views.PlayerCreation
+namespace Solene.MobileApp.Core.Views
 {
     public partial class PlayerGenderPage : ContentPage
     {

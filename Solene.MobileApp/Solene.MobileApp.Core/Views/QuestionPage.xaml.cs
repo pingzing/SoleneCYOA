@@ -10,7 +10,7 @@ namespace Solene.MobileApp.Core.Views
         public QuestionPage(ChosenQuestionRequest chosen)
         {
             InitializeComponent();
-            (BindingContext as QuestionViewModel).Parameter = chosen;
+            (BindingContext as QuestionPageViewModel).Parameter = chosen;
         }
     }
 }

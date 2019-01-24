@@ -2,23 +2,36 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Solene.MobileApp.Core.Views.ProfileOverviewPage"
-             xmlns:models="clr-namespace:Solene.Models;assembly=Solene.Models"
+             xmlns:models="clr-namespace:Solene.Models;assembly=Solene.Models"      
+             xmlns:localModels="clr-namespace:Solene.MobileApp.Core.Models"
+             xmlns:conv="clr-namespace:Solene.MobileApp.Core.Converters"
              
              BindingContext="{Binding Source={StaticResource Locator}, Path=ProfileOverview}"
              Title="{Binding TitleString}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:QuestioSelectableToColorConverter x:Key="BackgroundColorConverter"/>
+            <conv:InvertBoolConverter x:Key="BoolInvert"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
     <ContentPage.ToolbarItems>
         <ToolbarItem Order="Secondary" Text="Import profile" Command="{Binding ImportProfileCommand}"/>
         <ToolbarItem Order="Secondary" Text="Refresh" Command="{Binding RefreshCommand}"/>
     </ContentPage.ToolbarItems>
 
     <ListView ItemsSource="{Binding Questions}"
-              ItemTapped="ListView_ItemTapped"
+              ItemTapped="ListView_ItemTapped"              
+              IsPullToRefreshEnabled="True"
+              RefreshCommand="{Binding RefreshCommand}"
+              SelectionMode="None"              
               CachingStrategy="RecycleElement">
-        <!--Todo: Hide items with no answers unless they're the last element in the list.-->
         <ListView.ItemTemplate>
-            <DataTemplate x:DataType="models:Question">
+            <DataTemplate>
                 <ViewCell>
-                    <Grid Padding="10, 0, 0, 5">
+                    <Grid Padding="10, 0, 0, 5"  Margin="0, 0, 0, 5"
+                          BackgroundColor="{Binding IsSelectableInLists, Converter={StaticResource BackgroundColorConverter}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
@@ -30,19 +43,28 @@
                         <Label Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
                                HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"
                                Style="{DynamicResource ListItemTextStyle}"
-                               Text="{Binding SequenceNumber, Mode=OneTime}"/>
+                               Text="{Binding SequenceNumber, Mode=OneWay}"/>
                         <Label Grid.Row="0" Grid.Column="1"
+                               Margin="0, 5, 0, 5"
+                               FontAttributes="Italic"
+                               IsVisible="{Binding IsSelectableInLists, Converter={StaticResource BoolInvert}}"
+                               HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"
+                               Style="{DynamicResource ListItemTextStyle}"
+                               Text="Locked"/>
+                        <Label Grid.Row="0" Grid.Column="1"
+                               IsVisible="{Binding IsSelectableInLists}"
                                MaxLines="1"
                                LineBreakMode="TailTruncation"
                                Margin="5, 0, 0, 0"
                                Style="{DynamicResource ListItemTextStyle}"
-                               Text="{Binding Title}"/>
+                               Text="{Binding Title, Mode=OneWay}"/>
                         <Label Grid.Row="1" Grid.Column="1"
                                MaxLines="1"
                                LineBreakMode="TailTruncation"
                                Margin="5, 0, 0, 0"
                                Style="{DynamicResource ListItemDetailTextStyle}"
-                               Text="{Binding Text}"/>
+                               IsVisible="{Binding IsSelectableInLists, Mode=OneWay}"
+                               Text="{Binding Text, Mode=OneWay}"/>
                     </Grid>
                 </ViewCell>
             </DataTemplate>

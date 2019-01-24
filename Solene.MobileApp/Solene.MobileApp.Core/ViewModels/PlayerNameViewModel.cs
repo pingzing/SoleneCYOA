@@ -3,7 +3,7 @@ using GalaSoft.MvvmLight.Command;
 using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Services;
 
-namespace Solene.MobileApp.Core.ViewModels.PlayerCreation
+namespace Solene.MobileApp.Core.ViewModels
 {
     public class PlayerNameViewModel : NavigableViewModelBase
     {

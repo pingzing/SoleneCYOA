@@ -1,5 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using GalaSoft.MvvmLight.Messaging;
+using Newtonsoft.Json;
 using Solene.MobileApp.Core.Extensions;
+using Solene.MobileApp.Core.Messages;
 using Solene.MobileApp.Core.Models;
 using Solene.Models;
 using System;
@@ -18,11 +20,18 @@ namespace Solene.MobileApp.Core.Services
         IEnumerable<ProfileMoniker> GetSavedProfileNames();
         Task<MaybeResult<PlayerProfile, GenericErrorResult>> GetProfile(Guid id);
         Task SaveProfile(PlayerProfile profile);
+        Task AddQuestionToSavedProfile(Guid profileId, Question newQuestion);
     }
 
     public class ProfileService : IProfileService
     {
+        private readonly IMessenger _messagingService;
         private static readonly string _appDataDir = FileSystem.AppDataDirectory;
+
+        public ProfileService(IMessenger messagingService)
+        {
+            _messagingService = messagingService;
+        }
 
         public IEnumerable<ProfileMoniker> GetSavedProfileNames()
         {
@@ -68,7 +77,22 @@ namespace Solene.MobileApp.Core.Services
             }
         }
 
-        private readonly static Regex _illegalCharsRegex = new Regex($"[{Regex.Escape(new string(Path.GetInvalidFileNameChars()))}]", RegexOptions.Compiled);
+        public async Task AddQuestionToSavedProfile(Guid profileId, Question newQuestion)
+        {
+            MaybeResult<PlayerProfile, GenericErrorResult> getProfileResult = await GetProfile(profileId);
+            if (getProfileResult.IsError)
+            {
+                Debug.WriteLine($"Couldn't fine a profile with ID {profileId}");
+                return;
+            }
+
+            PlayerProfile profile = getProfileResult.Unwrap();
+            profile.Questions.Add(newQuestion);
+            await SaveProfile(profile);
+            _messagingService.Send(new ProfileUpdated { NewQuestion = newQuestion, ProfileId = profileId });
+        }
+
+        private readonly static Regex _illegalCharsRegex = new Regex($"[{Regex.Escape(new string(Path.GetInvalidFileNameChars()))}]", RegexOptions.Compiled);        
         public static string SanitizeFileName(string inputString)
         {
             if (_illegalCharsRegex.IsMatch(inputString))

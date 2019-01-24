@@ -7,7 +7,7 @@ using Solene.Models;
 
 namespace Solene.MobileApp.Core.ViewModels
 {
-    public class QuestionViewModel: NavigableViewModelBase
+    public class QuestionPageViewModel: NavigableViewModelBase
     {
         private readonly IProfileService _profileService;
         private readonly INetworkService _networkService;
@@ -80,7 +80,7 @@ namespace Solene.MobileApp.Core.ViewModels
         public RelayCommand<string> AnswerQuestionCommand { get; private set; }
         public RelayCommand<string> AnswerFreeFormQuestionCommand { get; private set; }
 
-        public QuestionViewModel(INavigationService navService, 
+        public QuestionPageViewModel(INavigationService navService, 
             INetworkService networkService,
             IProfileService profileService) : base(navService)
         {

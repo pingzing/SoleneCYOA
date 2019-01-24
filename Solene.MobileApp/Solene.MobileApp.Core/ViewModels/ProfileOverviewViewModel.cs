@@ -2,8 +2,6 @@
 using Solene.MobileApp.Core.Models;
 using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Services;
-using Solene.Models;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,8 +23,8 @@ namespace Solene.MobileApp.Core.ViewModels
             set => Set(ref _titleString, value);
         }
 
-        private ObservableCollection<Question> _questions = new ObservableCollection<Question>();
-        public ObservableCollection<Question> Questions
+        private ObservableCollection<QuestionViewModel> _questions = new ObservableCollection<QuestionViewModel>();
+        public ObservableCollection<QuestionViewModel> Questions
         {
             get => _questions;
             set => Set(ref _questions, value);
@@ -56,7 +54,8 @@ namespace Solene.MobileApp.Core.ViewModels
 
                 if (_profile.Questions != null)
                 {
-                    Questions = new ObservableCollection<Question>(_profile.Questions);
+                    Questions = new ObservableCollection<QuestionViewModel>(
+                        _profile.Questions.Select(x => new QuestionViewModel(x)));
                 }
                 await _notificationService.Register(_profile.PlayerInfo.Id);
             }
@@ -64,14 +63,14 @@ namespace Solene.MobileApp.Core.ViewModels
             await Refresh();
         }
 
-        public async Task QuestionSelected(Question selected)
+        public async Task QuestionSelected(QuestionViewModel selected)
         {
             ChosenQuestionRequest request = new ChosenQuestionRequest
             {
                 ChosenIndex = Questions.IndexOf(selected),
                 Profile = _profile
             };
-            await _navigationService.NavigateToViewModelAsync<QuestionViewModel>(request);
+            await _navigationService.NavigateToViewModelAsync<QuestionPageViewModel>(request);
         }
 
         private async void RefreshClicked()
@@ -80,7 +79,30 @@ namespace Solene.MobileApp.Core.ViewModels
         }
 
         private async Task Refresh()
-        {            
+        {
+            // First update list with any changes from question-answering
+            var updatedProfileResult = await _profileService.GetProfile(_profile.PlayerInfo.Id);
+            if (updatedProfileResult.IsOk)
+            {
+                var updatedProfileQuestions = updatedProfileResult.Unwrap().Questions;
+                for(int i = 0; i < Questions.Count; i++)
+                {
+                    Questions[i].ChosenAnswer = updatedProfileQuestions[i].ChosenAnswer;
+                }
+            }
+
+            // Then, update isFirstUnfilled
+            foreach (var question in Questions)
+            {
+                question.IsFirstUnfilledQuestion = false;
+            }
+            var firstUnfilledQuestion = Questions.FirstOrDefault(x => x.ChosenAnswer == null);
+            if (firstUnfilledQuestion != null)
+            {
+                firstUnfilledQuestion.IsFirstUnfilledQuestion = true;
+            }
+
+            // Finally, see if the server has anything new for us
             var latestQuestionsResult = await _networkService.GetPlayerQuestions(_profile.PlayerInfo.Id);
             if (latestQuestionsResult.IsError)
             {
@@ -94,7 +116,8 @@ namespace Solene.MobileApp.Core.ViewModels
             {
                 _profile.Questions = latestQuestions;
                 await _profileService.SaveProfile(_profile);
-                Questions = new ObservableCollection<Question>(_profile.Questions);
+                Questions = new ObservableCollection<QuestionViewModel>(
+                    _profile.Questions.Select(x => new QuestionViewModel(x)));
             }
         }
 

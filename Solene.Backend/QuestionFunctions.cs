@@ -47,9 +47,8 @@ namespace Solene.Backend
             var dbClient = new SoleneTableClient(connectionString, log);
 
             log.LogInformation($"{DateTime.UtcNow}: AddQuestion called for player with ID {playerGuidId}");
-
-            string questionJson = await req.ReadAsStringAsync();
-            Question question = JsonConvert.DeserializeObject<Question>(questionJson);
+            
+            Question question = JsonConvert.DeserializeObject<Question>(await req.ReadAsStringAsync());
 
             log.LogInformation($"{DateTime.UtcNow}: Adding question with text {question.Text} to player with ID {playerGuidId}");
 
@@ -63,10 +62,11 @@ namespace Solene.Backend
             // calculating the actual final size of the payload is tricky.
             // FCM is 4062 (for notification + data payload TOTAL)
             // WNS is 5KB total.
+            string addedQuestionJson = JsonConvert.SerializeObject(addedQuestion);
             string base64Question = null;
-            if (questionJson.Length < 2500)
+            if (addedQuestionJson.Length < 2500)
             {
-                base64Question = Convert.ToBase64String(Encoding.UTF8.GetBytes(questionJson));
+                base64Question = Convert.ToBase64String(Encoding.UTF8.GetBytes(addedQuestionJson));
             }            
             await PushNotifications.SendPushNotification(playerGuidId, question.Title, question.Text, base64Question, log);
 

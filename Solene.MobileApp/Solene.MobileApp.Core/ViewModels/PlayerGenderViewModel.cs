@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 
-namespace Solene.MobileApp.Core.ViewModels.PlayerCreation
+namespace Solene.MobileApp.Core.ViewModels
 {
     public class PlayerGenderViewModel : NavigableViewModelBase
     {

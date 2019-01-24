@@ -15,7 +15,12 @@ namespace Solene.MobileApp.Core.Views
 
         private async void ListView_ItemTapped(object sender, ItemTappedEventArgs e)
         {
-            Question selected = e.Item as Question;
+            QuestionViewModel selected = e.Item as QuestionViewModel;
+            if (!selected.IsSelectableInLists)
+            {
+                return;
+            }
+
             await (BindingContext as ProfileOverviewViewModel).QuestionSelected(selected);
         }
     }
