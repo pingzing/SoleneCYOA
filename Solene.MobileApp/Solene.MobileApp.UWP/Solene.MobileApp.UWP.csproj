@@ -143,6 +143,10 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.1.9" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Solene.Models\Solene.Models.csproj">
+      <Project>{91888F3B-124C-4BD2-B677-3FD6EE112033}</Project>
+      <Name>Solene.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Solene.MobileApp.Core\Solene.MobileApp.Core.csproj">
       <Project>{0F82317A-EEFD-46DC-9139-4F227ADF4D45}</Project>
       <Name>Solene.MobileApp.Core</Name>

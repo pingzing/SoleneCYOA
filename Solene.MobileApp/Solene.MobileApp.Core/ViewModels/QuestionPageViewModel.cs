@@ -1,5 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
+using Solene.MobileApp.Core.Messages;
 using Solene.MobileApp.Core.Models;
 using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Services;
@@ -11,14 +15,10 @@ namespace Solene.MobileApp.Core.ViewModels
     {
         private readonly IProfileService _profileService;
         private readonly INetworkService _networkService;
+        private readonly IMessenger _messengerService;
         private PlayerProfile _backingProfile;
 
-        private string _title;
-        public string Title
-        {
-            get => _title;
-            set => Set(ref _title, value);
-        }
+        public string Title => $"Question {CurrentQuestion?.SequenceNumber}";
 
         private Question _currentQuestion;
         public Question CurrentQuestion
@@ -27,13 +27,7 @@ namespace Solene.MobileApp.Core.ViewModels
             set
             {
                 Set(ref _currentQuestion, value);
-                RaisePropertyChanged(nameof(IsNextVisible));
-                RaisePropertyChanged(nameof(IsPreviousVisible));
-                RaisePropertyChanged(nameof(IsFreeFormEntryEnabled));
-                RaisePropertyChanged(nameof(ChosenAnswer));
-                PreviousCommand.RaiseCanExecuteChanged();
-                NextCommand.RaiseCanExecuteChanged();
-                AnswerFreeFormQuestionCommand.RaiseCanExecuteChanged();
+                QuestionChanged();
             }
         }
 
@@ -60,7 +54,7 @@ namespace Solene.MobileApp.Core.ViewModels
             }
         }
 
-        private bool _isLoading;
+        private bool _isLoading;        
         public bool IsLoading
         {
             get => _isLoading;
@@ -82,7 +76,8 @@ namespace Solene.MobileApp.Core.ViewModels
 
         public QuestionPageViewModel(INavigationService navService, 
             INetworkService networkService,
-            IProfileService profileService) : base(navService)
+            IProfileService profileService,
+            IMessenger messengerService) : base(navService)
         {
             _networkService = networkService;
             _profileService = profileService;
@@ -90,14 +85,25 @@ namespace Solene.MobileApp.Core.ViewModels
             PreviousCommand = new RelayCommand(PreviousClicked);
             AnswerQuestionCommand = new RelayCommand<string>(AnswerQuestionClicked, CanClickAnswers);
             AnswerFreeFormQuestionCommand = new RelayCommand<string>(AnswerQuestionClicked, CanClickFreeForm);
+            _messengerService = messengerService;
+            _messengerService.Register<ProfileUpdated>(this, OnProfileUpdated);
+        }
+
+        private void OnProfileUpdated(ProfileUpdated updatedProfileMessage)
+        {
+            if (_backingProfile.PlayerInfo.Id == updatedProfileMessage.NewQuestion.PlayerId
+                && !_backingProfile.Questions.Any(x => x.Id == updatedProfileMessage.NewQuestion.Id))
+            {
+                _backingProfile.Questions.Add(updatedProfileMessage.NewQuestion);
+                QuestionChanged();
+            }
         }
 
         public override Task Activated(NavigationType navType)
         {
             var chosenQuestion = Parameter as ChosenQuestionRequest;
             _backingProfile = chosenQuestion.Profile;
-            CurrentQuestion = _backingProfile.Questions[chosenQuestion.ChosenIndex];
-            Title = $"Question {CurrentQuestion.SequenceNumber}";
+            CurrentQuestion = _backingProfile.Questions[chosenQuestion.ChosenIndex];            
 
             PreviousCommand.RaiseCanExecuteChanged();
             NextCommand.RaiseCanExecuteChanged();
@@ -173,6 +179,18 @@ namespace Solene.MobileApp.Core.ViewModels
             return !IsLoading 
                 && ChosenAnswer == null 
                 && !string.IsNullOrWhiteSpace(answer);
+        }
+
+        private void QuestionChanged()
+        {
+            RaisePropertyChanged(nameof(IsNextVisible));
+            RaisePropertyChanged(nameof(IsPreviousVisible));
+            RaisePropertyChanged(nameof(IsFreeFormEntryEnabled));
+            RaisePropertyChanged(nameof(ChosenAnswer));
+            RaisePropertyChanged(nameof(Title));
+            PreviousCommand.RaiseCanExecuteChanged();
+            NextCommand.RaiseCanExecuteChanged();
+            AnswerFreeFormQuestionCommand.RaiseCanExecuteChanged();
         }
     }
 }

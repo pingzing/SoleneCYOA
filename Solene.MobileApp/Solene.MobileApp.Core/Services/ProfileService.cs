@@ -20,7 +20,7 @@ namespace Solene.MobileApp.Core.Services
         IEnumerable<ProfileMoniker> GetSavedProfileNames();
         Task<MaybeResult<PlayerProfile, GenericErrorResult>> GetProfile(Guid id);
         Task SaveProfile(PlayerProfile profile);
-        Task AddQuestionToSavedProfile(Guid profileId, Question newQuestion);
+        Task AddQuestionToSavedProfile(Question newQuestion);
     }
 
     public class ProfileService : IProfileService
@@ -77,19 +77,19 @@ namespace Solene.MobileApp.Core.Services
             }
         }
 
-        public async Task AddQuestionToSavedProfile(Guid profileId, Question newQuestion)
+        public async Task AddQuestionToSavedProfile(Question newQuestion)
         {
-            MaybeResult<PlayerProfile, GenericErrorResult> getProfileResult = await GetProfile(profileId);
+            MaybeResult<PlayerProfile, GenericErrorResult> getProfileResult = await GetProfile(newQuestion.PlayerId);
             if (getProfileResult.IsError)
             {
-                Debug.WriteLine($"Couldn't fine a profile with ID {profileId}");
+                Debug.WriteLine($"Couldn't fine a profile with ID {newQuestion.PlayerId}");
                 return;
             }
 
             PlayerProfile profile = getProfileResult.Unwrap();
             profile.Questions.Add(newQuestion);
             await SaveProfile(profile);
-            _messagingService.Send(new ProfileUpdated { NewQuestion = newQuestion, ProfileId = profileId });
+            _messagingService.Send(new ProfileUpdated { NewQuestion = newQuestion });
         }
 
         private readonly static Regex _illegalCharsRegex = new Regex($"[{Regex.Escape(new string(Path.GetInvalidFileNameChars()))}]", RegexOptions.Compiled);        

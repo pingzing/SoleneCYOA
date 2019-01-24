@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using Solene.MobileApp.Core.Consts;
 using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Services;
-using Solene.MobileApp.Core.Services.CrossplatInterfaces;
 using Solene.MobileApp.Core.Views;
 using Solene.Models;
 using System;
@@ -54,13 +53,15 @@ namespace Solene.MobileApp.Core
         {
             var profileService = SimpleIoc.Default.GetInstance<IProfileService>();
             var savedProfileNames = profileService.GetSavedProfileNames();
+
+            // If we were launched with a question in notification, save it to the profile before we load up.
             if (_launchedBase64Question != null)
             {
                 string base64String = _launchedBase64Question;
                 _launchedBase64Question = null;
                 string questionJson = Encoding.UTF8.GetString(Convert.FromBase64String(base64String));
                 Question launchedQuestion = JsonConvert.DeserializeObject<Question>(questionJson);
-                await profileService.AddQuestionToSavedProfile(launchedQuestion.Id, launchedQuestion);
+                await profileService.AddQuestionToSavedProfile(launchedQuestion);
             }
 
             AppCenter.Start($"android={Secrets.AndroidAppCenterKey};" +

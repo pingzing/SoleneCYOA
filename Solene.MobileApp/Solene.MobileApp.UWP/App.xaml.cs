@@ -1,7 +1,11 @@
 ﻿using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
+using Newtonsoft.Json;
+using Solene.MobileApp.Core.Services;
+using Solene.Models;
 using System;
 using System.Diagnostics;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -64,9 +68,15 @@ namespace Solene.MobileApp.UWP
             else if(base64Question != null)
             {
                 // This happened because we clicked on a notification and the app is active
-                // Use the Messenger to send it down to the either the QuestionViewModel,
-                // or maybe the profile service (which would in turn fire a "hey, I updated"
-                // event).
+                // Update the active profile, which will trigger the Messenger to fire an
+                // update message.
+                var profileService = SimpleIoc.Default.GetInstance<IProfileService>();
+                if (profileService != null)
+                {
+                    string questionJson = Encoding.UTF8.GetString(Convert.FromBase64String(base64Question));
+                    Question launchedQuestion = JsonConvert.DeserializeObject<Question>(questionJson);
+                    await profileService.AddQuestionToSavedProfile(launchedQuestion);
+                }
             }
 
             Window.Current.Activate();
