@@ -8,6 +8,7 @@ using Solene.Database;
 using Solene.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Solene.Backend
@@ -104,6 +105,23 @@ namespace Solene.Backend
             }
 
             return new OkObjectResult(getResult);
+        }
+
+        [FunctionName("GetAllPlayers")]
+        public static async Task<IActionResult> GetAllPlayers(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "players")]HttpRequest req,
+            ILogger log)
+        {
+            string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
+            var dbClient = new SoleneTableClient(connectionString, log);
+
+            List<Player> getAllPlayersResult = (await dbClient.GetAllPlayers())?.ToList();
+            if (getAllPlayersResult == null)
+            {
+                return new NotFoundResult();
+            }
+
+            return new OkObjectResult(getAllPlayersResult);
         }
 
         [FunctionName("RegisterPush")]
