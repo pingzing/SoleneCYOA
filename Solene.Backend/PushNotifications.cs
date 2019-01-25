@@ -9,14 +9,15 @@ namespace Solene.Backend
 {
     public static class PushNotifications
     {
-        public static async Task SendPushNotification(Guid userId,
+        public static async Task SendPushNotification(uint sequenceNumber, 
+            Guid userId,
             string title, string body, string base64Question,
             ILogger logger)
         {
             string connectionString = Environment.GetEnvironmentVariable("SOLENE_NOTIFICATION_CONNECTION_STRING", EnvironmentVariableTarget.Process);
             NotificationHubClient hub = NotificationHubClient.CreateClientFromConnectionString(connectionString, "solene-mobile-app");
             NotificationOutcome result = await hub.SendTemplateNotificationAsync(new Dictionary<string, string>
-                { {"title", title }, {"body", body }, {"question", base64Question} }, 
+                { {"title", $"{sequenceNumber}: {title}" }, {"body", body }, {"question", base64Question} }, 
                 userId.ToString("N"));            
 
             logger.LogInformation($"Notification sent to {userId}. Outcome of push ID {result.TrackingId}: {result.State}.");

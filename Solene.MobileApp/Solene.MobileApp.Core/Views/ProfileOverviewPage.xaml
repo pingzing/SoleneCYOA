@@ -2,8 +2,6 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Solene.MobileApp.Core.Views.ProfileOverviewPage"
-             xmlns:models="clr-namespace:Solene.Models;assembly=Solene.Models"      
-             xmlns:localModels="clr-namespace:Solene.MobileApp.Core.Models"
              xmlns:conv="clr-namespace:Solene.MobileApp.Core.Converters"
              
              BindingContext="{Binding Source={StaticResource Locator}, Path=ProfileOverview}"
@@ -22,15 +20,17 @@
     </ContentPage.ToolbarItems>
 
     <ListView ItemsSource="{Binding Questions}"
+              HasUnevenRows="True"
               ItemTapped="ListView_ItemTapped"              
               IsPullToRefreshEnabled="True"
+              IsRefreshing="{Binding IsLoading}"
               RefreshCommand="{Binding RefreshCommand}"
               SelectionMode="None"              
               CachingStrategy="RecycleElement">
         <ListView.ItemTemplate>
             <DataTemplate>
                 <ViewCell>
-                    <Grid Padding="10, 0, 0, 5"  Margin="0, 0, 0, 5"
+                    <Grid Padding="10, 0, 0, 5"  Margin="0, 5, 0, 5"
                           BackgroundColor="{Binding IsSelectableInLists, Converter={StaticResource BackgroundColorConverter}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>

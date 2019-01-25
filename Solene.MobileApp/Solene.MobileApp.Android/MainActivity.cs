@@ -11,8 +11,8 @@ using Xamarin.Forms;
 
 namespace Solene.MobileApp.Droid
 {
-    [Activity(Label = "Solene.MobileApp", 
-        Icon = "@mipmap/icon", 
+    [Activity(Label = "Solene", 
+        Icon = "@mipmap/solene_flag",         
         Theme = "@style/MainTheme", 
         MainLauncher = true, 
         ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
@@ -24,6 +24,16 @@ namespace Solene.MobileApp.Droid
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(savedInstanceState);
+
+            if (Intent.Extras != null)
+            {
+                foreach (var key in Intent.Extras.KeySet())
+                {
+                    var value = Intent.Extras.GetString(key);
+                    System.Diagnostics.Debug.WriteLine($"Intent Key: {key}, Val: {value}");
+                }
+            }
+
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             Forms.Init(this, savedInstanceState);
             var app = new Core.App();
@@ -41,12 +51,6 @@ namespace Solene.MobileApp.Droid
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-
-        protected override void OnNewIntent(Intent intent)
-        {
-            base.OnNewIntent(intent);
-            // TODO: Handle tap from a local notification (and maybe background one too?)
         }
     }
 }

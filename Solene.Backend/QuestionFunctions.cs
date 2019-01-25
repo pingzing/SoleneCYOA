@@ -68,7 +68,7 @@ namespace Solene.Backend
             {
                 base64Question = Convert.ToBase64String(Encoding.UTF8.GetBytes(addedQuestionJson));
             }            
-            await PushNotifications.SendPushNotification(playerGuidId, question.Title, question.Text, base64Question, log);
+            await PushNotifications.SendPushNotification(addedQuestion.SequenceNumber, playerGuidId, question.Title, question.Text, base64Question, log);
 
             return new CreatedResult("", addedQuestion);
         }

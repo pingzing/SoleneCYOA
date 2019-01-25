@@ -22,35 +22,46 @@ namespace Solene.MobileApp.Core
 {
     public partial class App : Application
     {
+        private static ViewModelLocator _locator = null;
         private string _launchedBase64Question = null;
-        public NavigationHost MainNavigationHost { get; private set; }
+        public static NavigationHost MainNavigationHost { get; private set; }
 
         // Guard against resuming reinitializing on Android.
         private static bool _initialized = false;
         public App(string launchedBase64Question = null)
         {
+            InitializeComponent();
+            
+            if (_locator == null)
+            {
+                _locator = new ViewModelLocator();
+            }
+            Resources["Locator"] = _locator;
             if (_initialized)
             {                
                 return;
             }
-
+                     
             _initialized = true;
 
             // Report binding failures ✨
-            Log.Listeners.Add(new DelegateLogListener((arg1, arg2) => Debug.WriteLine(arg2)));
-            InitializeComponent();
+            Log.Listeners.Add(new DelegateLogListener((arg1, arg2) => Debug.WriteLine(arg2)));            
 
             // If launchedQuestion isn't null, then the app was started by tapping on
             // a toast notification that contained a question. 
             // Hold onto that, and pass it down to the ProfileService.
             _launchedBase64Question = launchedBase64Question;
 
-            MainNavigationHost = new NavigationHost();            
-            MainPage = MainNavigationHost;
+            MainNavigationHost = new NavigationHost();                        
         }
 
         protected override async void OnStart()
         {
+            // Do this in here instead of the constructor,
+            // because Android runs through the constructor every time,
+            // so it might be short-circuited.
+            MainPage = MainNavigationHost;
+
             var profileService = SimpleIoc.Default.GetInstance<IProfileService>();
             var savedProfileNames = profileService.GetSavedProfileNames();
 

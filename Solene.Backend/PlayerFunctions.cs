@@ -126,10 +126,10 @@ namespace Solene.Backend
 
             PushRegistrationRequest pushRegistration = JsonConvert.DeserializeObject<PushRegistrationRequest>(await req.ReadAsStringAsync());
 
-            bool success = await PushNotifications.Register(playerGuidId, 
-                pushRegistration.PushPlatform, 
-                pushRegistration.PnsToken, 
-                pushRegistration.PlatformPushTemplate, 
+            bool success = await PushNotifications.Register(playerGuidId,
+                pushRegistration.PushPlatform,
+                pushRegistration.PnsToken,
+                pushRegistration.PlatformPushTemplate,
                 log);
 
             if (!success)
@@ -146,22 +146,35 @@ namespace Solene.Backend
             {
                 new Question
                 {
-                    Title = "Test Question 1",
-                    Text = "This is the body of test question number one.",
-                    PrefilledAnswers = new List<string> {"It has two prefilled answers", "The second of which is this one"},
+                    Title = "Welcome!",
+                    Text = "You've taken your first step in an adventure in the twin cities of Aurinsol and Kuulene--the City of the Sun and the Metropolis of the Moon." +
+                    "Before we get started, let's establish a few more things about you. \n\n" +
+                    "First: which of these attributes define you?",
+                    PrefilledAnswers = new List<string> {"Fast", "Smart", "Strong"},
                 },
                 new Question
                 {
-                    Title = "Test Question 2",
-                    Text = "This is the body of TWOOO",
-                    PrefilledAnswers = new List<string> {"Three answers!", "Two", "Treeeee"},
+                    Title = "Your Background",
+                    Text = "Okay! Now, for the second question, this time about your background:\n\n" +
+                    "How wealthy would you say you were while growing up?",
+                    PrefilledAnswers = new List<string> {"Poor", "Comfortable", "Rich"},
                 },
                 new Question
                 {
-                    Title = "Test Question Thuh-ree",
-                    Text = "Question numbah three represent!",
-                    PrefilledAnswers = new List<string> {"Only one prefilled this time!"},
-                }
+                    Title = "Your Personality",
+                    Text = "Good, we'll let the tax collectors know. Now, finally, let's get a little bit more...personal.\n\n" +
+                    "What character trait most defines you?",
+                    PrefilledAnswers = new List<string> {"Bravery", "Stubbornness", "Kindness", "Precision", "Rage",
+                                                            "All-consuming Ennui" },
+                },
+                new Question
+                {
+                    Title = "Ready?",
+                    Text = "Okay. That's all we need for now. All the other questions are going to be custom-tailored to you." +
+                    "Now, for the most important question.\n\n" +
+                    "Are you ready?",
+                    PrefilledAnswers = new List<string> { "Yes" },
+                },
             };
         }
     }

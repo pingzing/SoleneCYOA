@@ -23,6 +23,13 @@ namespace Solene.MobileApp.Core.ViewModels
             set => Set(ref _titleString, value);
         }
 
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => Set(ref _isLoading, value);
+        }
+
         private ObservableCollection<QuestionViewModel> _questions = new ObservableCollection<QuestionViewModel>();
         public ObservableCollection<QuestionViewModel> Questions
         {
@@ -80,6 +87,7 @@ namespace Solene.MobileApp.Core.ViewModels
 
         private async Task Refresh()
         {
+            IsLoading = true;
             // First update list with any changes from question-answering
             var updatedProfileResult = await _profileService.GetProfile(_profile.PlayerInfo.Id);
             if (updatedProfileResult.IsOk)
@@ -107,6 +115,7 @@ namespace Solene.MobileApp.Core.ViewModels
             if (latestQuestionsResult.IsError)
             {
                 // TODO: Display error. Maybe.
+                IsLoading = false;
                 return;
             }
 
@@ -119,6 +128,7 @@ namespace Solene.MobileApp.Core.ViewModels
                 Questions = new ObservableCollection<QuestionViewModel>(
                     _profile.Questions.Select(x => new QuestionViewModel(x)));
             }
+            IsLoading = false;
         }
 
         private async void ImportProfileClicked()
