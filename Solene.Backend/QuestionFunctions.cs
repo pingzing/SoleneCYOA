@@ -189,15 +189,21 @@ namespace Solene.Backend
                 logger.LogError($"Unable to send email: no question with the ID {questionId} exists.");
                 return;
             }
+            var player = await dbClient.GetPlayer(question.PlayerId);
+            if (player == null)
+            {
+                logger.LogError($"Unable to get player: no player with ID {question.PlayerId} found.");
+                return;
+            }
 
             var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY", EnvironmentVariableTarget.Process);
             var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("donotreply@solene.com", "Solene Admin Automated Sender");
-            string subject = $"Player {question.PlayerId} has answered {question.Title} with: '{question.ChosenAnswer}'";
+            var from = new EmailAddress("donotreply@solene.com", "Solene Automated Sender");
+            string subject = $"Player {player.Name} has answered {question.Title} with: '{question.ChosenAnswer}'";
             subject = subject.Substring(0, Math.Min(subject.Length, 78)); // Truncate subject to 78 chars.
             string gameAdmin = Environment.GetEnvironmentVariable("GAME_ADMIN_EMAIL", EnvironmentVariableTarget.Process);
             var to = new EmailAddress(gameAdmin);
-            string body = $"Player with ID {question.PlayerId} has answered question {question.SequenceNumber} with:\n" +
+            string body = $"Player {player.Name}(ID: {question.PlayerId}) has answered question number {question.SequenceNumber} ({question.Text}) with:\n" +
                 $"'{question.ChosenAnswer}'";
             var email = MailHelper.CreateSingleEmail(from, to, subject, body, null);
             var response = await client.SendEmailAsync(email);
