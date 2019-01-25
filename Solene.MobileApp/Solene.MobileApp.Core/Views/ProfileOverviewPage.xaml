@@ -17,6 +17,7 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Order="Secondary" Text="Import profile" Command="{Binding ImportProfileCommand}"/>
         <ToolbarItem Order="Secondary" Text="Refresh" Command="{Binding RefreshCommand}"/>
+        <ToolbarItem Order="Secondary" Text="Create new character" Command="{Binding NewCharacterCommand}"/>
     </ContentPage.ToolbarItems>
 
     <ListView ItemsSource="{Binding Questions}"

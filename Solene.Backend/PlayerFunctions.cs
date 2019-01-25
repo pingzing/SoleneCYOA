@@ -147,10 +147,10 @@ namespace Solene.Backend
                 new Question
                 {
                     Title = "Welcome!",
-                    Text = "You've taken your first step in an adventure in the twin cities of Aurinsol and Kuulene--the City of the Sun and the Metropolis of the Moon." +
+                    Text = "You've taken your first step in an adventure in the twin cities of Aurinsol and Kuulene--the City of the Sun and the Metropolis of the Moon. " +
                     "Before we get started, let's establish a few more things about you. \n\n" +
                     "First: which of these attributes define you?",
-                    PrefilledAnswers = new List<string> {"Fast", "Smart", "Strong"},
+                    PrefilledAnswers = new List<string> {"Speed", "Intelligence", "Strength"},
                 },
                 new Question
                 {

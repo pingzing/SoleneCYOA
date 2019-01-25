@@ -3,6 +3,7 @@ using Solene.MobileApp.Core.Consts;
 using Solene.MobileApp.Core.Models;
 using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Services;
+using Solene.MobileApp.Core.Views;
 using Solene.Models;
 using System.Diagnostics;
 using System.Linq;
@@ -145,6 +146,11 @@ namespace Solene.MobileApp.Core.ViewModels
             else
             {
                 await _navigationService.NavigateToViewModelAsync<ProfileOverviewViewModel>(profile);
+                await _navigationService.NavigateToViewModelAsync<QuestionPageViewModel>(new ChosenQuestionRequest
+                {
+                    ChosenIndex = 0,
+                    Profile = profile
+                });
             }
 
             _navigationService.ClearBackStack();

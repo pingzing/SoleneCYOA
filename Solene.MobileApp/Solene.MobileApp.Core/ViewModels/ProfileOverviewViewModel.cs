@@ -2,6 +2,7 @@
 using Solene.MobileApp.Core.Models;
 using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Services;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -38,7 +39,8 @@ namespace Solene.MobileApp.Core.ViewModels
         }
 
         public RelayCommand RefreshCommand { get; private set; }
-        public RelayCommand ImportProfileCommand { get; private set;}
+        public RelayCommand ImportProfileCommand { get; private set; }
+        public RelayCommand NewCharacterCommand { get; private set; }
 
         public ProfileOverviewViewModel(INavigationService navService,
             INetworkService networkService,
@@ -47,6 +49,7 @@ namespace Solene.MobileApp.Core.ViewModels
         {
             RefreshCommand = new RelayCommand(RefreshClicked);
             ImportProfileCommand = new RelayCommand(ImportProfileClicked);
+            NewCharacterCommand = new RelayCommand(NewCharacterClicked);
             _networkService = networkService;
             _profileService = profileService;
             _notificationService = notificationService;
@@ -134,6 +137,11 @@ namespace Solene.MobileApp.Core.ViewModels
         private async void ImportProfileClicked()
         {
             await _navigationService.NavigateToViewModelAsync<ImportProfileViewModel>();
+        }
+
+        private async void NewCharacterClicked()
+        {
+            await _navigationService.NavigateToViewModelAsync<PlayerNameViewModel>();
         }
     }
 }
