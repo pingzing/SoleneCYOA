@@ -23,6 +23,15 @@
                 <TextBlock Text="{x:Bind Name}" Style="{ThemeResource ListTitleStyle}"/>
                 <TextBlock Text="{x:Bind Gender}" Style="{StaticResource ListSubTitleStyle}"/>
                 <TextBlock Text="{x:Bind Id}" Style="{StaticResource ListSubTitleStyle}"/>
+                <StackPanel.ContextFlyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem Text="Delete" Click="DeleteItem_Click">
+                            <MenuFlyoutItem.Icon>
+                                <SymbolIcon Symbol="Delete"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                    </MenuFlyout>
+                </StackPanel.ContextFlyout>
             </StackPanel>
         </DataTemplate>
 

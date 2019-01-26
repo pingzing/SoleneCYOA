@@ -69,5 +69,17 @@ namespace Solene.AdminClient.Views
         }
 
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        private async void DeleteItem_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedPlayer = ((sender as MenuFlyoutItem)?.DataContext as Player);
+            bool result = await NetworkService.DeletePlayer(selectedPlayer.Id);
+            if (!result)
+            {
+                return;
+            }
+
+            Players.Remove(selectedPlayer);
+        }
     }
 }
