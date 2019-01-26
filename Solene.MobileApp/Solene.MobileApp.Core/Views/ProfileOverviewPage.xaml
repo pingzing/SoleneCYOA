@@ -2,7 +2,9 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Solene.MobileApp.Core.Views.ProfileOverviewPage"
+             
              xmlns:conv="clr-namespace:Solene.MobileApp.Core.Converters"
+             xmlns:model="clr-namespace:Solene.MobileApp.Core.Models"
              
              BindingContext="{Binding Source={StaticResource Locator}, Path=ProfileOverview}"
              Title="{Binding TitleString}">
@@ -32,7 +34,7 @@
             <DataTemplate>
                 <ViewCell>
                     <Grid Padding="10, 0, 0, 5"  Margin="0, 5, 0, 5"
-                          BackgroundColor="{Binding IsSelectableInLists, Converter={StaticResource BackgroundColorConverter}}">
+                          BackgroundColor="{Binding IsLocked, Converter={StaticResource BackgroundColorConverter}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
@@ -41,30 +43,34 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <Label Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
+                        <Label x:Name="SequenceNumber" 
+                               Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
                                HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"
                                Style="{DynamicResource ListItemTextStyle}"
                                Text="{Binding SequenceNumber, Mode=OneWay}"/>
-                        <Label Grid.Row="0" Grid.Column="1"
+                        <Label x:Name="LockedText" 
+                               Grid.Row="0" Grid.Column="1"
                                Margin="0, 5, 0, 5"
                                FontAttributes="Italic"
-                               IsVisible="{Binding IsSelectableInLists, Converter={StaticResource BoolInvert}}"
+                               IsVisible="{Binding IsLocked}"
                                HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"
                                Style="{DynamicResource ListItemTextStyle}"
                                Text="Locked"/>
-                        <Label Grid.Row="0" Grid.Column="1"
-                               IsVisible="{Binding IsSelectableInLists}"
+                        <Label x:Name="QuestionTitle" 
+                               Grid.Row="0" Grid.Column="1"
+                               IsVisible="{Binding IsLocked, Converter={StaticResource BoolInvert}}"
                                MaxLines="1"
                                LineBreakMode="TailTruncation"
                                Margin="5, 0, 0, 0"
                                Style="{DynamicResource ListItemTextStyle}"
                                Text="{Binding Title, Mode=OneWay}"/>
-                        <Label Grid.Row="1" Grid.Column="1"
+                        <Label x:Name="QuestionBody" 
+                               Grid.Row="1" Grid.Column="1"
                                MaxLines="1"
                                LineBreakMode="TailTruncation"
                                Margin="5, 0, 0, 0"
                                Style="{DynamicResource ListItemDetailTextStyle}"
-                               IsVisible="{Binding IsSelectableInLists, Mode=OneWay}"
+                               IsVisible="{Binding IsLocked, Converter={StaticResource BoolInvert}}"
                                Text="{Binding Text, Mode=OneWay}"/>
                     </Grid>
                 </ViewCell>

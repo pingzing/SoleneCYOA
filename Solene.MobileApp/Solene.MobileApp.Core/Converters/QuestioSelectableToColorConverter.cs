@@ -8,14 +8,14 @@ namespace Solene.MobileApp.Core.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            bool isSelectable = (bool)value;
-            if (isSelectable)
+            bool isLocked = (bool)value;
+            if (isLocked)
             {
-                return Color.Transparent;
+                return Color.FromHex("33FFFFFF");                
             }
             else
             {
-                return Color.FromHex("33FFFFFF");
+                return Color.Transparent;
             }
         }
 

@@ -1,4 +1,6 @@
 ﻿using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
+using Solene.MobileApp.Core.Messages;
 using Solene.MobileApp.Core.Models;
 using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Services;
@@ -16,6 +18,7 @@ namespace Solene.MobileApp.Core.ViewModels
         private readonly INetworkService _networkService;
         private readonly IProfileService _profileService;
         private readonly INotificationService _notificationService;
+        private readonly IMessenger _messengerService;
 
         private string _titleString;
         public string TitleString
@@ -31,7 +34,7 @@ namespace Solene.MobileApp.Core.ViewModels
             set => Set(ref _isLoading, value);
         }
 
-        private ObservableCollection<QuestionViewModel> _questions = new ObservableCollection<QuestionViewModel>();
+        private ObservableCollection<QuestionViewModel> _questions = new ObservableCollection<QuestionViewModel>();        
         public ObservableCollection<QuestionViewModel> Questions
         {
             get => _questions;
@@ -45,7 +48,8 @@ namespace Solene.MobileApp.Core.ViewModels
         public ProfileOverviewViewModel(INavigationService navService,
             INetworkService networkService,
             IProfileService profileService,
-            INotificationService notificationService) : base(navService)
+            INotificationService notificationService,
+            IMessenger messengerService) : base(navService)
         {
             RefreshCommand = new RelayCommand(RefreshClicked);
             ImportProfileCommand = new RelayCommand(ImportProfileClicked);
@@ -53,6 +57,7 @@ namespace Solene.MobileApp.Core.ViewModels
             _networkService = networkService;
             _profileService = profileService;
             _notificationService = notificationService;
+            _messengerService = messengerService;
         }
 
         public override async Task Activated(NavigationType navType)
@@ -102,23 +107,13 @@ namespace Solene.MobileApp.Core.ViewModels
                 }
             }
 
-            // Then, update isFirstUnfilled
-            foreach (var question in Questions)
-            {
-                question.IsFirstUnfilledQuestion = false;
-            }
-            var firstUnfilledQuestion = Questions.FirstOrDefault(x => x.ChosenAnswer == null);
-            if (firstUnfilledQuestion != null)
-            {
-                firstUnfilledQuestion.IsFirstUnfilledQuestion = true;
-            }
-
             // Finally, see if the server has anything new for us
             var latestQuestionsResult = await _networkService.GetPlayerQuestions(_profile.PlayerInfo.Id);
             if (latestQuestionsResult.IsError)
             {
                 // TODO: Display error. Maybe.
                 IsLoading = false;
+                _messengerService.Send(new QuestionListRefreshed());
                 return;
             }
 
@@ -130,19 +125,9 @@ namespace Solene.MobileApp.Core.ViewModels
                 await _profileService.SaveProfile(_profile);
                 Questions = new ObservableCollection<QuestionViewModel>(
                     _profile.Questions.Select(x => new QuestionViewModel(x)));
-
-                // Gotta update firstUnfilled again
-                foreach (var question in Questions)
-                {
-                    question.IsFirstUnfilledQuestion = false;
-                }
-                firstUnfilledQuestion = Questions.FirstOrDefault(x => x.ChosenAnswer == null);
-                if (firstUnfilledQuestion != null)
-                {
-                    firstUnfilledQuestion.IsFirstUnfilledQuestion = true;
-                }
             }
             IsLoading = false;
+            _messengerService.Send(new QuestionListRefreshed());
         }
 
         private async void ImportProfileClicked()

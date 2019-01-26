@@ -18,25 +18,15 @@ namespace Solene.MobileApp.Core.Models
         public string ChosenAnswer
         {
             get => _chosenAnswer;
-            set
-            {
-                Set(ref _chosenAnswer, value);
-                RaisePropertyChanged(nameof(IsSelectableInLists));
-            }
+            set => Set(ref _chosenAnswer, value);
         }
 
-        private bool _isFirstUnfilledQuestion;
-        public bool IsFirstUnfilledQuestion
+        private bool _isLocked;
+        public bool IsLocked
         {
-            get => _isFirstUnfilledQuestion;
-            set
-            {
-                Set(ref _isFirstUnfilledQuestion, value);
-                RaisePropertyChanged(nameof(IsSelectableInLists));
-            }
+            get => _isLocked;
+            set => Set(ref _isLocked, value);
         }
-
-        public bool IsSelectableInLists => ChosenAnswer != null || IsFirstUnfilledQuestion;
 
         public QuestionViewModel(Question question)
         {
