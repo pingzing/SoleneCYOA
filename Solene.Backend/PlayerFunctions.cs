@@ -188,7 +188,7 @@ namespace Solene.Backend
                 new Question
                 {
                     Title = "Ready?",
-                    Text = "Okay. That's all we need for now. All the other questions are going to be custom-tailored to you." +
+                    Text = "Okay. That's all we need for now. All the other questions are going to be custom-tailored to you.\n" +
                     "Now, for the most important question.\n\n" +
                     "Are you ready?",
                     PrefilledAnswers = new List<string> { "Yes" },

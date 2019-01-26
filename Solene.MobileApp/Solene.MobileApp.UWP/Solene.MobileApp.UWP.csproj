@@ -20,7 +20,7 @@
     <PackageCertificateKeyFile>Solene.MobileApp.UWP_StoreKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>D135DBCC4D90306FB242CFC5B0346F3F287AD389</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
-    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
