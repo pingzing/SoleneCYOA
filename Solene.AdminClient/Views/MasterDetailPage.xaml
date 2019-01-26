@@ -70,7 +70,7 @@
                     <VisualState>
                         <VisualState.StateTriggers>
                             <!--641 is the default CompactModeThresholdWidth in NavigationView -->
-                            <AdaptiveTrigger MinWindowWidth="641" />
+                            <AdaptiveTrigger MinWindowWidth="1000" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
                             <Setter Target="MasterDetailsViewControl.MasterHeaderTemplate" Value="{StaticResource MasterHeaderTemplate}" />
@@ -79,7 +79,7 @@
                 </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
         <controls:MasterDetailsView
-            x:Name="MasterDetailsViewControl"
+            x:Name="MasterDetailsViewControl"            
             ItemsSource="{x:Bind Players}"
             SelectedItem="{x:Bind Selected, Mode=TwoWay}"
             ItemTemplate="{StaticResource ItemTemplate}"

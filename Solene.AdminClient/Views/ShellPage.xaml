@@ -19,6 +19,7 @@
         SelectedItem="{x:Bind Selected, Mode=OneWay}"
         ItemInvoked="OnItemInvoked"
         IsSettingsVisible="False"
+        PaneDisplayMode="LeftCompact"
         Background="{ThemeResource SystemControlBackgroundAltHighBrush}">
         <winui:NavigationView.MenuItems>
             <!--
