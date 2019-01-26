@@ -4,15 +4,29 @@
              xmlns:models="clr-namespace:Solene.MobileApp.Core.Models"
              x:Class="Solene.MobileApp.Core.Views.ProfileSelectPage"
              
-             Title="Solene CYOA: Characters"
+             Title="Character Selection"
              BindingContext="{Binding Source={StaticResource Locator}, Path=ProfileSelect}">
 
     <ListView ItemsSource="{Binding CharacterList}"
-              ItemTapped="ListView_ItemTapped">
+              ItemTapped="ListView_ItemTapped"
+              HasUnevenRows="True">
         <ListView.ItemTemplate>
-            <DataTemplate x:DataType="models:ProfileMoniker">
-                <TextCell Text="{Binding CharacterName, Mode=OneTime}" 
-                          Detail="{Binding Id, Mode=OneTime, StringFormat='={0:N}'}"/>
+            <DataTemplate x:DataType="models:ProfileMonikerViewModel">
+                <ViewCell>
+                    <Grid Padding="10, 0, 0, 5" Margin="0, 5, 0, 5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Row="0" 
+                               FontAttributes="Bold" 
+                               VerticalOptions="CenterAndExpand"
+                               Text="{Binding CharacterNameString, Mode=OneTime}" />
+                        <Label Grid.Row="1" 
+                               VerticalOptions="CenterAndExpand"
+                               Text="{Binding IdString, Mode=OneTime}"/>
+                    </Grid>
+                </ViewCell>
             </DataTemplate>
         </ListView.ItemTemplate>
     </ListView>              

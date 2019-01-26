@@ -14,7 +14,7 @@ namespace Solene.MobileApp.Core.Views
 
         private async void ListView_ItemTapped(object sender, ItemTappedEventArgs e)
         {
-            Guid profileId = (e.Item as ProfileMoniker).Id;
+            Guid profileId = (e.Item as ProfileMonikerViewModel).Id;
             await (BindingContext as ProfileSelectViewModel).SelectProfile(profileId);
         }
     }

@@ -11,11 +11,12 @@ namespace Solene.MobileApp.Core.ViewModels
     public class ProfileSelectViewModel : NavigableViewModelBase
     {
         private readonly IProfileService _profileService;
-        private readonly INotificationService _notificationService;
 
-        public ObservableCollection<ProfileMoniker> CharacterList { get; } = new ObservableCollection<ProfileMoniker>();
+        public ObservableCollection<ProfileMonikerViewModel> CharacterList { get; } 
+            = new ObservableCollection<ProfileMonikerViewModel>();
 
-        public ProfileSelectViewModel(INavigationService navService, IProfileService profileService) : base(navService)
+        public ProfileSelectViewModel(INavigationService navService, 
+            IProfileService profileService) : base(navService)
         {
             _profileService = profileService;
         }
@@ -26,7 +27,7 @@ namespace Solene.MobileApp.Core.ViewModels
             CharacterList.Clear();
             foreach(var name in characterNames)
             {
-                CharacterList.Add(name);
+                CharacterList.Add(new ProfileMonikerViewModel(name));
             }
 
             return Task.CompletedTask;

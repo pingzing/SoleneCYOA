@@ -20,35 +20,50 @@
         <ToolbarItem Order="Secondary" Text="Import profile" Command="{Binding ImportProfileCommand}"/>
         <ToolbarItem Order="Secondary" Text="Refresh" Command="{Binding RefreshCommand}"/>
         <ToolbarItem Order="Secondary" Text="Create new character" Command="{Binding NewCharacterCommand}"/>
+        <ToolbarItem Order="Secondary" Text="Copy profile ID" Command="{Binding CopyIdCommand}"/>
     </ContentPage.ToolbarItems>
 
-    <ListView ItemsSource="{Binding Questions}"
-              HasUnevenRows="True"
-              ItemTapped="ListView_ItemTapped"              
-              IsPullToRefreshEnabled="True"
-              IsRefreshing="{Binding IsLoading}"
-              RefreshCommand="{Binding RefreshCommand}"
-              SelectionMode="None"              
-              CachingStrategy="RecycleElement">
-        <ListView.ItemTemplate>
-            <DataTemplate>
-                <ViewCell>
-                    <Grid Padding="10, 0, 0, 5"  Margin="0, 5, 0, 5"
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" 
+               FontSize="Small" 
+               Margin="10, 0, 0, 0"
+               Text="{Binding ProfileIdString}"
+               TextColor="#99FFFFFF"/>
+
+        <ListView Grid.Row="1" 
+                  ItemsSource="{Binding Questions}"
+                  Margin="0, 5, 0, 0"
+                  HasUnevenRows="True"
+                  ItemTapped="ListView_ItemTapped"              
+                  IsPullToRefreshEnabled="True"
+                  IsRefreshing="{Binding IsLoading}"
+                  RefreshCommand="{Binding RefreshCommand}"
+                  SelectionMode="None"              
+                  CachingStrategy="RecycleElement">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid Padding="10, 0, 0, 5"  Margin="0, 5, 0, 5"
                           BackgroundColor="{Binding IsLocked, Converter={StaticResource BackgroundColorConverter}}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Label x:Name="SequenceNumber" 
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Label x:Name="SequenceNumber" 
                                Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
                                HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"
                                Style="{DynamicResource ListItemTextStyle}"
-                               Text="{Binding SequenceNumber, Mode=OneWay}"/>
-                        <Label x:Name="LockedText" 
+                               Text="{Binding SequenceNumber, Mode=OneTime}"/>
+                            <Label x:Name="LockedText" 
                                Grid.Row="0" Grid.Column="1"
                                Margin="0, 5, 0, 5"
                                FontAttributes="Italic"
@@ -56,7 +71,7 @@
                                HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"
                                Style="{DynamicResource ListItemTextStyle}"
                                Text="Locked"/>
-                        <Label x:Name="QuestionTitle" 
+                            <Label x:Name="QuestionTitle" 
                                Grid.Row="0" Grid.Column="1"
                                IsVisible="{Binding IsLocked, Converter={StaticResource BoolInvert}}"
                                MaxLines="1"
@@ -64,7 +79,7 @@
                                Margin="5, 0, 0, 0"
                                Style="{DynamicResource ListItemTextStyle}"
                                Text="{Binding Title, Mode=OneWay}"/>
-                        <Label x:Name="QuestionBody" 
+                            <Label x:Name="QuestionBody" 
                                Grid.Row="1" Grid.Column="1"
                                MaxLines="1"
                                LineBreakMode="TailTruncation"
@@ -72,10 +87,12 @@
                                Style="{DynamicResource ListItemDetailTextStyle}"
                                IsVisible="{Binding IsLocked, Converter={StaticResource BoolInvert}}"
                                Text="{Binding Text, Mode=OneWay}"/>
-                    </Grid>
-                </ViewCell>
-            </DataTemplate>
-        </ListView.ItemTemplate>
-    </ListView>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
 
+    </Grid>
+   
 </ContentPage>

@@ -8,6 +8,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 
 namespace Solene.MobileApp.Core.ViewModels
 {
@@ -27,6 +28,13 @@ namespace Solene.MobileApp.Core.ViewModels
             set => Set(ref _titleString, value);
         }
 
+        private string _profileIdString;
+        public string ProfileIdString
+        {
+            get => _profileIdString;
+            set => Set(ref _profileIdString, value);
+        }
+
         private bool _isLoading;
         public bool IsLoading
         {
@@ -44,6 +52,7 @@ namespace Solene.MobileApp.Core.ViewModels
         public RelayCommand RefreshCommand { get; private set; }
         public RelayCommand ImportProfileCommand { get; private set; }
         public RelayCommand NewCharacterCommand { get; private set; }
+        public RelayCommand CopyIdCommand { get; private set; }
 
         public ProfileOverviewViewModel(INavigationService navService,
             INetworkService networkService,
@@ -54,6 +63,7 @@ namespace Solene.MobileApp.Core.ViewModels
             RefreshCommand = new RelayCommand(RefreshClicked);
             ImportProfileCommand = new RelayCommand(ImportProfileClicked);
             NewCharacterCommand = new RelayCommand(NewCharacterClicked);
+            CopyIdCommand = new RelayCommand(CopyIdClicked);
             _networkService = networkService;
             _profileService = profileService;
             _notificationService = notificationService;
@@ -66,6 +76,7 @@ namespace Solene.MobileApp.Core.ViewModels
             {
                 _profile = (PlayerProfile)Parameter;
                 TitleString = $"{_profile.PlayerInfo.Name}'s Profile";
+                ProfileIdString = $"ID: {_profile.PlayerInfo.Id}";
 
                 if (_profile.Questions != null)
                 {
@@ -138,6 +149,11 @@ namespace Solene.MobileApp.Core.ViewModels
         private async void NewCharacterClicked()
         {
             await _navigationService.NavigateToViewModelAsync<PlayerNameViewModel>();
+        }
+
+        private async void CopyIdClicked()
+        {
+            await Clipboard.SetTextAsync(_profile.PlayerInfo.Id.ToString("N"));
         }
     }
 }
