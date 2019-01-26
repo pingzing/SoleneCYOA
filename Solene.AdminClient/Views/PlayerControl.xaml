@@ -4,46 +4,96 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="using:Solene.Models"
+    xmlns:ctl="using:Solene.AdminClient.Controls"
     mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="400">
-    <ScrollViewer
-        Name="ForegroundElement"
-        VerticalScrollMode="Enabled"
+    d:DesignHeight="500"
+    d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style TargetType="TextBlock">
+                <Setter Property="IsTextSelectionEnabled" Value="True"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid
+        Name="ForegroundElement"        
         HorizontalAlignment="Stretch"
         Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-        Padding="{StaticResource DetailPageMargin}">
-        <StackPanel HorizontalAlignment="Left">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                <FontIcon
-                    FontSize="48"
-                    Glyph="{x:Bind MasterMenuItem.Symbol, Mode=OneWay}"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Center"/>
-                <TextBlock
-                    Margin="{StaticResource SmallLeftMargin}"
-                    VerticalAlignment="Center"
-                    Text="{x:Bind MasterMenuItem.Company, Mode=OneWay}"
-                    Style="{ThemeResource TitleTextBlockStyle}" />
-            </StackPanel>
-            <StackPanel Name="block" Padding="0,15,0,0">
-                <TextBlock Text="Status" Style="{StaticResource DetailSubTitleStyle}"/>
-                <TextBlock Text="{x:Bind MasterMenuItem.Status, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
-                <TextBlock Text="Order date" Style="{StaticResource DetailSubTitleStyle}" Margin="{StaticResource SmallTopMargin}"/>
-                <TextBlock Text="{x:Bind MasterMenuItem.OrderDate, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
-                <TextBlock Text="Company" Style="{StaticResource DetailSubTitleStyle}" Margin="{StaticResource SmallTopMargin}"/>
-                <TextBlock Text="{x:Bind MasterMenuItem.Company, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
-                <TextBlock Text="Ship to" Style="{StaticResource DetailSubTitleStyle}" Margin="{StaticResource SmallTopMargin}"/>
-                <TextBlock Text="{x:Bind MasterMenuItem.ShipTo, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
-                <TextBlock Text="Order total" Style="{StaticResource DetailSubTitleStyle}" Margin="{StaticResource SmallTopMargin}"/>
-                <TextBlock Text="{x:Bind MasterMenuItem.OrderTotal, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
-
-                <TextBlock Text="Note 1" Style="{StaticResource DetailSubTitleStyle}" Margin="{StaticResource MediumTopMargin}" />
-                <TextBlock Style="{StaticResource DetailBodyStyle}" Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis quis hendrerit nulla, vel molestie libero. In nec ultricies magna, ultricies molestie ipsum. Mauris non dignissim velit. Etiam malesuada blandit mauris eu maximus. Quisque ornare, felis nec scelerisque mollis, risus dolor posuere magna, in gravida quam mi id nisi. Nullam mattis consequat ex. Cras nulla neque, dictum ac urna et, vestibulum feugiat ex. Pellentesque malesuada accumsan ligula, vel fringilla lacus facilisis sit amet. Proin convallis tempor arcu, ac placerat libero pretium ut. Praesent hendrerit nisl at lobortis viverra. Fusce vitae velit odio. Nam ut tortor sed purus finibus sollicitudin quis at ante. Ut sodales dolor vel eros mollis suscipit. Donec eu nulla id urna ultricies consequat. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;" />
-
-                <TextBlock Text="Note 2" Style="{StaticResource DetailSubTitleStyle}" Margin="{StaticResource SmallTopMargin}" />
-                <TextBlock Style="{StaticResource DetailBodyStyle}" Margin="{StaticResource MediumBottomMargin}" Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis quis hendrerit nulla, vel molestie libero. In nec ultricies magna, ultricies molestie ipsum. Mauris non dignissim velit. Etiam malesuada blandit mauris eu maximus. Quisque ornare, felis nec scelerisque mollis, risus dolor posuere magna, in gravida quam mi id nisi. Nullam mattis consequat ex. Cras nulla neque, dictum ac urna et, vestibulum feugiat ex. Pellentesque malesuada accumsan ligula, vel fringilla lacus facilisis sit amet. Proin convallis tempor arcu, ac placerat libero pretium ut. Praesent hendrerit nisl at lobortis viverra. Fusce vitae velit odio. Nam ut tortor sed purus finibus sollicitudin quis at ante. Ut sodales dolor vel eros mollis suscipit. Donec eu nulla id urna ultricies consequat. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;" />
-            </StackPanel>
+        Padding="10 10 0 0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Stretch">
+            <TextBlock                
+                Margin="{StaticResource SmallLeftMargin}"
+                IsTextSelectionEnabled="True"
+                VerticalAlignment="Center">
+                <Run Text="{x:Bind MasterMenuItem.Name, Mode=OneWay}"/>
+                <Run Text="("/><Run Text="{x:Bind MasterMenuItem.Gender, Mode=OneWay}"/><Run Text=")"/>
+            </TextBlock>
+            <TextBlock
+                Margin="{StaticResource SmallLeftMargin}"
+                IsTextSelectionEnabled="True"
+                VerticalAlignment="Center"
+                Text="{x:Bind MasterMenuItem.Id, Mode=OneWay}"
+                Style="{ThemeResource DetailSubTitleStyle}" />
+            <Button Click="Refresh_Click">
+                <Button.Content>
+                    <SymbolIcon Symbol="Refresh"/>
+                </Button.Content>
+            </Button>
         </StackPanel>
-    </ScrollViewer>
+        <ListView x:Name="QuestionsList" Grid.Row="1"
+                  ItemsSource="{x:Bind Questions}"
+                  SelectionMode="None">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="model:Question">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ListTitleStyle}">
+                                <Run Text="{x:Bind SequenceNumber}"/>
+                                <Run Text="{x:Bind Title}"/>
+                            </TextBlock>                            
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Orientation="Horizontal">
+                            <TextBlock Text="Question ID:" Style="{StaticResource CaptionTextBlockStyle}"/>
+                            <TextBlock Text="{x:Bind Id}" Style="{StaticResource CaptionTextBlockStyle}" IsTextSelectionEnabled="True"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Orientation="Horizontal">
+                            <TextBlock Text="Player ID:" Style="{StaticResource CaptionTextBlockStyle}"/>
+                            <TextBlock Text="{x:Bind PlayerId}" Style="{StaticResource CaptionTextBlockStyle}" IsTextSelectionEnabled="True"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="3" Text="{x:Bind Text}" TextWrapping="Wrap"/>
+                        <TextBlock Grid.Row="4" Text="{x:Bind ChosenAnswer}" TextWrapping="Wrap" Style="{StaticResource BaseTextBlockStyle}" Foreground="Orange"/>
+                        <ItemsControl Grid.Row="5" ItemsSource="{x:Bind PrefilledAnswers}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button IsEnabled="False" Content="{Binding}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Line Grid.Row="6" X1="0" Y1="0" X2="1" Y2="0" Stroke="Gray" Margin="0 5" StrokeThickness="1" Stretch="Fill" HorizontalAlignment="Stretch"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            <ListView.Footer>
+                <StackPanel Padding="5 0">
+                    <TextBlock Text="Add new question"/>
+                    <ctl:AddQuestionControl x:Name="AddQuestionForm" SubmitClicked="AddQuestionControl_SubmitClicked"/>
+                    <TextBlock x:Name="AddQuestionFormStatusText"/>
+                </StackPanel>
+            </ListView.Footer>
+        </ListView>
+    </Grid>
 </UserControl>

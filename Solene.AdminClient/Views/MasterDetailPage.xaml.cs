@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-
 using Microsoft.Toolkit.Uwp.UI.Controls;
 
 using Solene.AdminClient.Services;
 using Solene.Models;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Animation;
 
 namespace Solene.AdminClient.Views
 {
@@ -26,7 +21,7 @@ namespace Solene.AdminClient.Views
             set { Set(ref _selected, value); }
         }
 
-        public ObservableCollection<Player> SampleItems { get; private set; } = new ObservableCollection<Player>();
+        public ObservableCollection<Player> Players { get; private set; } = new ObservableCollection<Player>();
 
         public MasterDetailPage()
         {
@@ -36,18 +31,27 @@ namespace Solene.AdminClient.Views
 
         private async void MasterDetailPage_Loaded(object sender, RoutedEventArgs e)
         {
-            SampleItems.Clear();
+            await Refresh();
+        }
 
-            var data = await SampleDataService.GetSampleModelDataAsync();
+        private async void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            await Refresh();
+        }
+
+        private async Task Refresh()
+        {
+            Players.Clear();
+            var data = await NetworkService.GetAllPlayers();
 
             foreach (var item in data)
             {
-                SampleItems.Add(item);
+                Players.Add(item);
             }
 
             if (MasterDetailsViewControl.ViewState == MasterDetailsViewState.Both)
             {
-                Selected = SampleItems.FirstOrDefault();
+                Selected = Players.FirstOrDefault();
             }
         }
 

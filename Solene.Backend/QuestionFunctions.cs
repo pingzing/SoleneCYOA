@@ -203,12 +203,12 @@ namespace Solene.Backend
             subject = subject.Substring(0, Math.Min(subject.Length, 78)); // Truncate subject to 78 chars.
             string gameAdmin = Environment.GetEnvironmentVariable("GAME_ADMIN_EMAIL", EnvironmentVariableTarget.Process);
             var to = new EmailAddress(gameAdmin);
-            string body = $"Name:{player.Name}\n" +
-                $"ID: {question.PlayerId}\n" +
-                $"Gender: {player.Gender}\n" +
-                $"Question: {question.SequenceNumber}. {question.Title}: {question.Text}\n" +
+            string body = $"Name:{player.Name}\r\n" +
+                $"ID: {question.PlayerId}\r\n" +
+                $"Gender: {player.Gender}\r\n" +
+                $"Question: {question.SequenceNumber}. {question.Title}: {question.Text}\r\n" +
                 $"'{question.ChosenAnswer}'";
-            var email = MailHelper.CreateSingleEmail(from, to, subject, body, null);
+            var email = MailHelper.CreateSingleEmail(from, to, subject, body, null);            
             var response = await client.SendEmailAsync(email);
             if (response.StatusCode != HttpStatusCode.Accepted)
             {

@@ -130,6 +130,17 @@ namespace Solene.MobileApp.Core.ViewModels
                 await _profileService.SaveProfile(_profile);
                 Questions = new ObservableCollection<QuestionViewModel>(
                     _profile.Questions.Select(x => new QuestionViewModel(x)));
+
+                // Gotta update firstUnfilled again
+                foreach (var question in Questions)
+                {
+                    question.IsFirstUnfilledQuestion = false;
+                }
+                firstUnfilledQuestion = Questions.FirstOrDefault(x => x.ChosenAnswer == null);
+                if (firstUnfilledQuestion != null)
+                {
+                    firstUnfilledQuestion.IsFirstUnfilledQuestion = true;
+                }
             }
             IsLoading = false;
         }

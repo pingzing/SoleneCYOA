@@ -7,6 +7,7 @@
     Style="{StaticResource PageStyle}"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:model="using:Solene.AdminClient.Models"
+    xmlns:sharedModel="using:Solene.Models"
     xmlns:views="using:Solene.AdminClient.Views"
     xmlns:behaviors="using:Solene.AdminClient.Behaviors"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
@@ -17,23 +18,17 @@
         </TransitionCollection>
     </Page.Transitions>
     <Page.Resources>
-        <DataTemplate x:Key="ItemTemplate" x:DataType="model:SampleOrder">
-            <Grid Height="60">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <FontIcon Grid.Column="0" FontSize="32" Glyph="{x:Bind Symbol}" VerticalAlignment="Center" />
-                <StackPanel Grid.Column="1" Margin="{StaticResource SmallLeftMargin}" VerticalAlignment="Center">
-                    <TextBlock Text="{x:Bind Company}" Style="{ThemeResource ListTitleStyle}"/>
-                    <TextBlock Text="{x:Bind Status}" Style="{StaticResource ListSubTitleStyle}"/>
-                </StackPanel>
-            </Grid>
+        <DataTemplate x:Key="ItemTemplate" x:DataType="sharedModel:Player">
+            <StackPanel Height="60" VerticalAlignment="Center">
+                <TextBlock Text="{x:Bind Name}" Style="{ThemeResource ListTitleStyle}"/>
+                <TextBlock Text="{x:Bind Gender}" Style="{StaticResource ListSubTitleStyle}"/>
+                <TextBlock Text="{x:Bind Id}" Style="{StaticResource ListSubTitleStyle}"/>
+            </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="DetailsTemplate">
             <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                <views:MasterDetailDetailControl MasterMenuItem="{Binding}"/>
+                <views:PlayerControl MasterMenuItem="{Binding}"/>
             </Grid>
         </DataTemplate>
 
@@ -85,7 +80,7 @@
             </VisualStateManager.VisualStateGroups>
         <controls:MasterDetailsView
             x:Name="MasterDetailsViewControl"
-            ItemsSource="{x:Bind SampleItems}"
+            ItemsSource="{x:Bind Players}"
             SelectedItem="{x:Bind Selected, Mode=TwoWay}"
             ItemTemplate="{StaticResource ItemTemplate}"
             DetailsTemplate="{StaticResource DetailsTemplate}"
@@ -94,6 +89,12 @@
             MasterHeader="MasterDetail"
             Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}"
             BackButtonBehavior="Automatic"
-            MasterHeaderTemplate="{StaticResource MinimalMasterHeaderTemplate}"/>
+            MasterHeaderTemplate="{StaticResource MinimalMasterHeaderTemplate}">
+            <controls:MasterDetailsView.MasterCommandBar>
+                <CommandBar>
+                    <AppBarButton Icon="Refresh" Label="Refresh" LabelPosition="Default" Click="Refresh_Click"/>
+                </CommandBar>
+            </controls:MasterDetailsView.MasterCommandBar>
+        </controls:MasterDetailsView>
     </Grid>
 </Page>
