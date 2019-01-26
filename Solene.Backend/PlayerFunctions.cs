@@ -124,6 +124,29 @@ namespace Solene.Backend
             return new OkObjectResult(getAllPlayersResult);
         }
 
+        [FunctionName("GetAllPlayersAndDetails")]
+        public static async Task<IActionResult> GetAllPlayersAndDetails(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "players-and-details")]HttpRequest req,
+            ILogger log)
+        {
+            string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
+            var dbClient = new SoleneTableClient(connectionString, log);
+
+            List<Task<IEnumerable<AdminQuestion>>> getQuestionsTasks = new List<Task<IEnumerable<AdminQuestion>>>();
+            var getAllPlayersResult = (await dbClient.GetAllPlayers()).ToList();
+            foreach(var player in getAllPlayersResult)
+            {
+                getQuestionsTasks.Add(dbClient.GetPlayerAdminQuestions(player.Id));
+            }
+
+            var allQuestions = (await Task.WhenAll(getQuestionsTasks)).SelectMany(x => x);
+            return new OkObjectResult(new PlayersAndDetails
+            {
+                AllPlayers = getAllPlayersResult,
+                AllQuestions = allQuestions.ToList()
+            });
+        }
+
         [FunctionName("RegisterPush")]
         public static async Task<IActionResult> RegisterPushNotifications(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "player/{playerId}/push")]HttpRequest req,

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Solene.Database.EntityModels;
 using Solene.Database.ExtensionMethods;
 using Solene.Models;
@@ -108,6 +109,21 @@ namespace Solene.Database
         public async Task<IEnumerable<Question>> GetPlayerQuestions(Guid playerId)
         {
             return (await GetPlayerQuestionEntities(playerId))?.Select(x => x.ToQuestion());
+        }
+
+        public async Task<IEnumerable<AdminQuestion>> GetPlayerAdminQuestions(Guid playerId)
+        {
+            return (await GetPlayerQuestionEntities(playerId))?.Select(x => new AdminQuestion
+            {
+                ChosenAnswer = x.ChosenAnswer,
+                Id = Guid.Parse(x.RowKey),
+                PlayerId = x.PlayerId,
+                PrefilledAnswers = JsonConvert.DeserializeObject<List<string>>(x.PrefilledAnswersJson),
+                SequenceNumber = (uint)x.SequenceNumber,
+                Text = x.Text,
+                Title = x.Title,
+                UpdatedTimestamp = x.Timestamp
+            });
         }
 
         public async Task<bool> AnswerQuestion(Guid questionId, string answer)
