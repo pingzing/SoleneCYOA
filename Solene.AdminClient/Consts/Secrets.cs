@@ -1,6 +1,5 @@
 ﻿namespace Solene.AdminClient.Consts
 {
-
     /// <summary>
     /// This file contains the secret keys.
     /// It should be marked as 'git update-index --skip-worktree' in git, allowing it to be
@@ -12,10 +11,11 @@
     {
         // <AzureFunctionsReplaceMe>        
         public static string CreatePlayerFunctionCode => "<CreatePlayerFunctionCode>";
-        public static string DeletePlayerFunctionCode => "<DeletePlayerFunctionCodeReplaceMe>";
+        public static string DeletePlayerFunctionCode => "<DeletePlayerFunctionCode>";
         public static string GetPlayerFunctionCode => "<GetPlayerFunctionCode>";
-        public static string GetAllPlayersFunctionCode => "<GetAllPlayersFunctionCodeReplaceMe>";
+        public static string GetAllPlayersFunctionCode => "<GetAllPlayersFunctionCode>";
         public static string GetPlayerQuestionsFunctionCode => "<GetPlayerQuestionsFunctionCode>";
         public static string AddQuestionFunctionCode => "<AddQuestionFunctionCode>";
+        public static string GetAllPlayersAndQuestionsFunctionCode => "<GetAllPlayersAndQuestionsFunctionCode>";
     }
 }
