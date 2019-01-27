@@ -9,7 +9,7 @@ Param(
 )
 
 #Main
-$secretsContent = Get-Content "./Consts/Secrets.cs";
+$secretsContent = Get-Content "./Solene.AdminClient/Consts/Secrets.cs";
 
 $secretsContent = $secretsContent.Replace("<CreatePlayerFunctionCode>", $createPlayerFunctionCode);
 $secretsContent = $secretsContent.Replace("<DeletePlayerFunctionCode>", $deletePlayerFunctionCode);
