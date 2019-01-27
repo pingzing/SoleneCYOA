@@ -25,18 +25,19 @@ namespace Solene.MobileApp.Droid
 
             base.OnCreate(savedInstanceState);
 
-            //if (Intent.Extras != null)
-            //{
-            //    foreach (var key in Intent.Extras.KeySet())
-            //    {
-            //        var value = Intent.Extras.GetString(key);
-            //        System.Diagnostics.Debug.WriteLine($"Intent Key: {key}, Val: {value}");
-            //    }
-            //}
+            string base64Question = null;
+            if (Intent.Extras != null)
+            {
+                string questionKey = "question";
+                if (Intent.Extras.ContainsKey(questionKey))
+                {
+                    base64Question = Intent.Extras.GetString(questionKey);
+                }
+            }
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             Forms.Init(this, savedInstanceState);
-            var app = new Core.App();
+            var app = new Core.App(base64Question);
             RegisterNativeServices();
             LoadApplication(app);
         }

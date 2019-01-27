@@ -58,14 +58,15 @@ namespace Solene.MobileApp.Droid.Services
 
         public string GetPushTemplate()
         {
-            return @"{  
-    ""notification"": {
-        ""title"" : ""$(title)"",
-        ""body"": ""$(body)"",
-        ""data"": {
-            ""question"": ""$(question)""
-        }
-    }    
+            return @"
+{
+  ""data"": {
+    ""question"": ""$(question)""
+  },
+  ""notification"": {
+    ""title"": ""$(title)"",
+    ""body"": ""$(body)""
+  }
 }";
         }
 
