@@ -97,6 +97,17 @@ namespace Solene.AdminClient.Services
             return await response.Content.ReadAsAsync<Question>();
         }
 
+        public static async Task<PlayersAndDetails> GetAllPlayersAndQuestions()
+        {
+            var response = await _httpClient.GetAsync($"players-and-details?{GetFunctionCode()}");
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.WriteLine($"GetAllPlayersAndQuestions failed: HTTP {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");
+            }
+
+            return await response.Content.ReadAsAsync<PlayersAndDetails>();
+        }
+
         private static string GetFunctionCode([CallerMemberName]string functionName = null)
         {
             switch (functionName)
@@ -113,6 +124,8 @@ namespace Solene.AdminClient.Services
                     return $"code={Consts.Secrets.DeletePlayerFunctionCode}";
                 case nameof(AddQuestion):
                     return $"code={Consts.Secrets.AddQuestionFunctionCode}";
+                case nameof(GetAllPlayersAndQuestions):
+                    return $"code={Consts.Secrets.GetAllPlayersAndQuestionsFunctionCode}";
                 default:
                     throw new ArgumentOutOfRangeException($"No function code found for {functionName}");
             }
