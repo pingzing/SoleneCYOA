@@ -1,9 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Application xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"             
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"    
+             xmlns:mvvm="clr-namespace:Solene.MobileApp.Core.Mvvm"
              x:Class="Solene.MobileApp.Core.App">
     <Application.Resources>
         <ResourceDictionary>
+            <mvvm:ViewModelLocator x:Key="Locator"/>
             <Style TargetType="Button">
                 <Setter Property="BackgroundColor" Value="Purple"/>
             </Style>

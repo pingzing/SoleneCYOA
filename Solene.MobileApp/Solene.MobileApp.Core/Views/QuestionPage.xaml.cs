@@ -1,5 +1,6 @@
 ﻿using Solene.MobileApp.Core.Models;
 using Solene.MobileApp.Core.ViewModels;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace Solene.MobileApp.Core.Views
@@ -11,6 +12,13 @@ namespace Solene.MobileApp.Core.Views
         {
             InitializeComponent();
             (BindingContext as QuestionPageViewModel).Parameter = chosen;
+        }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            await Task.Delay(1000);
+            ApplyBindings();
         }
     }
 }

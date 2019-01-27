@@ -31,6 +31,13 @@ namespace Solene.MobileApp.Core.ViewModels
             }
         }
 
+        private string _freeformText;
+        public string FreeformText
+        {
+            get => _freeformText;
+            set => Set(ref _freeformText, value);
+        }
+
         public string ChosenAnswer => CurrentQuestion?.ChosenAnswer;        
 
         // Do we have a next question?        
@@ -129,12 +136,20 @@ namespace Solene.MobileApp.Core.ViewModels
         private void NextClicked()
         {
             int currentIndex = _backingProfile.Questions.IndexOf(CurrentQuestion);
+            if (currentIndex + 1 >= _backingProfile.Questions.Count)
+            {
+                return;
+            }
             CurrentQuestion = _backingProfile.Questions[currentIndex + 1];
         }
 
         private void PreviousClicked()
-        {
+        {            
             int currentIndex = _backingProfile.Questions.IndexOf(CurrentQuestion);
+            if (currentIndex == 0)
+            {
+                return;
+            }
             CurrentQuestion = _backingProfile.Questions[currentIndex - 1];
         }
 
@@ -183,6 +198,7 @@ namespace Solene.MobileApp.Core.ViewModels
 
         private void QuestionChanged()
         {
+            FreeformText = "";
             RaisePropertyChanged(nameof(IsNextVisible));
             RaisePropertyChanged(nameof(IsPreviousVisible));
             RaisePropertyChanged(nameof(IsFreeFormEntryEnabled));
@@ -190,7 +206,7 @@ namespace Solene.MobileApp.Core.ViewModels
             RaisePropertyChanged(nameof(Title));
             PreviousCommand.RaiseCanExecuteChanged();
             NextCommand.RaiseCanExecuteChanged();
-            AnswerFreeFormQuestionCommand.RaiseCanExecuteChanged();
+            AnswerFreeFormQuestionCommand.RaiseCanExecuteChanged();            
         }
     }
 }

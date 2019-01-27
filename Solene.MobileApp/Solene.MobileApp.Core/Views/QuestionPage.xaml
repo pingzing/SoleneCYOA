@@ -54,9 +54,10 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <Entry x:Name="FreeformEntry" Grid.Column="0"
+                    <Entry x:Name="FreeformEntry" Grid.Column="0"                           
                            Placeholder="Custom Answer"
-                           IsEnabled="{Binding IsFreeFormEntryEnabled}"/>
+                           IsEnabled="{Binding IsFreeFormEntryEnabled}"
+                           Text="{Binding FreeformText, Mode=TwoWay}"/>
                     <Button Grid.Column="1"
                             Command="{Binding AnswerFreeFormQuestionCommand}"
                             CommandParameter="{Binding Source={x:Reference FreeformEntry}, Path=Text}"

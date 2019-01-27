@@ -41,7 +41,7 @@ namespace Solene.MobileApp.Core.Mvvm
 
         private INavigationService InitializeNavigationService()
         {
-            NavigationService navService = new NavigationService(App.MainNavigationHost)
+            NavigationService navService = new NavigationService(((App)Application.Current).MainNavigationHost)
                 .Configure(typeof(ProfileSelectViewModel), typeof(ProfileSelectPage))
                 .Configure(typeof(PlayerNameViewModel), typeof(PlayerNamePage))
                 .Configure(typeof(PlayerGenderViewModel), typeof(PlayerGenderPage))

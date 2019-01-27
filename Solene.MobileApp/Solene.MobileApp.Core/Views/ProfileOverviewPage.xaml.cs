@@ -14,7 +14,6 @@ namespace Solene.MobileApp.Core.Views
     {
         private ProfileOverviewViewModel _viewmodel;
         private readonly IMessenger _messengerService;
-        private int _currentSpecialUnlockedIndex = -1;
 
         public ProfileOverviewPage(PlayerProfile profile)
         {
@@ -41,7 +40,6 @@ namespace Solene.MobileApp.Core.Views
             var firstUnanswered = _viewmodel.Questions.FirstOrDefault(x => x.ChosenAnswer == null);
             if (firstUnanswered == null)
             {
-                _currentSpecialUnlockedIndex = -1;
                 // Everything has an answer, unlock everything
                 foreach(var question in _viewmodel.Questions)
                 {
@@ -51,17 +49,9 @@ namespace Solene.MobileApp.Core.Views
             }
 
             int newUnlockIndex = _viewmodel.Questions.IndexOf(firstUnanswered);
-            if (newUnlockIndex == _currentSpecialUnlockedIndex
-                && _viewmodel.Questions[newUnlockIndex].IsLocked == false)
-            {
-                // If it's still unlocked from a previous unlock, we don't have to do anything
-                return;
-            }
-
-            _currentSpecialUnlockedIndex = newUnlockIndex;
 
             // Lock everything beyond the exception-index
-            for (int i =_currentSpecialUnlockedIndex; i < _viewmodel.Questions.Count; i++)
+            for (int i = newUnlockIndex; i < _viewmodel.Questions.Count; i++)
             {
                 _viewmodel.Questions[i].IsLocked = true;
             }
