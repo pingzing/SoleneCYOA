@@ -9,7 +9,8 @@ Param(
 )
 
 #Main
-$secretsContent = Get-Content "./Solene.AdminClient/Consts/Secrets.cs";
+$constsFile = "./Solene.AdminClient/Consts/Secrets.cs";
+$secretsContent = Get-Content $constsFile;
 
 $secretsContent = $secretsContent.Replace("<CreatePlayerFunctionCode>", $createPlayerFunctionCode);
 $secretsContent = $secretsContent.Replace("<DeletePlayerFunctionCode>", $deletePlayerFunctionCode);
@@ -17,7 +18,7 @@ $secretsContent = $secretsContent.Replace("<GetPlayerFunctionCode>", $getPlayerF
 $secretsContent = $secretsContent.Replace("<GetAllPlayersFunctionCode>", $getAllPlayersFunctionCode);
 $secretsContent = $secretsContent.Replace("<GetPlayerQuestionsFunctionCode>", $getPlayerQuestionsFunctionCode);
 $secretsContent = $secretsContent.Replace("<AddQuestionFunctionCode>", $addQuestionFunctionCode);
-$secretsContent = $secretsContent.Replace("<GetAllPlayersAndQuestionsFunctionCode>")
+$secretsContent = $secretsContent.Replace("<GetAllPlayersAndQuestionsFunctionCode>", $getAllPlayersAndQuestionsFunctionCode);
 
-Set-Content "./Consts/Secrets.cs" $secretsContent;
+Set-Content $constsFile $secretsContent;
 Write-Host "Contents of Secrets.cs filled in with keys.";
