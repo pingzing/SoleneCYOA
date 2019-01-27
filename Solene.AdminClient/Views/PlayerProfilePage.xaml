@@ -1,5 +1,5 @@
-﻿<UserControl
-    x:Class="Solene.AdminClient.Views.PlayerControl"
+﻿<Page
+    x:Class="Solene.AdminClient.Views.PlayerProfilePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -31,13 +31,13 @@
                 IsTextSelectionEnabled="True"
                 VerticalAlignment="Center"
                 Style="{ThemeResource DetailSubTitleStyle}">
-                <Run Text="{x:Bind MasterMenuItem.Name, Mode=OneWay}"/>
-                <Run Text="("/><Run Text="{x:Bind MasterMenuItem.Gender, Mode=OneWay}"/><Run Text=")"/>
+                <Run Text="{x:Bind MasterMenuItem.PlayerInfo.Name, Mode=OneWay}"/>
+                <Run Text="("/><Run Text="{x:Bind MasterMenuItem.PlayerInfo.Gender, Mode=OneWay}"/><Run Text=")"/>
             </TextBlock>
             <TextBlock                
                 IsTextSelectionEnabled="True"
                 VerticalAlignment="Center"
-                Text="{x:Bind MasterMenuItem.Id, Mode=OneWay}"/>
+                Text="{x:Bind MasterMenuItem.PlayerInfo.Id, Mode=OneWay}"/>
             <Button Click="Refresh_Click">
                 <Button.Content>
                     <SymbolIcon Symbol="Refresh"/>
@@ -100,4 +100,4 @@
             </ListView.Footer>
         </ListView>
     </Grid>
-</UserControl>
+</Page>

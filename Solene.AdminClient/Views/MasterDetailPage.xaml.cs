@@ -1,10 +1,11 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Toolkit.Uwp.UI.Controls;
-
+using Solene.AdminClient.Models;
 using Solene.AdminClient.Services;
 using Solene.Models;
 using Windows.UI.Xaml;
@@ -14,14 +15,14 @@ namespace Solene.AdminClient.Views
 {
     public sealed partial class MasterDetailPage : Page, INotifyPropertyChanged
     {
-        private Player _selected;
-        public Player Selected
+        private AdminPlayerProfile _selected;
+        public AdminPlayerProfile Selected
         {
             get { return _selected; }
             set { Set(ref _selected, value); }
         }
 
-        public ObservableCollection<Player> Players { get; private set; } = new ObservableCollection<Player>();
+        public ObservableCollection<AdminPlayerProfile> Players { get; private set; } = new ObservableCollection<AdminPlayerProfile>();
 
         public MasterDetailPage()
         {
@@ -42,9 +43,17 @@ namespace Solene.AdminClient.Views
         private async Task Refresh()
         {
             Players.Clear();
-            var data = await NetworkService.GetAllPlayers();
+            var playersAndDetails = await NetworkService.GetAllPlayersAndQuestions();
+            List<AdminPlayerProfile> profiles = playersAndDetails.AllPlayers.Select(p =>
+                new AdminPlayerProfile
+                {
+                    PlayerInfo = p,
+                    Questions = playersAndDetails.AllQuestions.Where(q => q.PlayerId == p.Id).ToList()
+                }
+            ).OrderByDescending(x => x.Questions.Last().UpdatedTimestamp)
+            .ToList();
 
-            foreach (var item in data)
+            foreach (var item in profiles)
             {
                 Players.Add(item);
             }
@@ -72,8 +81,8 @@ namespace Solene.AdminClient.Views
 
         private async void DeleteItem_Click(object sender, RoutedEventArgs e)
         {
-            var selectedPlayer = ((sender as MenuFlyoutItem)?.DataContext as Player);
-            bool result = await NetworkService.DeletePlayer(selectedPlayer.Id);
+            var selectedPlayer = ((sender as MenuFlyoutItem)?.DataContext as AdminPlayerProfile);
+            bool result = await NetworkService.DeletePlayer(selectedPlayer.PlayerInfo.Id);
             if (!result)
             {
                 return;

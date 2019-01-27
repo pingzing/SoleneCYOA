@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Solene.AdminClient.Models;
 using Solene.AdminClient.Services;
 using Solene.Models;
 using Windows.UI.Xaml;
@@ -9,19 +10,19 @@ using Windows.UI.Xaml.Controls;
 
 namespace Solene.AdminClient.Views
 {
-    public sealed partial class PlayerControl : UserControl
+    public sealed partial class PlayerProfilePage : Page
     {
         public ObservableCollection<Question> Questions { get; set; } = new ObservableCollection<Question>();
 
-        public Player MasterMenuItem
+        public AdminPlayerProfile MasterMenuItem
         {
-            get { return GetValue(MasterMenuItemProperty) as Player; }
+            get { return GetValue(MasterMenuItemProperty) as AdminPlayerProfile; }
             set { SetValue(MasterMenuItemProperty, value); }
         }
 
-        public static readonly DependencyProperty MasterMenuItemProperty = DependencyProperty.Register("MasterMenuItem", typeof(Player), typeof(PlayerControl), new PropertyMetadata(null, OnMasterMenuItemPropertyChanged));
+        public static readonly DependencyProperty MasterMenuItemProperty = DependencyProperty.Register("MasterMenuItem", typeof(Player), typeof(PlayerProfilePage), new PropertyMetadata(null, OnMasterMenuItemPropertyChanged));
 
-        public PlayerControl()
+        public PlayerProfilePage()
         {
             InitializeComponent();
         }
@@ -33,7 +34,8 @@ namespace Solene.AdminClient.Views
                 return;
             }
             Questions.Clear();
-            var questions = await NetworkService.GetPlayerQuestions(MasterMenuItem.Id);
+            AddQuestionFormStatusText.Text = "";
+            var questions = await NetworkService.GetPlayerQuestions(MasterMenuItem.PlayerInfo.Id);
             if (questions != null)
             {
                 foreach(var question in questions)
@@ -45,7 +47,7 @@ namespace Solene.AdminClient.Views
 
         private static async void OnMasterMenuItemPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as PlayerControl;
+            var control = d as PlayerProfilePage;
             await control.LoadQuestions();
         }
 
@@ -58,7 +60,7 @@ namespace Solene.AdminClient.Views
         {
             AddQuestionFormStatusText.Text = "";
             AddQuestionForm.Clear();
-            Question result = await NetworkService.AddQuestion(MasterMenuItem.Id, e);
+            Question result = await NetworkService.AddQuestion(MasterMenuItem.PlayerInfo.Id, e);
             AddQuestionFormStatusText.Text = $"Question with ID: {result?.Id} added.";
             await LoadQuestions();
         }
