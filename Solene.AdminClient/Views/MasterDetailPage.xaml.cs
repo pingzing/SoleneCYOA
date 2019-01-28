@@ -48,12 +48,15 @@ namespace Solene.AdminClient.Views
                 new AdminPlayerProfile
                 {
                     PlayerInfo = p,
-                    Questions = playersAndDetails.AllQuestions.Where(q => q.PlayerId == p.Id).ToList()
+                    Questions = playersAndDetails.AllQuestions
+                        .Where(q => q.PlayerId == p.Id)
+                        .OrderBy(q => q.SequenceNumber)
+                        .ToList()
                 }
             ).OrderByDescending(x => x.Questions.Last().UpdatedTimestamp)
             .ToList();
 
-            foreach (var item in profiles)
+           foreach (var item in profiles)
             {
                 Players.Add(item);
             }
