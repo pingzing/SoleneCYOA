@@ -1,21 +1,47 @@
-﻿namespace Solene.AdminClient.Consts
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.Storage.AccessCache;
+using Windows.Storage.Pickers;
+
+namespace Solene.AdminClient.Consts
 {
-    /// <summary>
-    /// This file contains the secret keys.
-    /// It should be marked as 'git update-index --skip-worktree' in git, allowing it to be
-    /// safely modified locally. It should never be checked in to source control after
-    /// being modified. (Except to add new, unfilled keys)
-    /// In the CI build, the ReplaceMe strings will be swapped out as a build step.
-    /// </summary>
     public static class Secrets
     {
-        // <AzureFunctionsReplaceMe>        
-        public static string CreatePlayerFunctionCode => "<CreatePlayerFunctionCode>";
-        public static string DeletePlayerFunctionCode => "<DeletePlayerFunctionCode>";
-        public static string GetPlayerFunctionCode => "<GetPlayerFunctionCode>";
-        public static string GetAllPlayersFunctionCode => "<GetAllPlayersFunctionCode>";
-        public static string GetPlayerQuestionsFunctionCode => "<GetPlayerQuestionsFunctionCode>";
-        public static string AddQuestionFunctionCode => "<AddQuestionFunctionCode>";
-        public static string GetAllPlayersAndQuestionsFunctionCode => "<GetAllPlayersAndQuestionsFunctionCode>";
+        private const string FunctionsKeysFileName = "functionKeys.txt";
+
+        public static async Task InitializeAsync()
+        {
+            StorageFile functionKeys = null;
+            if (StorageApplicationPermissions.MostRecentlyUsedList.ContainsItem(FunctionsKeysFileName))
+            {
+                functionKeys = await StorageApplicationPermissions.MostRecentlyUsedList.GetFileAsync(FunctionsKeysFileName);
+            }
+            else
+            {
+                var picker = new FileOpenPicker();
+                picker.FileTypeFilter.Add(".txt");
+                functionKeys = await picker.PickSingleFileAsync();
+                StorageApplicationPermissions.MostRecentlyUsedList.Add(functionKeys);
+            }
+
+            IList<string> lines = await FileIO.ReadLinesAsync(functionKeys);
+            CreatePlayerFunctionCode = lines[0];
+            DeletePlayerFunctionCode = lines[1];
+            GetPlayerFunctionCode = lines[2];
+            GetAllPlayersFunctionCode = lines[3];
+            GetPlayerQuestionsFunctionCode = lines[4];
+            AddQuestionFunctionCode = lines[5];
+            GetAllPlayersAndQuestionsFunctionCode = lines[6];
+        }
+        
+        public static string CreatePlayerFunctionCode { get; private set; }
+        public static string DeletePlayerFunctionCode { get; private set; }
+        public static string GetPlayerFunctionCode { get; private set; }
+        public static string GetAllPlayersFunctionCode { get; private set; }
+        public static string GetPlayerQuestionsFunctionCode { get; private set; }
+        public static string AddQuestionFunctionCode { get; private set; }
+        public static string GetAllPlayersAndQuestionsFunctionCode { get; private set; }
     }
 }

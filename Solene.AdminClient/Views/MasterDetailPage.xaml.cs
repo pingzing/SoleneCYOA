@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Toolkit.Uwp.UI.Controls;
+using Solene.AdminClient.Consts;
 using Solene.AdminClient.Models;
 using Solene.AdminClient.Services;
 using Solene.Models;
@@ -32,6 +33,7 @@ namespace Solene.AdminClient.Views
 
         private async void MasterDetailPage_Loaded(object sender, RoutedEventArgs e)
         {
+            await Secrets.InitializeAsync();
             await Refresh();
         }
 
