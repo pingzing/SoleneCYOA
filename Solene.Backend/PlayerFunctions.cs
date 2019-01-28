@@ -213,7 +213,8 @@ namespace Solene.Backend
                     Title = "Ready?",
                     Text = "Okay. That's all we need for now. All the other questions are going to be custom-tailored to you.\n" +
                     "Now, for the most important question.\n\n" +
-                    "Are you ready?",
+                    "Are you ready?\n\n" +
+                    "(Please note that after answering this, a real live human has to read your input, and write content for you. This can take some time!)",
                     PrefilledAnswers = new List<string> { "Yes" },
                 },
             };
