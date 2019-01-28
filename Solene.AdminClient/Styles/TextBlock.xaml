@@ -21,7 +21,6 @@
     <!--MasterDetail TextBlock Styles-->
     <Style x:Key="ListTitleStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="MaxLines" Value="1" />
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
@@ -31,6 +30,10 @@
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="MaxLines" Value="1" />
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style x:Key="ListCaptionStyle" TargetType="TextBlock" BasedOn="{StaticResource ListSubTitleStyle}">
+        <Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
     </Style>
 
     <Style x:Key="DetailSubTitleStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">

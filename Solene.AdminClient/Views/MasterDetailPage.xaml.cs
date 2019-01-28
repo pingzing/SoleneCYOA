@@ -82,11 +82,11 @@ namespace Solene.AdminClient.Views
             OnPropertyChanged(propertyName);
         }
 
-        private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));             
 
-        private async void DeleteItem_Click(object sender, RoutedEventArgs e)
+        private async void MasterItem_DeleteClick(object sender, object e)
         {
-            var selectedPlayer = ((sender as MenuFlyoutItem)?.DataContext as AdminPlayerProfile);
+            var selectedPlayer = e as AdminPlayerProfile;
             bool result = await NetworkService.DeletePlayer(selectedPlayer.PlayerInfo.Id);
             if (!result)
             {

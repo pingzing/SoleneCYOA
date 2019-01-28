@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Solene.AdminClient.Models;
 using Solene.AdminClient.Services;
@@ -42,7 +43,7 @@ namespace Solene.AdminClient.Views
                 {
                     Questions.Add(question);
                 }
-            }
+            }           
         }
 
         private static async void OnMasterMenuItemPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -63,6 +64,7 @@ namespace Solene.AdminClient.Views
             Question result = await NetworkService.AddQuestion(MasterMenuItem.PlayerInfo.Id, e);
             AddQuestionFormStatusText.Text = $"Question with ID: {result?.Id} added.";
             await LoadQuestions();
+            QuestionsList.ScrollIntoView(Questions.Last(), ScrollIntoViewAlignment.Leading);
         }
     }
 }

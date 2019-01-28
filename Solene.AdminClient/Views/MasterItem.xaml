@@ -1,0 +1,37 @@
+﻿<UserControl
+    x:Class="Solene.AdminClient.Views.MasterItem"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <StackPanel x:Name="RootElement" Height="60" VerticalAlignment="Center">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="MasterItemStates">
+                <VisualState x:Name="Answered"/>
+                <VisualState x:Name="Unanswered">
+                    <VisualState.Setters>
+                        <Setter Target="NameTextBlock.FontWeight" Value="Bold"/>
+                        <Setter Target="GenderTextBlock.FontWeight" Value="Bold"/>
+                        <Setter Target="NameTextBlock.(TextBlock.Foreground)" Value="{ThemeResource SystemControlForegroundAccentBrush}"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <TextBlock x:Name="NameTextBlock" Text="{Binding PlayerInfo.Name}" Style="{ThemeResource ListTitleStyle}"/>
+        <TextBlock x:Name="GenderTextBlock" Text="{Binding PlayerInfo.Gender}" Style="{StaticResource ListSubTitleStyle}"/>
+        <TextBlock x:Name="IdTextBlock" Text="{Binding PlayerInfo.Id}" Style="{ThemeResource ListCaptionStyle}"/>
+        <StackPanel.ContextFlyout>
+            <MenuFlyout>
+                <MenuFlyoutItem Text="Delete" Click="DeleteItem_Click">
+                    <MenuFlyoutItem.Icon>
+                        <SymbolIcon Symbol="Delete"/>
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+            </MenuFlyout>
+        </StackPanel.ContextFlyout>
+    </StackPanel>
+</UserControl>

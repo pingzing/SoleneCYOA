@@ -6,8 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Style="{StaticResource PageStyle}"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
-    xmlns:model="using:Solene.AdminClient.Models"
-    xmlns:sharedModel="using:Solene.Models"
+    xmlns:model="using:Solene.AdminClient.Models"    
     xmlns:views="using:Solene.AdminClient.Views"
     xmlns:behaviors="using:Solene.AdminClient.Behaviors"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
@@ -18,21 +17,8 @@
         </TransitionCollection>
     </Page.Transitions>
     <Page.Resources>
-        <DataTemplate x:Key="ItemTemplate" x:DataType="model:AdminPlayerProfile">
-            <StackPanel Height="60" VerticalAlignment="Center">
-                <TextBlock Text="{x:Bind PlayerInfo.Name}" Style="{ThemeResource ListTitleStyle}"/>
-                <TextBlock Text="{x:Bind PlayerInfo.Gender}" Style="{StaticResource ListSubTitleStyle}"/>
-                <TextBlock Text="{x:Bind PlayerInfo.Id}" Style="{StaticResource ListSubTitleStyle}"/>
-                <StackPanel.ContextFlyout>
-                    <MenuFlyout>
-                        <MenuFlyoutItem Text="Delete" Click="DeleteItem_Click">
-                            <MenuFlyoutItem.Icon>
-                                <SymbolIcon Symbol="Delete"/>
-                            </MenuFlyoutItem.Icon>
-                        </MenuFlyoutItem>
-                    </MenuFlyout>
-                </StackPanel.ContextFlyout>
-            </StackPanel>
+        <DataTemplate x:Key="ItemTemplate">
+            <views:MasterItem DeleteClick="MasterItem_DeleteClick"/>
         </DataTemplate>
 
         <DataTemplate x:Key="DetailsTemplate">
