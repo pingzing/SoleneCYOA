@@ -9,21 +9,23 @@ namespace Solene.AdminClient.Consts
 {
     public static class Secrets
     {
-        private const string FunctionsKeysFileName = "functionKeys.txt";
+        private const string FunctionKeysTokenKey = "functionKeys";
 
         public static async Task InitializeAsync()
         {
             StorageFile functionKeys = null;
-            if (StorageApplicationPermissions.MostRecentlyUsedList.ContainsItem(FunctionsKeysFileName))
+            if (ApplicationData.Current.LocalSettings.Values.TryGetValue(FunctionKeysTokenKey, out object retrievedMruToken)
+                && StorageApplicationPermissions.MostRecentlyUsedList.ContainsItem(retrievedMruToken as string))
             {
-                functionKeys = await StorageApplicationPermissions.MostRecentlyUsedList.GetFileAsync(FunctionsKeysFileName);
+                functionKeys = await StorageApplicationPermissions.MostRecentlyUsedList.GetFileAsync(retrievedMruToken as string);
             }
             else
             {
                 var picker = new FileOpenPicker();
                 picker.FileTypeFilter.Add(".txt");
                 functionKeys = await picker.PickSingleFileAsync();
-                StorageApplicationPermissions.MostRecentlyUsedList.Add(functionKeys);
+                string mruToken = StorageApplicationPermissions.MostRecentlyUsedList.Add(functionKeys);
+                ApplicationData.Current.LocalSettings.Values.Add(FunctionKeysTokenKey, mruToken);
             }
 
             IList<string> lines = await FileIO.ReadLinesAsync(functionKeys);

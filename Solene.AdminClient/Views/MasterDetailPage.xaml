@@ -17,26 +17,6 @@
         </TransitionCollection>
     </Page.Transitions>
     <Page.Resources>
-        <DataTemplate x:Key="ItemTemplate">
-            <views:MasterItem DeleteClick="MasterItem_DeleteClick"/>
-        </DataTemplate>
-
-        <DataTemplate x:Key="DetailsTemplate">
-            <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                <views:PlayerProfilePage MasterMenuItem="{Binding}"/>
-            </Grid>
-        </DataTemplate>
-
-        <DataTemplate x:Key="NoSelectionContentTemplate">
-            <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                <TextBlock
-                    x:Uid="MasterDetail_NoSelection"
-                    Style="{StaticResource SubtitleTextBlockStyle}"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Center"
-                    TextAlignment="Center"/>
-            </Grid>
-        </DataTemplate>
 
         <DataTemplate x:Key="MasterHeaderTemplate">
             <Grid Height="40">
@@ -65,7 +45,7 @@
                     <VisualState>
                         <VisualState.StateTriggers>
                             <!--641 is the default CompactModeThresholdWidth in NavigationView -->
-                            <AdaptiveTrigger MinWindowWidth="1000" />
+                            <AdaptiveTrigger MinWindowWidth="641" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
                             <Setter Target="MasterDetailsViewControl.MasterHeaderTemplate" Value="{StaticResource MasterHeaderTemplate}" />
@@ -74,19 +54,40 @@
                 </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
         <controls:MasterDetailsView
-            x:Name="MasterDetailsViewControl"            
+            x:Name="MasterDetailsViewControl"
+            Background="{ThemeResource SystemControlAltMediumLowAcrylicWindowMediumBrush}"
+            NoSelectionContent="Nothing selected"
             ItemsSource="{x:Bind Players}"
-            SelectedItem="{x:Bind Selected, Mode=TwoWay}"
-            ItemTemplate="{StaticResource ItemTemplate}"
-            DetailsTemplate="{StaticResource DetailsTemplate}"
-            NoSelectionContentTemplate="{StaticResource NoSelectionContentTemplate}"
+            SelectedItem="{x:Bind Selected, Mode=TwoWay}"                                    
             BorderBrush="Transparent"
-            MasterHeader="MasterDetail"
-            Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}"
+            MasterHeader="Players"            
             BackButtonBehavior="Automatic"
             MasterHeaderTemplate="{StaticResource MinimalMasterHeaderTemplate}">
+            <controls:MasterDetailsView.ItemTemplate>
+                <DataTemplate>
+                    <views:MasterItem DeleteClick="MasterItem_DeleteClick"/>
+                </DataTemplate>
+            </controls:MasterDetailsView.ItemTemplate>
+            <controls:MasterDetailsView.DetailsTemplate>
+                <DataTemplate>
+                    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                        <views:PlayerProfilePage MasterMenuItem="{Binding}"/>
+                    </Grid>
+                </DataTemplate>
+            </controls:MasterDetailsView.DetailsTemplate>
+            <controls:MasterDetailsView.NoSelectionContentTemplate>
+                <DataTemplate>
+                    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                        <TextBlock                        
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        TextAlignment="Center"/>
+                    </Grid>
+                </DataTemplate>
+            </controls:MasterDetailsView.NoSelectionContentTemplate>
             <controls:MasterDetailsView.MasterCommandBar>
-                <CommandBar>
+                <CommandBar Background="{ThemeResource SystemControlAcrylicWindowMediumHighBrush}">
                     <AppBarButton Icon="Refresh" Label="Refresh" LabelPosition="Default" Click="Refresh_Click"/>
                 </CommandBar>
             </controls:MasterDetailsView.MasterCommandBar>

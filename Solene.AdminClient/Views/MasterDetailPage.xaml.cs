@@ -33,6 +33,7 @@ namespace Solene.AdminClient.Views
 
         private async void MasterDetailPage_Loaded(object sender, RoutedEventArgs e)
         {
+            NavigationService.MasterDetail = this.MasterDetailsViewControl;
             await Secrets.InitializeAsync();
             await Refresh();
         }

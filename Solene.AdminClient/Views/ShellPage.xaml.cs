@@ -23,7 +23,7 @@ namespace Solene.AdminClient.Views
         private readonly KeyboardAccelerator _backKeyboardAccelerator = BuildKeyboardAccelerator(VirtualKey.GoBack);
 
         private bool _isBackEnabled;
-        private WinUI.NavigationViewItem _selected;
+        private WinUI.NavigationViewItem _selected;        
 
         public bool IsBackEnabled
         {
@@ -83,7 +83,7 @@ namespace Solene.AdminClient.Views
         }
 
         private void OnBackRequested(WinUI.NavigationView sender, WinUI.NavigationViewBackRequestedEventArgs args)
-        {
+        {            
             NavigationService.GoBack();
         }
 

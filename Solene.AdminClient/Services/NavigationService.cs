@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Toolkit.Uwp.UI.Controls;
+using System;
 
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -10,11 +11,12 @@ namespace Solene.AdminClient.Services
     public static class NavigationService
     {
         public static event NavigatedEventHandler Navigated;
-
         public static event NavigationFailedEventHandler NavigationFailed;
 
         private static Frame _frame;
         private static object _lastParamUsed;
+        
+        public static MasterDetailsView MasterDetail { get; set; }
 
         public static Frame Frame
         {
@@ -43,6 +45,13 @@ namespace Solene.AdminClient.Services
 
         public static bool GoBack()
         {
+            // Check to see if any registered MasterDetailViews need to be cleared.
+            if (MasterDetail.SelectedItem != null)
+            {
+                MasterDetail.SelectedItem = null;
+                return true;
+            }
+
             if (CanGoBack)
             {
                 Frame.GoBack();
