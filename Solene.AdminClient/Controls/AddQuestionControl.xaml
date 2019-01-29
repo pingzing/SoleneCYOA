@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid RowSpacing="5">
+    <Grid RowSpacing="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -19,16 +19,21 @@
         </Grid.RowDefinitions>
         <TextBox Grid.Row="0" x:Name="TitleBox" PlaceholderText="Title"/>
         <TextBox Grid.Row="1" x:Name="BodyTextBox" PlaceholderText="Body text" AcceptsReturn="True" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" />
-        <ItemsControl x:Name="PrefilledItems" Grid.Row="2" ItemsSource="{x:Bind PrefilledAnswers}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+        <ItemsControl x:Name="PrefilledItems"
+                      Grid.Row="2"
+                      ItemsSource="{x:Bind PrefilledAnswers}"
+                      IsTabStop="False"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Stretch">
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:PrefilledContainer">
-                    <Grid>
+                    <Grid ColumnSpacing="5" Margin="0, 0, 0, 5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBox Grid.Column="0" PlaceholderText="Prefilled answer" Text="{x:Bind Answer, Mode=TwoWay}"/>
-                        <Button Grid.Column="1" Click="Remove_Click" IsTabStop="False">
+                        <Button Grid.Column="1" Click="Remove_Click" IsTabStop="False" Width="100">
                             <Button.Content>
                                 <SymbolIcon Symbol="Remove"/>
                             </Button.Content>
@@ -42,7 +47,11 @@
                 <SymbolIcon Symbol="Add"/>
             </Button.Content>
         </Button>
-        <Button Grid.Row="4" Click="Submit_Click" Content="Submit" HorizontalAlignment="Stretch"/>
+        <Button Grid.Row="4"
+                Background="{ThemeResource SystemControlAccentAcrylicElementAccentMediumHighBrush}"
+                Click="Submit_Click"
+                Content="Submit"
+                HorizontalAlignment="Stretch"/>
 
     </Grid>
 </UserControl>

@@ -46,7 +46,8 @@
             </behaviors:NavigationViewHeaderBehavior>
         </i:Interaction.Behaviors>
         <Grid>
-            <Frame x:Name="shellFrame" />
+            <Frame x:Name="shellFrame"
+                   Background="{ThemeResource SystemControlAltMediumLowAcrylicWindowMediumBrush}"/>
         </Grid>
     </winui:NavigationView>
 </Page>

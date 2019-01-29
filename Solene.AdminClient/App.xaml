@@ -17,6 +17,9 @@
             <Style TargetType="TextBlock">
                 <Setter Property="IsTextSelectionEnabled" Value="True"/>
             </Style>
+            <Style TargetType="Button">
+                <Setter Property="Style" Value="{StaticResource ButtonRevealStyle}"/>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
