@@ -23,5 +23,6 @@
         public static string GetPlayerQuestionsFunctionCode => "<GetPlayerQuestionsFunctionCodeReplaceMe>";
         public static string AnswerQuestionFunctionCode => "<AnswerQuestionFunctionCodeReplaceMe>";
         public static string RegisterPushNotificationsCode => "<RegisterPushNotificationsCodeReplaceMe>";
+        public static string SimulateDeveloperResponseFunctionCode => "<SimulateDeveloperResponseFunctionCodeReplaceMe>";
     }
 }
