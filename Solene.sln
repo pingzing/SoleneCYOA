@@ -17,6 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Solene.MobileApp.Core", "So
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Solene.AdminClient", "Solene.AdminClient\Solene.AdminClient.csproj", "{B9822CCD-33A8-4032-BF35-5BF8387E22FE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{25F00289-5BB7-434C-AA08-FE2F5003164C}"
+	ProjectSection(SolutionItems) = preProject
+		Replace-Secrets.ps1 = Replace-Secrets.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

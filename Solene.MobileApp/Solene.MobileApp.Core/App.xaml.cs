@@ -4,6 +4,7 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Solene.MobileApp.Core.Consts;
+using Solene.MobileApp.Core.Models;
 using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Services;
 using Solene.MobileApp.Core.Views;
@@ -12,6 +13,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -30,10 +32,10 @@ namespace Solene.MobileApp.Core
             // If Android's OnCreate has been called again, clear out the IoC container's registry so it's safe to re-init.
             SimpleIoc.Default.Reset();
 
-            InitializeComponent();           
+            InitializeComponent();
 
             // Report binding failures ✨
-            Log.Listeners.Add(new DelegateLogListener((arg1, arg2) => Debug.WriteLine(arg2)));            
+            Log.Listeners.Add(new DelegateLogListener((arg1, arg2) => Debug.WriteLine(arg2)));
 
             // If launchedQuestion isn't null, then the app was started by tapping on
             // a toast notification that contained a question. 
@@ -41,16 +43,18 @@ namespace Solene.MobileApp.Core
             _launchedBase64Question = launchedBase64Question;
 
             MainNavigationHost = new NavigationHost();
-            MainPage = MainNavigationHost;
         }
 
         protected override async void OnStart()
-        {  
-            var profileService = SimpleIoc.Default.GetInstance<IProfileService>();
+        {
+            //await MainNavigationHost.NavigateToAsync(new ProfileSelectPage(), false);
+            MainPage = MainNavigationHost;
+
+            var profileService = SimpleIoc.Default.GetInstance<IProfileService>();            
             var savedProfileNames = profileService.GetSavedProfileNames();
 
             // If we were launched with a question in notification, save it to the profile before we load up.
-            if (_launchedBase64Question != null)
+            if (!string.IsNullOrWhiteSpace(_launchedBase64Question))
             {
                 string base64String = _launchedBase64Question;
                 _launchedBase64Question = null;
@@ -71,6 +75,10 @@ namespace Solene.MobileApp.Core
                 else
                 {
                     var onlyProfile = await profileService.GetProfile(savedProfileNames.First().Id);
+                    if (onlyProfile.IsError)
+                    {
+                        onlyProfile = await RepairProfile(savedProfileNames.First().Id);
+                    }
                     await MainNavigationHost.NavigateToAsync(new ProfileOverviewPage(onlyProfile.Unwrap()), false);
                 }
             }
@@ -78,6 +86,20 @@ namespace Solene.MobileApp.Core
             {
                 await MainNavigationHost.NavigateToAsync(new PlayerNamePage(), false);
             }
+        }
+
+        private async Task<MaybeResult<PlayerProfile, GenericErrorResult>> RepairProfile(Guid playerId)
+        {
+            // If we're in here, we're repairing a damaged profile
+            var networkService = SimpleIoc.Default.GetInstance<INetworkService>();
+            var getProfileResult = await networkService.GetPlayerProfile(playerId);
+            if (getProfileResult.IsError)
+            {
+                await MainNavigationHost.NavigateToAsync(new ProfileSelectPage());
+                await MainNavigationHost.DisplayAlert("Profile error", "Unable to load your profile. It may be corrupted.", "Okay =(");
+            }
+
+            return getProfileResult;
         }
 
         protected override void OnSleep()

@@ -6,6 +6,7 @@ using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Services;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
@@ -134,10 +135,12 @@ namespace Solene.MobileApp.Core.ViewModels
             {
                 _profile.Questions = latestQuestions;
                 await _profileService.SaveProfile(_profile);
+                Debug.WriteLine($"QuestionVM's REFRESH: Profile saved, updating ObservableCollection.");
                 Questions = new ObservableCollection<QuestionViewModel>(
                     _profile.Questions.Select(x => new QuestionViewModel(x)));
             }
             IsLoading = false;
+            Debug.WriteLine($"QuestionVM's REFRESH: Done processing, firing messenger event.");
             _messengerService.Send(new QuestionListRefreshed());
         }
 
