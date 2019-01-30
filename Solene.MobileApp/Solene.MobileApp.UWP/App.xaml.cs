@@ -25,15 +25,6 @@ namespace Solene.MobileApp.UWP
         {
             InitializeComponent();
             Suspending += OnSuspending;
-            UnhandledException += App_UnhandledException;
-        }
-
-        private async void App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
-        {
-            MessageDialog dialog = new MessageDialog($"Oh snap, a crash:\n {e}");
-            await dialog.ShowAsync();
-            string localFolderPath = ApplicationData.Current.LocalCacheFolder.Path;
-            File.WriteAllText(Path.Combine(localFolderPath, "stacktrace.txt"), e.ToString());
         }
 
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
