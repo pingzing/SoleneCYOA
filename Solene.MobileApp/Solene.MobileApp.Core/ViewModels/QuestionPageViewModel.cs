@@ -1,17 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using GalaSoft.MvvmLight.Command;
+﻿using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using Solene.MobileApp.Core.Messages;
 using Solene.MobileApp.Core.Models;
 using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Services;
 using Solene.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Solene.MobileApp.Core.ViewModels
 {
-    public class QuestionPageViewModel: NavigableViewModelBase
+    public class QuestionPageViewModel : NavigableViewModelBase
     {
         private readonly IProfileService _profileService;
         private readonly INetworkService _networkService;
@@ -38,7 +38,7 @@ namespace Solene.MobileApp.Core.ViewModels
             set => Set(ref _freeformText, value);
         }
 
-        public string ChosenAnswer => CurrentQuestion?.ChosenAnswer;        
+        public string ChosenAnswer => CurrentQuestion?.ChosenAnswer;
 
         // Do we have a next question?        
         public bool IsNextVisible
@@ -61,7 +61,7 @@ namespace Solene.MobileApp.Core.ViewModels
             }
         }
 
-        private bool _isLoading;        
+        private bool _isLoading;
         public bool IsLoading
         {
             get => _isLoading;
@@ -74,14 +74,28 @@ namespace Solene.MobileApp.Core.ViewModels
             }
         }
 
+        private Guid _testGuid = Guid.Parse("ea47e33b-34e8-4454-9db2-a797d481e339");
+        public bool IsTestAnswerVisible
+        {
+            get
+            {
+                if (Guid.TryParse(_backingProfile?.PlayerInfo.Name, out Guid parsedNameGuid))
+                {
+                    return !IsNextVisible && parsedNameGuid == _testGuid;
+                }
+                return false;
+            }
+        }
+
         public bool IsFreeFormEntryEnabled => !IsLoading && ChosenAnswer == null;
 
         public RelayCommand NextCommand { get; private set; }
         public RelayCommand PreviousCommand { get; private set; }
         public RelayCommand<string> AnswerQuestionCommand { get; private set; }
         public RelayCommand<string> AnswerFreeFormQuestionCommand { get; private set; }
+        public RelayCommand TestAnswerCommand { get; private set; }
 
-        public QuestionPageViewModel(INavigationService navService, 
+        public QuestionPageViewModel(INavigationService navService,
             INetworkService networkService,
             IProfileService profileService,
             IMessenger messengerService) : base(navService)
@@ -92,6 +106,7 @@ namespace Solene.MobileApp.Core.ViewModels
             PreviousCommand = new RelayCommand(PreviousClicked);
             AnswerQuestionCommand = new RelayCommand<string>(AnswerQuestionClicked, CanClickAnswers);
             AnswerFreeFormQuestionCommand = new RelayCommand<string>(AnswerQuestionClicked, CanClickFreeForm);
+            TestAnswerCommand = new RelayCommand(TestAnswerClicked);
             _messengerService = messengerService;
             _messengerService.Register<ProfileUpdated>(this, OnProfileUpdated);
         }
@@ -110,7 +125,7 @@ namespace Solene.MobileApp.Core.ViewModels
         {
             var chosenQuestion = Parameter as ChosenQuestionRequest;
             _backingProfile = chosenQuestion.Profile;
-            CurrentQuestion = _backingProfile.Questions[chosenQuestion.ChosenIndex];            
+            CurrentQuestion = _backingProfile.Questions[chosenQuestion.ChosenIndex];
 
             PreviousCommand.RaiseCanExecuteChanged();
             NextCommand.RaiseCanExecuteChanged();
@@ -144,7 +159,7 @@ namespace Solene.MobileApp.Core.ViewModels
         }
 
         private void PreviousClicked()
-        {            
+        {
             int currentIndex = _backingProfile.Questions.IndexOf(CurrentQuestion);
             if (currentIndex == 0)
             {
@@ -171,7 +186,7 @@ namespace Solene.MobileApp.Core.ViewModels
             int index = _backingProfile.Questions.IndexOf(questionAnswered);
             _backingProfile.Questions[index].ChosenAnswer = answer;
             RaisePropertyChanged(nameof(ChosenAnswer));
-            
+
             //  - Update and save the current profile.
             await _profileService.SaveProfile(_backingProfile);
 
@@ -191,8 +206,8 @@ namespace Solene.MobileApp.Core.ViewModels
         private bool CanClickFreeForm(string answer)
         {
             // Not loading, not already answered, and has a valid answer.
-            return !IsLoading 
-                && ChosenAnswer == null 
+            return !IsLoading
+                && ChosenAnswer == null
                 && !string.IsNullOrWhiteSpace(answer);
         }
 
@@ -204,9 +219,53 @@ namespace Solene.MobileApp.Core.ViewModels
             RaisePropertyChanged(nameof(IsFreeFormEntryEnabled));
             RaisePropertyChanged(nameof(ChosenAnswer));
             RaisePropertyChanged(nameof(Title));
+            RaisePropertyChanged(nameof(IsTestAnswerVisible));
             PreviousCommand.RaiseCanExecuteChanged();
             NextCommand.RaiseCanExecuteChanged();
-            AnswerFreeFormQuestionCommand.RaiseCanExecuteChanged();            
+            AnswerFreeFormQuestionCommand.RaiseCanExecuteChanged();
+        }
+
+        private bool _gettingTestAnswer = false;
+        private async void TestAnswerClicked()
+        {
+            if (_gettingTestAnswer)
+            {
+                return;
+            }
+
+            _gettingTestAnswer = true;
+
+            bool response = await _networkService.SimulateDeveloperAnswer(_backingProfile.PlayerInfo.Id);
+            if (!response)
+            {
+                _gettingTestAnswer = false;
+                return;
+            }
+
+            var latestQuestionsResult = await _networkService.GetPlayerQuestions(_backingProfile.PlayerInfo.Id);
+            if (latestQuestionsResult.IsError)
+            {
+                _gettingTestAnswer = false;
+                return;
+            }
+
+            var latestQuestions = latestQuestionsResult.Unwrap();
+            var lastQuestion = latestQuestions.LastOrDefault();
+            if (lastQuestion == null)
+            {
+                _gettingTestAnswer = false;
+                return;
+            }
+            
+            if (_backingProfile.Questions.Any(x => x.Id == lastQuestion.Id))
+            {
+                _gettingTestAnswer = false;
+                return;
+            }
+
+            _backingProfile.Questions.Add(lastQuestion);
+            QuestionChanged();
+            _gettingTestAnswer = false;
         }
     }
 }

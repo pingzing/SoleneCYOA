@@ -20,6 +20,7 @@ namespace Solene.MobileApp.Core.Services
         Task<MaybeResult<bool, GenericErrorResult>> RegisterPushNotifications(Guid id, PushRegistrationRequest pushRegistration);
         Task<bool> AnswerQuestion(Guid questionId, string answer);
         Task<MaybeResult<Player, GenericErrorResult>> GetPlayer(Guid playerId);
+        Task<bool> SimulateDeveloperAnswer(Guid id);
     }
 
     public class NetworkService : INetworkService
@@ -29,7 +30,7 @@ namespace Solene.MobileApp.Core.Services
         public NetworkService()
         {
             _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri("https://solene.azurewebsites.net/api/");
+            _httpClient.BaseAddress = new Uri("http://localhost:7071/api/");
         }
 
         public async Task<MaybeResult<Player, GenericErrorResult>> CreatePlayer(Player player)
@@ -128,9 +129,22 @@ namespace Solene.MobileApp.Core.Services
                     return $"code={Consts.Secrets.RegisterPushNotificationsCode}";
                 case nameof(AnswerQuestion):
                     return $"code={Consts.Secrets.AnswerQuestionFunctionCode}";
+                case nameof(SimulateDeveloperAnswer):
+                    return $"code={Consts.Secrets.SimulateDeveloperResponseFunctionCode}";
                 default:
                     throw new ArgumentOutOfRangeException($"No function code found for {functionName}");
             }
+        }
+
+        public async Task<bool> SimulateDeveloperAnswer(Guid id)
+        {
+            var response = await _httpClient.PostAsync($"question/{id.ToString("N")}/simulateDeveloper?{GetFunctionCode()}", new StringContent(""));
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

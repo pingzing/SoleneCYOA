@@ -146,14 +146,13 @@ namespace Solene.MobileApp.Core.ViewModels
             else
             {
                 await _navigationService.NavigateToViewModelAsync<ProfileOverviewViewModel>(profile);
+                _navigationService.ClearBackStack();
                 await _navigationService.NavigateToViewModelAsync<QuestionPageViewModel>(new ChosenQuestionRequest
                 {
                     ChosenIndex = 0,
                     Profile = profile
                 });
-            }
-
-            _navigationService.ClearBackStack();
+            }            
         }
     }
 }

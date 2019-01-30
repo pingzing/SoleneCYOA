@@ -26,6 +26,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0" 
                        Style="{DynamicResource SubtitleStyle}"
@@ -63,13 +64,19 @@
                             CommandParameter="{Binding Source={x:Reference FreeformEntry}, Path=Text}"
                             Text="▶"/>
                 </Grid>
-                                
+
                 <StackLayout Grid.Row="4" 
                              Margin="0, 10, 0, 0"
                              IsVisible="{Binding ChosenAnswer, Converter={StaticResource NullToVisConverter}}">
                     <Label Text="Your Answer" FontSize="Medium" FontAttributes="Bold" TextColor="Orange"/>
                     <Label Text="{Binding ChosenAnswer}"/>
                 </StackLayout>
+
+                <Button x:Name="TestAnswerButton"
+                        Grid.Row="5"
+                        Text="Simulate Developer Response"
+                        IsVisible="{Binding IsTestAnswerVisible}"
+                        Command="{Binding TestAnswerCommand}"/>
 
             </Grid>
         </ScrollView>

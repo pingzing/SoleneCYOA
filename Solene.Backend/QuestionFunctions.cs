@@ -181,6 +181,45 @@ namespace Solene.Backend
             return new OkResult();
         }
 
+        [FunctionName("SimulateDeveloperResponse")]
+        public static async Task<IActionResult> SimulateDeveloperResponse(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "question/{playerId}/simulateDeveloper")] HttpRequest req,
+            string playerId,
+            ILogger log)
+        {
+            if (String.IsNullOrWhiteSpace(playerId))
+            {
+                log.LogError($"{DateTime.UtcNow}: Player ID was null or empty.");
+                return new BadRequestObjectResult("Player ID must not be null or empty.");
+            }
+
+            if (!Guid.TryParse(playerId, out Guid playerGuidId))
+            {
+                log.LogError($"Player ID ({playerId}) was not a valid GUID.");
+                return new BadRequestObjectResult("Invalid Player ID.");
+            }
+
+            string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
+            var dbClient = new SoleneTableClient(connectionString, log);
+
+            log.LogInformation($"{DateTime.UtcNow}: SimulateDeveloperResponse called for player with ID {playerGuidId}");
+
+            await dbClient.AddQuestionToPlayer(playerGuidId, new Question
+            {
+                Title = "Simulated Developer Response",
+                Text = "This is the body of a question as it would appear when added by the developer.\n" +
+                "It contains text, and can contain an arbitrary number of pre-selected responses. This " +
+                $"question includes two. It was added at: {DateTime.UtcNow}, UTC.",
+                PrefilledAnswers = new List<string>
+                {
+                    "Repsonse 1",
+                    "Response the second"
+                }
+            });
+
+            return new CreatedResult("", null);
+        }
+
         private static async Task SendEmailToAdmin(SoleneTableClient dbClient, Guid questionId, ILogger logger)
         {
             var question = await dbClient.GetQuestion(questionId);
