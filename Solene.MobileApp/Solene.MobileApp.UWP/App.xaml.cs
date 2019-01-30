@@ -5,11 +5,13 @@ using Solene.MobileApp.Core.Services;
 using Solene.Models;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Networking.PushNotifications;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -22,6 +24,13 @@ namespace Solene.MobileApp.UWP
         {
             InitializeComponent();
             Suspending += OnSuspending;
+            UnhandledException += App_UnhandledException;
+        }
+
+        private void App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
+        {
+            string localFolderPath = ApplicationData.Current.LocalCacheFolder.Path;
+            File.WriteAllText(Path.Combine(localFolderPath, "stacktrace.txt"), e.ToString());
         }
 
         protected override async void OnLaunched(LaunchActivatedEventArgs e)

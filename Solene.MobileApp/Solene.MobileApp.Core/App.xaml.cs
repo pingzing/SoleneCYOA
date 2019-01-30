@@ -49,7 +49,7 @@ namespace Solene.MobileApp.Core
         {            
             MainPage = MainNavigationHost;
 
-            var profileService = SimpleIoc.Default.GetInstance<IProfileService>();            
+            var profileService = SimpleIoc.Default.GetInstance<IProfileService>();
             var savedProfileNames = profileService.GetSavedProfileNames();
 
             // If we were launched with a question in notification, save it to the profile before we load up.
