@@ -46,8 +46,7 @@ namespace Solene.MobileApp.Core
         }
 
         protected override async void OnStart()
-        {
-            //await MainNavigationHost.NavigateToAsync(new ProfileSelectPage(), false);
+        {            
             MainPage = MainNavigationHost;
 
             var profileService = SimpleIoc.Default.GetInstance<IProfileService>();            

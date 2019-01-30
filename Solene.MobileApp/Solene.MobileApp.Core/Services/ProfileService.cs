@@ -62,7 +62,7 @@ namespace Solene.MobileApp.Core.Services
             var profile = File.OpenRead(Path.Combine(_appDataDir, profilePath))
                 .DeserializeJsonFromStream<PlayerProfile>();
 
-            if (profile == null)
+            if (profile?.PlayerInfo == null)
             {
                 return MaybeResult<PlayerProfile, GenericErrorResult>.CreateError(GenericErrorResult.NotFound);
             }
