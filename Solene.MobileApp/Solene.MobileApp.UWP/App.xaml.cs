@@ -12,6 +12,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Networking.PushNotifications;
 using Windows.Storage;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -27,8 +28,10 @@ namespace Solene.MobileApp.UWP
             UnhandledException += App_UnhandledException;
         }
 
-        private void App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
+        private async void App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
         {
+            MessageDialog dialog = new MessageDialog($"Oh snap, a crash:\n {e}");
+            await dialog.ShowAsync();
             string localFolderPath = ApplicationData.Current.LocalCacheFolder.Path;
             File.WriteAllText(Path.Combine(localFolderPath, "stacktrace.txt"), e.ToString());
         }
