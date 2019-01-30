@@ -134,13 +134,11 @@ namespace Solene.MobileApp.Core.ViewModels
                 || !_profile.Questions.SequenceEqual(latestQuestions))
             {
                 _profile.Questions = latestQuestions;
-                await _profileService.SaveProfile(_profile);
-                Debug.WriteLine($"QuestionVM's REFRESH: Profile saved, updating ObservableCollection.");
+                await _profileService.SaveProfile(_profile);                
                 Questions = new ObservableCollection<QuestionViewModel>(
                     _profile.Questions.Select(x => new QuestionViewModel(x)));
             }
-            IsLoading = false;
-            Debug.WriteLine($"QuestionVM's REFRESH: Done processing, firing messenger event.");
+            IsLoading = false;            
             _messengerService.Send(new QuestionListRefreshed());
         }
 
