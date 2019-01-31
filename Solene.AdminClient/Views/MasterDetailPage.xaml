@@ -55,7 +55,7 @@
             </VisualStateManager.VisualStateGroups>
         <controls:MasterDetailsView
             x:Name="MasterDetailsViewControl"
-            Background="{ThemeResource SystemControlBaseMediumLowAcrylicWindowMediumBrush}"
+            Background="{ThemeResource SystemControlAltMediumLowAcrylicWindowMediumBrush}"
             NoSelectionContent="Nothing selected"
             ItemsSource="{x:Bind Players}"
             SelectedItem="{x:Bind Selected, Mode=TwoWay}"                                    
