@@ -91,7 +91,7 @@ namespace Solene.Database
                     TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, PartitionKeys.Question),
                     TableOperators.And,
                     TableQuery.GenerateFilterConditionForGuid("PlayerId", QueryComparisons.Equal, playerGuidId)))
-                .Select(new string[] { "RowKey" });
+                .Select(new string[] { "PartitionKey", "RowKey" });
 
             return await DeleteEntities(await table.ExecuteQueryAsync(questionsForPlayerQuery));            
         }
@@ -109,13 +109,13 @@ namespace Solene.Database
 
             TableQuery<DynamicTableEntity> allQuestionsQuery = new TableQuery<DynamicTableEntity>().Where(
                 TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, PartitionKeys.Question))
-                .Select(new string[] { "RowKey", "PlayerId" });
+                .Select(new string[] { "PartitionKey", "RowKey", "PlayerId" });
             EntityResolver<QuestionEntity> questionResolver = (pk, rk, ts, props, etag) =>
-                props.ContainsKey("RowKey") && props.ContainsKey("PlayerId")
-                ? new QuestionEntity { RowKey = props["RowKey"].StringValue, PlayerId = props["PlayerId"].GuidValue.Value }
+                props.ContainsKey("PlayerId")
+                ? new QuestionEntity { PartitionKey = pk, RowKey = rk, PlayerId = props["PlayerId"].GuidValue.Value }
                 : null;
 
-            var questions = table.ExecuteQuery(allQuestionsQuery, questionResolver, null, null);
+            var questions = table.ExecuteQuery(allQuestionsQuery, questionResolver, null, null).ToList();
             var orphanQuestions = questions.Where(x => !playerIds.Contains(x.PlayerId));
             return await DeleteEntities(orphanQuestions);
         }
@@ -286,6 +286,10 @@ namespace Solene.Database
                 TableBatchOperation deleteOp = new TableBatchOperation();
                 foreach (var entity in sublist)
                 {
+                    if (string.IsNullOrWhiteSpace(entity.ETag))
+                    {
+                        entity.ETag = "*";
+                    }
                     deleteOp.Delete(entity);
                 }
                 return deleteOp;
