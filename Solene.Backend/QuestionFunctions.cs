@@ -10,6 +10,7 @@ using Solene.Database;
 using Solene.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -218,6 +219,32 @@ namespace Solene.Backend
             });
 
             return new CreatedResult("", null);
+        }
+
+        [FunctionName("DeleteOrphans")]
+        public static async Task<IActionResult> DeleteOrphans(
+            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "question/orphans")]HttpRequest req,
+            ILogger log)
+        {
+            string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
+            var dbClient = new SoleneTableClient(connectionString, log);
+
+            log.LogInformation($"{DateTime.UtcNow}: DeleteOrphans called.");
+
+            Stopwatch deleteStopwatch = new Stopwatch();
+            deleteStopwatch.Start();
+            bool success = await dbClient.DeleteOrphanQuestions();
+            deleteStopwatch.Stop();
+
+            log.LogInformation($"DeleteOrphans complete. Time elapsed: {deleteStopwatch.Elapsed}");
+
+            if (!success)
+            {
+                log.LogError("Failed to delete all orphan questions.");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
+            return new OkResult();
         }
 
         private static async Task SendEmailToAdmin(SoleneTableClient dbClient, Guid questionId, ILogger logger)

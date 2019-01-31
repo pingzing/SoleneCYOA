@@ -92,32 +92,32 @@ namespace Solene.Database
                     TableOperators.And,
                     TableQuery.GenerateFilterConditionForGuid("PlayerId", QueryComparisons.Equal, playerGuidId)))
                 .Select(new string[] { "RowKey" });
-            
-            // Split into groups of 100, as batch operations allow a max of 100 items
-            var sublists = (await table.ExecuteQueryAsync(questionsForPlayerQuery))
-                .Select((x, i) => new { Index = i, Value = x })
-                .GroupBy(x => x.Index / 100)
-                .Select(x => x.Select(v => v.Value).ToList())
+
+            return await DeleteEntities(await table.ExecuteQueryAsync(questionsForPlayerQuery));            
+        }
+
+        public async Task<bool> DeleteOrphanQuestions()
+        {
+            var table = _tableClient.GetTableReference(TableNames.Player);
+            TableQuery<DynamicTableEntity> playerIdsQuery = new TableQuery<DynamicTableEntity>().Where(
+                TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, PartitionKeys.Player))
+            .Select(new string[] { "RowKey" });
+
+            var playerIds = (await table.ExecuteQueryAsync(playerIdsQuery))
+                .Select(x => Guid.Parse(x.RowKey))
                 .ToList();
 
-            var deleteBatchOps = sublists.Select(sublist =>
-            {
-                TableBatchOperation deleteOp = new TableBatchOperation();
-                foreach(var entity in sublist)
-                {
-                    deleteOp.Delete(entity);
-                }
-                return deleteOp;
-            });
+            TableQuery<DynamicTableEntity> allQuestionsQuery = new TableQuery<DynamicTableEntity>().Where(
+                TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, PartitionKeys.Question))
+                .Select(new string[] { "RowKey", "PlayerId" });
+            EntityResolver<QuestionEntity> questionResolver = (pk, rk, ts, props, etag) =>
+                props.ContainsKey("RowKey") && props.ContainsKey("PlayerId")
+                ? new QuestionEntity { RowKey = props["RowKey"].StringValue, PlayerId = props["PlayerId"].GuidValue.Value }
+                : null;
 
-            var deletionResults = (await Task.WhenAll(deleteBatchOps.Select(x => table.ExecuteBatchAsync(x))))
-                .SelectMany(x => x);   
-            if (deletionResults.Any(x => x.HttpStatusCode != 204))
-            {
-                return false;
-            }
-
-            return true;
+            var questions = table.ExecuteQuery(allQuestionsQuery, questionResolver, null, null);
+            var orphanQuestions = questions.Where(x => !playerIds.Contains(x.PlayerId));
+            return await DeleteEntities(orphanQuestions);
         }
 
         public async Task<Question> AddQuestionToPlayer(Guid playerId, Question question)
@@ -269,6 +269,36 @@ namespace Solene.Database
             }
 
             return await table.ExecuteBatchAsync(insertBatch);
+        }
+
+        private async Task<bool> DeleteEntities(IEnumerable<ITableEntity> entities)
+        {
+            var table = _tableClient.GetTableReference(TableNames.Player);
+            // Split into groups of 100, as batch operations allow a max of 100 items
+            var sublists = entities
+                .Select((x, i) => new { Index = i, Value = x })
+                .GroupBy(x => x.Index / 100)
+                .Select(x => x.Select(v => v.Value).ToList())
+                .ToList();
+
+            var deleteBatchOps = sublists.Select(sublist =>
+            {
+                TableBatchOperation deleteOp = new TableBatchOperation();
+                foreach (var entity in sublist)
+                {
+                    deleteOp.Delete(entity);
+                }
+                return deleteOp;
+            });
+
+            var deletionResults = (await Task.WhenAll(deleteBatchOps.Select(x => table.ExecuteBatchAsync(x))))
+                .SelectMany(x => x);
+            if (deletionResults.Any(x => x.HttpStatusCode != 204))
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
