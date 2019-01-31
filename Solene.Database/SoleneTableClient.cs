@@ -83,6 +83,43 @@ namespace Solene.Database
             return playerEntities.Select(x => x.ToPlayer());
         }
 
+        public async Task<bool> DeletePlayerQuestions(Guid playerGuidId)
+        {
+            var table = _tableClient.GetTableReference(TableNames.Player);
+            TableQuery<DynamicTableEntity> questionsForPlayerQuery = new TableQuery<DynamicTableEntity>()
+                .Where(TableQuery.CombineFilters(
+                    TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, PartitionKeys.Question),
+                    TableOperators.And,
+                    TableQuery.GenerateFilterConditionForGuid("PlayerId", QueryComparisons.Equal, playerGuidId)))
+                .Select(new string[] { "RowKey" });
+            
+            // Split into groups of 100, as batch operations allow a max of 100 items
+            var sublists = (await table.ExecuteQueryAsync(questionsForPlayerQuery))
+                .Select((x, i) => new { Index = i, Value = x })
+                .GroupBy(x => x.Index / 100)
+                .Select(x => x.Select(v => v.Value).ToList())
+                .ToList();
+
+            var deleteBatchOps = sublists.Select(sublist =>
+            {
+                TableBatchOperation deleteOp = new TableBatchOperation();
+                foreach(var entity in sublist)
+                {
+                    deleteOp.Delete(entity);
+                }
+                return deleteOp;
+            });
+
+            var deletionResults = (await Task.WhenAll(deleteBatchOps.Select(x => table.ExecuteBatchAsync(x))))
+                .SelectMany(x => x);   
+            if (deletionResults.Any(x => x.HttpStatusCode != 204))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public async Task<Question> AddQuestionToPlayer(Guid playerId, Question question)
         {
             var table = _tableClient.GetTableReference(TableNames.Player);

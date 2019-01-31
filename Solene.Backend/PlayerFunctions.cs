@@ -72,6 +72,12 @@ namespace Solene.Backend
                 log.LogError($"DB did not return 204. Could not delete player with ID {playerGuidId}");
             }
 
+            var deleteQuestionsSuccess = await dbClient.DeletePlayerQuestions(playerGuidId);
+            if (!deleteQuestionsSuccess)
+            {
+                log.LogError($"Unable to delete all questions for player {playerGuidId}");
+            }
+
             return new OkResult();
         }
 
