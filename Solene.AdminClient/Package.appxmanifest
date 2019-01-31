@@ -3,7 +3,7 @@
   <Identity Name="Solene.AdminClient.Local" Publisher="CN=mcali" Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="10C4DFB7-3B4E-4179-B45D-0A39FA85A8AD" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>Solene.AdminClient</DisplayName>
+    <DisplayName>Solene Admin Client (Dev)</DisplayName>
     <PublisherDisplayName>mcali</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -15,8 +15,8 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Solene.AdminClient.App">
-      <uap:VisualElements DisplayName="Solene Admin Client" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="Administrator control panel for the Solene CYOA game." BackgroundColor="transparent">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" ShortName="Solene" Square310x310Logo="Assets\LargeTile.png" Square71x71Logo="Assets\SmallTile.png">
+      <uap:VisualElements DisplayName="Solene Admin Client (Dev)" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="Administrator control panel for the Solene CYOA game." BackgroundColor="transparent">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" ShortName="Solene Admin" Square310x310Logo="Assets\LargeTile.png" Square71x71Logo="Assets\SmallTile.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo" />
             <uap:ShowOn Tile="wide310x150Logo" />
