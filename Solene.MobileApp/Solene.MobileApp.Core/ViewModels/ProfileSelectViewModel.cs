@@ -38,9 +38,7 @@ namespace Solene.MobileApp.Core.ViewModels
             MaybeResult<PlayerProfile, GenericErrorResult> profileSelectionResult = await _profileService.GetProfile(id);
             if (profileSelectionResult.IsError)
             {
-                // oh no, display error
-                // also remove from list, maybe?
-                return;
+                throw new ArgumentNullException("id", $"Unable to find a profile with the id {id} on the local device.");
             }
 
             // Navigate to profile overview page that shows all questions

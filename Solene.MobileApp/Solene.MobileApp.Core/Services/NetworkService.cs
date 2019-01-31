@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Solene.MobileApp.Core.Models;
 using Solene.Models;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace Solene.MobileApp.Core.Services
         Task<bool> AnswerQuestion(Guid questionId, string answer);
         Task<MaybeResult<Player, GenericErrorResult>> GetPlayer(Guid playerId);
         Task<bool> SimulateDeveloperAnswer(Guid id);
+        Task<MaybeResult<PlayerProfile, GenericErrorResult>> GetPlayerProfile(Guid playerId);
     }
 
     public class NetworkService : INetworkService
@@ -30,7 +32,7 @@ namespace Solene.MobileApp.Core.Services
         public NetworkService()
         {
             _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri("http://localhost:7071/api/");
+            _httpClient.BaseAddress = new Uri("https://solene.azurewebsites.net/api/");
         }
 
         public async Task<MaybeResult<Player, GenericErrorResult>> CreatePlayer(Player player)
@@ -97,6 +99,25 @@ namespace Solene.MobileApp.Core.Services
             }
 
             return true;
+        }
+
+        public async Task<MaybeResult<PlayerProfile, GenericErrorResult>> GetPlayerProfile(Guid playerId)
+        {
+            var getPlayerTask = GetPlayer(playerId);
+            var getquestionsTasks = GetPlayerQuestions(playerId);
+            await Task.WhenAll(getPlayerTask, getquestionsTasks);
+            if (getPlayerTask.Result.IsError || getquestionsTasks.Result.IsError)
+            {
+                return NetworkMaybeResult.Failure<PlayerProfile>(GenericErrorResult.NotFound);
+            }
+
+            PlayerProfile profile = new PlayerProfile
+            {
+                PlayerInfo = getPlayerTask.Result.Unwrap(),
+                Questions = getquestionsTasks.Result.Unwrap()
+            };
+
+            return NetworkMaybeResult.Success(profile);
         }
 
         private async Task<HttpResponseMessage> PostAsJsonAsync<T>(string requestUri, T value)
