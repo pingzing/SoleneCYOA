@@ -42,13 +42,13 @@ namespace Solene.MobileApp.Core
             // Hold onto that, and pass it down to the ProfileService.
             _launchedBase64Question = launchedBase64Question;
 
-            MainNavigationHost = new NavigationHost();
+            MainNavigationHost = new NavigationHost();            
         }
 
         protected override async void OnStart()
-        {            
+        {
+            await MainNavigationHost.NavigateToAsync(new Page(), false);
             MainPage = MainNavigationHost;
-
             var profileService = SimpleIoc.Default.GetInstance<IProfileService>();
             var savedProfileNames = profileService.GetSavedProfileNames();
 
@@ -84,7 +84,7 @@ namespace Solene.MobileApp.Core
             else
             {
                 await MainNavigationHost.NavigateToAsync(new PlayerNamePage(), false);
-            }
+            }            
         }
 
         private async Task<MaybeResult<PlayerProfile, GenericErrorResult>> RepairProfile(Guid playerId)
