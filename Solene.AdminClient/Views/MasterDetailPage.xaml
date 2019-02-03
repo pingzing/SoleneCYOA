@@ -66,8 +66,7 @@
             <controls:MasterDetailsView.ItemTemplate>
                 <DataTemplate x:DataType="model:AdminPlayerProfile">
                     <views:MasterItem DataContext="{x:Bind}"
-                                      DeleteClick="MasterItem_DeleteClick"
-                                      HorizontalContentAlignment="Stretch"/>
+                                      DeleteClick="MasterItem_DeleteClick"/>
                 </DataTemplate>
             </controls:MasterDetailsView.ItemTemplate>
             <controls:MasterDetailsView.DetailsTemplate>

@@ -4,12 +4,14 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Solene.MobileApp.Core.Consts;
+using Solene.MobileApp.Core.Converters;
 using Solene.MobileApp.Core.Models;
 using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Services;
 using Solene.MobileApp.Core.Views;
 using Solene.Models;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -23,15 +25,18 @@ using Xamarin.Forms.Xaml;
 namespace Solene.MobileApp.Core
 {
     public partial class App : Application
-    {        
+    {
         private string _launchedBase64Question = null;
         public NavigationHost MainNavigationHost { get; private set; }
-              
+
         public App(string launchedBase64Question = null)
         {
             // If Android's OnCreate has been called again, clear out the IoC container's registry so it's safe to re-init.
             SimpleIoc.Default.Reset();
-
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter> { new QuestionJsonConverter() }
+            };
             InitializeComponent();
 
             // Report binding failures ✨
@@ -42,7 +47,7 @@ namespace Solene.MobileApp.Core
             // Hold onto that, and pass it down to the ProfileService.
             _launchedBase64Question = launchedBase64Question;
 
-            MainNavigationHost = new NavigationHost();            
+            MainNavigationHost = new NavigationHost();
         }
 
         protected override async void OnStart()
@@ -63,7 +68,7 @@ namespace Solene.MobileApp.Core
             }
 
             AppCenter.Start($"android={Secrets.AndroidAppCenterKey};" +
-                $"uwp={Secrets.UwpAppCenterKey}", 
+                $"uwp={Secrets.UwpAppCenterKey}",
                 typeof(Analytics), typeof(Crashes));
             if (Preferences.Get(PreferencesKeys.FirstCharacterCreationComplete, false))
             {
@@ -84,7 +89,7 @@ namespace Solene.MobileApp.Core
             else
             {
                 await MainNavigationHost.NavigateToAsync(new PlayerNamePage(), false);
-            }            
+            }
         }
 
         private async Task<MaybeResult<PlayerProfile, GenericErrorResult>> RepairProfile(Guid playerId)

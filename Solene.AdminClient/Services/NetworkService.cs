@@ -16,7 +16,7 @@ namespace Solene.AdminClient.Services
 
         static NetworkService()
         {
-            _httpClient.BaseAddress = new Uri("https://solene.azurewebsites.net/api/");
+            _httpClient.BaseAddress = new Uri("http://localhost:7071/api/");
         }
 
         public static async Task<Player> CreatePlayer(Player player)
@@ -84,6 +84,7 @@ namespace Solene.AdminClient.Services
 
         public static async Task<Question> AddQuestion(Guid playerId, Question newQuestion)
         {
+            newQuestion.Text = newQuestion.Text.Replace("\r\r", "\\n");
             var response = await _httpClient.PostAsJsonAsync(
                 $"player/{playerId.ToString("N")}/questions?{GetFunctionCode()}",
                 newQuestion);

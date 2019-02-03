@@ -49,7 +49,7 @@ namespace Solene.Backend
 
             log.LogInformation($"{DateTime.UtcNow}: AddQuestion called for player with ID {playerGuidId}");
             
-            Question question = JsonConvert.DeserializeObject<Question>(await req.ReadAsStringAsync());
+            Question question = JsonConvert.DeserializeObject<Question>(await req.ReadAsStringAsync());            
 
             log.LogInformation($"{DateTime.UtcNow}: Adding question with text {question.Text} to player with ID {playerGuidId}");
 
