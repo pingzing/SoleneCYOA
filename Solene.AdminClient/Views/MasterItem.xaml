@@ -6,9 +6,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400">
+    d:DesignWidth="400"
+    HorizontalAlignment="Stretch">
 
-    <StackPanel x:Name="RootElement" Height="60" VerticalAlignment="Center">
+    <StackPanel x:Name="RootElement" Height="60" VerticalAlignment="Center" x:DefaultBindMode="OneWay">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="MasterItemStates">
                 <VisualState x:Name="Answered"/>
@@ -21,9 +22,16 @@
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-        <TextBlock x:Name="NameTextBlock" Text="{Binding PlayerInfo.Name}" Style="{ThemeResource ListTitleStyle}"/>
-        <TextBlock x:Name="GenderTextBlock" Text="{Binding PlayerInfo.Gender}" Style="{StaticResource ListSubTitleStyle}"/>
-        <TextBlock x:Name="IdTextBlock" Text="{Binding PlayerInfo.Id}" Style="{ThemeResource ListCaptionStyle}"/>
+        <Grid HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="NameTextBlock" Grid.Column="0" Text="{x:Bind BackingProfile.PlayerInfo.Name}" Style="{ThemeResource ListTitleStyle}"/>
+            <TextBlock x:Name="DateTextBlock" Grid.Column="1" Text="{x:Bind LastUpdated.ToString('g', x:Null)}" HorizontalAlignment="Right"/>
+        </Grid>
+        <TextBlock x:Name="GenderTextBlock" Text="{x:Bind BackingProfile.PlayerInfo.Gender}" Style="{StaticResource ListSubTitleStyle}"/>
+        <TextBlock x:Name="IdTextBlock" Text="{x:Bind BackingProfile.PlayerInfo.Id}" Style="{ThemeResource ListCaptionStyle}"/>
         <StackPanel.ContextFlyout>
             <MenuFlyout>
                 <MenuFlyoutItem Text="Delete" Click="DeleteItem_Click">

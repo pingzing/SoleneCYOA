@@ -64,8 +64,10 @@
             BackButtonBehavior="Automatic"
             MasterHeaderTemplate="{StaticResource MinimalMasterHeaderTemplate}">
             <controls:MasterDetailsView.ItemTemplate>
-                <DataTemplate>
-                    <views:MasterItem DeleteClick="MasterItem_DeleteClick"/>
+                <DataTemplate x:DataType="model:AdminPlayerProfile">
+                    <views:MasterItem DataContext="{x:Bind}"
+                                      DeleteClick="MasterItem_DeleteClick"
+                                      HorizontalContentAlignment="Stretch"/>
                 </DataTemplate>
             </controls:MasterDetailsView.ItemTemplate>
             <controls:MasterDetailsView.DetailsTemplate>
