@@ -1,5 +1,7 @@
 ﻿using System;
-
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using Solene.AdminClient.Converters;
 using Solene.AdminClient.Services;
 
 using Windows.ApplicationModel.Activation;
@@ -19,6 +21,11 @@ namespace Solene.AdminClient
         public App()
         {
             InitializeComponent();
+
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter> { new QuestionJsonConverter() }
+            };
 
             // Deferred execution until used. Check https://msdn.microsoft.com/library/dd642331(v=vs.110).aspx for further info on Lazy<T> class.
             _activationService = new Lazy<ActivationService>(CreateActivationService);

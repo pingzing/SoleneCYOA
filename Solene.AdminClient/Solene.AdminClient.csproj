@@ -127,6 +127,7 @@
     <Compile Include="Controls\AddQuestionControl.xaml.cs">
       <DependentUpon>AddQuestionControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\QuestionJsonConverter.cs" />
     <Compile Include="Helpers\NavHelper.cs" />
     <Compile Include="Models\AdminPlayerProfile.cs" />
     <Compile Include="Services\ActivationService.cs" />
