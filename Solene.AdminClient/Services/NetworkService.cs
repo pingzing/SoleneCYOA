@@ -84,7 +84,7 @@ namespace Solene.AdminClient.Services
 
         public static async Task<Question> AddQuestion(Guid playerId, Question newQuestion)
         {
-            newQuestion.Text = newQuestion.Text.Replace("\r\r", "\\n");
+            newQuestion.Text = newQuestion.Text.Replace("\r", "\\n");
             var response = await _httpClient.PostAsJsonAsync(
                 $"player/{playerId.ToString("N")}/questions?{GetFunctionCode()}",
                 newQuestion);
