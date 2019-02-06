@@ -15,7 +15,7 @@ namespace Solene.MobileApp.Core.ViewModels
     {
         private readonly IProfileService _profileService;
         private readonly INetworkService _networkService;
-        private readonly IMessenger _messengerService;
+        private readonly IMessenger _messengerService;        
         private PlayerProfile _backingProfile;
 
         public string Title => $"Question {CurrentQuestion?.SequenceNumber}";
@@ -225,7 +225,7 @@ namespace Solene.MobileApp.Core.ViewModels
             AnswerFreeFormQuestionCommand.RaiseCanExecuteChanged();
         }
 
-        private bool _gettingTestAnswer = false;
+        private bool _gettingTestAnswer = false;        
         private async void TestAnswerClicked()
         {
             if (_gettingTestAnswer)

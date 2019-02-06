@@ -21,6 +21,7 @@ namespace Solene.MobileApp.Core.Mvvm
             SimpleIoc.Default.Register<IProfileService, ProfileService>();
             SimpleIoc.Default.Register<INotificationService, NotificationService>();
             SimpleIoc.Default.Register<IMessenger>(() => Messenger.Default);
+            SimpleIoc.Default.Register<IParsingService, ParsingService>();
 
             //Register ViewModels here    
             SimpleIoc.Default.Register<ProfileSelectViewModel>();

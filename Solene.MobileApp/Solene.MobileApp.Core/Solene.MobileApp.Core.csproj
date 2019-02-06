@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Solene.Models\Solene.Models.csproj" />
+    <ProjectReference Include="..\..\Solene.SimpleParser\Solene.SimpleParser.csproj" />
   </ItemGroup>
 
   <ItemGroup>

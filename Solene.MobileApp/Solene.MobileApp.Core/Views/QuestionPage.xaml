@@ -9,6 +9,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <conv:NullToVisConverter x:Key="NullToVisConverter"/>
+            <conv:QuestionBodyConverter x:Key="QuestionBodyConverter"/>
             <x:Boolean x:Key="False">False</x:Boolean>
         </ResourceDictionary>
     </ContentPage.Resources>
@@ -31,9 +32,10 @@
                 <Label Grid.Row="0" 
                        Style="{DynamicResource SubtitleStyle}"
                        Text="{Binding CurrentQuestion.Title}"/>
-                <Label Grid.Row="1"
+                <Label x:Name="QuestionBodyLabel" 
+                       Grid.Row="1"
                        Style="{DynamicResource BodyStyle}"
-                       Text="{Binding CurrentQuestion.Text}"/>
+                       FormattedText="{Binding CurrentQuestion.Text, Converter={StaticResource QuestionBodyConverter}}"/>
                 <StackLayout x:Name="ButtonsStack" Grid.Row="2"
                              BindableLayout.ItemsSource="{Binding CurrentQuestion.PrefilledAnswers}"
                              IsVisible="{Binding ChosenAnswer, 
