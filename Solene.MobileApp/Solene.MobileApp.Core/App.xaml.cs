@@ -90,6 +90,7 @@ namespace Solene.MobileApp.Core
             {
                 await MainNavigationHost.NavigateToAsync(new PlayerNamePage(), false);
             }
+            MainNavigationHost.ClearBackStack();
         }
 
         private async Task<MaybeResult<PlayerProfile, GenericErrorResult>> RepairProfile(Guid playerId)
