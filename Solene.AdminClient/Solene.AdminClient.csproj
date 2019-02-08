@@ -127,6 +127,7 @@
     <Compile Include="Controls\AddQuestionControl.xaml.cs">
       <DependentUpon>AddQuestionControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\QuestionBodyConverter.cs" />
     <Compile Include="Converters\QuestionJsonConverter.cs" />
     <Compile Include="Helpers\NavHelper.cs" />
     <Compile Include="Models\AdminPlayerProfile.cs" />
@@ -134,6 +135,7 @@
     <Compile Include="Activation\DefaultLaunchActivationHandler.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\NetworkService.cs" />
+    <Compile Include="Services\ParsingService.cs" />
     <Compile Include="Views\MasterItem.xaml.cs">
       <DependentUpon>MasterItem.xaml</DependentUpon>
     </Compile>
@@ -208,6 +210,10 @@
     <ProjectReference Include="..\Solene.Models\Solene.Models.csproj">
       <Project>{91888F3B-124C-4BD2-B677-3FD6EE112033}</Project>
       <Name>Solene.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Solene.SimpleParser\Solene.SimpleParser.csproj">
+      <Project>{6834D090-6943-4F05-9624-465EB93C6E70}</Project>
+      <Name>Solene.SimpleParser</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
