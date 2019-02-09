@@ -12,6 +12,65 @@ namespace Solene.SimpleParser
             new RuleDefiniton(@"\*.*?\*", RuleType.Bold, 1), // Stars for bold
         };
 
+        /// <summary>
+        /// Convert the given markup text into a series of ordered, <see cref="FormattedSegment"/>s that
+        /// contain the text split into segments, with a formatting rule applied exclusively to each segment.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static IEnumerable<FormattedSegment> ArrangeText(string text)
+        {
+            var spans = ApplyRulesToText(text);
+            if (!spans.Any())
+            {
+                return new[] { new FormattedSegment() { Text = text } };
+            }
+
+            return ArrangeText(spans, text);
+        }
+
+        private static IEnumerable<FormattedSegment> ArrangeText(IEnumerable<RuleMatch> spans, string originalText)
+        {
+            var runs = new List<FormattedSegment>();
+ 
+            int currentIndex = 0;
+            foreach (var span in spans)
+            {
+                //if this rule match is preceded by something that doesn't match a rule, pull it out as regular text.
+                if (currentIndex < span.StartIndex)
+                {
+                    runs.Add(new FormattedSegment
+                    {
+                        Text = originalText.Substring(currentIndex, span.StartIndex - currentIndex),
+                    });
+                }
+
+                runs.Add(new FormattedSegment
+                {
+                    Text = StripUnprintableCharacters(span.Value),
+                    Formatting = span.RuleType,
+                });
+                currentIndex = span.EndIndex;
+            }
+
+            // Anything trailing after all the rule-matched segments needs to be pulled out too.
+            int indexDiff = originalText.Length - currentIndex;
+            if (indexDiff > 0)
+            {
+                runs.Add(new FormattedSegment
+                {
+                    Text = originalText.Substring(currentIndex, indexDiff)
+                });
+            }
+
+            return runs;
+        }
+
+        /// <summary>
+        /// Transforms text into a series of <see cref="RuleMatch"/>es, which splits the text into
+        /// mutually-exclusive formatted sections, with index information about where that text section
+        /// began and ended in the original text.
+        /// </summary>        
         public static IEnumerable<RuleMatch> ApplyRulesToText(string text)
         {
             var groupedByIndex = _supportedFormattings
@@ -67,6 +126,12 @@ namespace Solene.SimpleParser
             }
         }
 
+        private static Regex _unprintables = new Regex(@"[\*_]", RegexOptions.Compiled);
+        private static string StripUnprintableCharacters(string text)
+        {
+            return _unprintables.Replace(text, "");
+        }
+
         private class RuleDefiniton
         {
             public Regex Regex { get; set; }
@@ -80,5 +145,11 @@ namespace Solene.SimpleParser
                 Precedence = precendence;
             }
         }
+    }
+
+    public class FormattedSegment
+    {
+        public RuleType Formatting { get; set; }
+        public string Text { get; set; }
     }
 }

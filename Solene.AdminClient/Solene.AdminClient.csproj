@@ -124,7 +124,8 @@
     <Compile Include="Behaviors\NavigationViewHeaderBehavior.cs" />
     <Compile Include="Behaviors\NavigationViewHeaderMode.cs" />
     <Compile Include="Consts\Secrets.cs" />
-    <Compile Include="Controls\AddQuestionControl.xaml.cs">
+    <Compile Include="Converters\BindableInlines.cs" />
+    <Compile Include="Views\AddQuestionControl.xaml.cs">
       <DependentUpon>AddQuestionControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\QuestionBodyConverter.cs" />
@@ -156,7 +157,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Controls\AddQuestionControl.xaml">
+    <Page Include="Views\AddQuestionControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

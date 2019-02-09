@@ -4,9 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    
     xmlns:toolkitCtls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:model="using:Solene.Models"
-    xmlns:ctl="using:Solene.AdminClient.Controls"
+    xmlns:views="using:Solene.AdminClient.Views"
+    xmlns:conv="using:Solene.AdminClient.Converters"
+    
     mc:Ignorable="d"
     d:DesignHeight="500"
     d:DesignWidth="800"
@@ -17,6 +20,7 @@
             <Style TargetType="TextBlock">
                 <Setter Property="IsTextSelectionEnabled" Value="True"/>
             </Style>
+            <conv:QuestionBodyConverter x:Key="QuestionBodyConverter"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid
@@ -74,7 +78,7 @@
                             <TextBlock Text="Player ID:" Style="{StaticResource CaptionTextBlockStyle}"/>
                             <TextBlock Text="{x:Bind PlayerId}" Style="{StaticResource CaptionTextBlockStyle}" IsTextSelectionEnabled="True"/>
                         </StackPanel>
-                        <TextBlock Grid.Row="3" Text="{x:Bind Text}" TextWrapping="Wrap" IsTextSelectionEnabled="True"/>
+                        <TextBlock Grid.Row="3" conv:BindableRuns.BindableRuns="{x:Bind Text, Converter={StaticResource QuestionBodyConverter}}" TextWrapping="Wrap" IsTextSelectionEnabled="True"/>
                         <TextBlock Grid.Row="4" Text="{x:Bind ChosenAnswer}" TextWrapping="Wrap" Style="{StaticResource BaseTextBlockStyle}" Foreground="Orange" IsTextSelectionEnabled="True"/>
                         <ItemsControl Grid.Row="5" ItemsSource="{x:Bind PrefilledAnswers}">
                             <ItemsControl.ItemsPanel>
@@ -95,7 +99,7 @@
             <ListView.Footer>
                 <StackPanel Padding="5 0">
                     <TextBlock Text="Add new question"/>
-                    <ctl:AddQuestionControl x:Name="AddQuestionForm" SubmitClicked="AddQuestionControl_SubmitClicked"/>
+                    <views:AddQuestionControl x:Name="AddQuestionForm" SubmitClicked="AddQuestionControl_SubmitClicked"/>
                     <TextBlock x:Name="AddQuestionFormStatusText"/>
                 </StackPanel>
             </ListView.Footer>
