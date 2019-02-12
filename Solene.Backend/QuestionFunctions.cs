@@ -32,24 +32,17 @@ namespace Solene.Backend
                 return new BadRequestObjectResult("Request body cannot be empty.");
             }
 
-            if (String.IsNullOrWhiteSpace(playerId))
-            {
-                log.LogError($"{DateTime.UtcNow}: Player ID was null or empty.");
-                return new BadRequestObjectResult("Player ID must not be null or empty.");
-            }
-
-            if (!Guid.TryParse(playerId, out Guid playerGuidId))
+            if (!Validation.TryValidateGuid(playerId, out Guid playerGuidId))
             {
                 log.LogError($"Player ID ({playerId}) was not a valid GUID.");
                 return new BadRequestObjectResult("Invalid Player ID.");
             }
 
-            string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
-            var dbClient = new SoleneTableClient(connectionString, log);
+            var dbClient = Database.GetDatabaseClient(log);
 
             log.LogInformation($"{DateTime.UtcNow}: AddQuestion called for player with ID {playerGuidId}");
-            
-            Question question = JsonConvert.DeserializeObject<Question>(await req.ReadAsStringAsync());            
+
+            Question question = JsonConvert.DeserializeObject<Question>(await req.ReadAsStringAsync());
 
             log.LogInformation($"{DateTime.UtcNow}: Adding question with text {question.Text} to player with ID {playerGuidId}");
 
@@ -68,7 +61,7 @@ namespace Solene.Backend
             if (addedQuestionJson.Length < 2500)
             {
                 base64Question = Convert.ToBase64String(Encoding.UTF8.GetBytes(addedQuestionJson));
-            }            
+            }
             await PushNotifications.SendPushNotification(addedQuestion.SequenceNumber, playerGuidId, question.Title, question.Text, base64Question, log);
 
             return new CreatedResult("", addedQuestion);
@@ -80,20 +73,13 @@ namespace Solene.Backend
             string playerId,
             ILogger log)
         {
-            if (String.IsNullOrWhiteSpace(playerId))
-            {
-                log.LogError($"{DateTime.UtcNow}: Player ID was null or empty.");
-                return new BadRequestObjectResult("Player ID must not be null or empty.");
-            }
-
-            if (!Guid.TryParse(playerId, out Guid playerGuidId))
+            if (!Validation.TryValidateGuid(playerId, out Guid playerGuidId))
             {
                 log.LogError($"Player ID ({playerId}) was not a valid GUID.");
                 return new BadRequestObjectResult("Invalid Player ID.");
             }
 
-            string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
-            var dbClient = new SoleneTableClient(connectionString, log);
+            var dbClient = Database.GetDatabaseClient(log);
 
             log.LogInformation($"{DateTime.UtcNow}: GetPlayerQuestions called for player with ID {playerGuidId}");
 
@@ -118,20 +104,13 @@ namespace Solene.Backend
             string questionId,
             ILogger log)
         {
-            if (String.IsNullOrWhiteSpace(questionId))
-            {
-                log.LogError($"{DateTime.UtcNow}: Question ID was null or empty.");
-                return new BadRequestObjectResult("Question ID must not be null or empty.");
-            }
-
-            if (!Guid.TryParse(questionId, out Guid questionGuidId))
+            if (!Validation.TryValidateGuid(questionId, out Guid questionGuidId))
             {
                 log.LogError($"Question ID ({questionId}) was not a valid GUID.");
                 return new BadRequestObjectResult("Invalid Question ID.");
             }
 
-            string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
-            var dbClient = new SoleneTableClient(connectionString, log);
+            var dbClient = Database.GetDatabaseClient(log);
 
             log.LogInformation($"{DateTime.UtcNow}: UpdateQuestion called for question with ID {questionGuidId}");
 
@@ -141,7 +120,7 @@ namespace Solene.Backend
             if (!success)
             {
                 return new BadRequestResult();
-            }            
+            }
 
             return new OkResult();
         }
@@ -152,20 +131,13 @@ namespace Solene.Backend
             string questionId,
             ILogger log)
         {
-            if (String.IsNullOrWhiteSpace(questionId))
-            {
-                log.LogError($"{DateTime.UtcNow}: Question ID was null or empty.");
-                return new BadRequestObjectResult("Question ID must not be null or empty.");
-            }
-
-            if (!Guid.TryParse(questionId, out Guid questionGuidId))
+            if (!Validation.TryValidateGuid(questionId, out Guid questionGuidId))
             {
                 log.LogError($"Question ID ({questionId}) was not a valid GUID.");
                 return new BadRequestObjectResult("Invalid Question ID.");
             }
 
-            string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
-            var dbClient = new SoleneTableClient(connectionString, log);
+            var dbClient = Database.GetDatabaseClient(log);
 
             log.LogInformation($"{DateTime.UtcNow}: AnswerQuestion called for question with ID {questionGuidId}");
 
@@ -188,20 +160,13 @@ namespace Solene.Backend
             string playerId,
             ILogger log)
         {
-            if (String.IsNullOrWhiteSpace(playerId))
-            {
-                log.LogError($"{DateTime.UtcNow}: Player ID was null or empty.");
-                return new BadRequestObjectResult("Player ID must not be null or empty.");
-            }
-
-            if (!Guid.TryParse(playerId, out Guid playerGuidId))
+            if (!Validation.TryValidateGuid(playerId, out Guid playerGuidId))
             {
                 log.LogError($"Player ID ({playerId}) was not a valid GUID.");
                 return new BadRequestObjectResult("Invalid Player ID.");
             }
 
-            string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
-            var dbClient = new SoleneTableClient(connectionString, log);
+            var dbClient = Database.GetDatabaseClient(log);
 
             log.LogInformation($"{DateTime.UtcNow}: SimulateDeveloperResponse called for player with ID {playerGuidId}");
 
@@ -226,8 +191,7 @@ namespace Solene.Backend
             [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "question/orphans")]HttpRequest req,
             ILogger log)
         {
-            string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
-            var dbClient = new SoleneTableClient(connectionString, log);
+            var dbClient = Database.GetDatabaseClient(log);
 
             log.LogInformation($"{DateTime.UtcNow}: DeleteOrphans called.");
 
@@ -247,6 +211,8 @@ namespace Solene.Backend
             return new OkResult();
         }
 
+        // Possible perf win: Make this pop a message onto a queue which gets processed elsewhere instead of
+        // holding up the request while this completes.
         private static async Task SendEmailToAdmin(SoleneTableClient dbClient, Guid questionId, ILogger logger)
         {
             var question = await dbClient.GetQuestion(questionId);
@@ -274,12 +240,12 @@ namespace Solene.Backend
                 $"Gender: {player.Gender}\r\n" +
                 $"Question: {question.SequenceNumber}. {question.Title}: {question.Text}\r\n" +
                 $"'{question.ChosenAnswer}'";
-            var email = MailHelper.CreateSingleEmail(from, to, subject, body, null);            
+            var email = MailHelper.CreateSingleEmail(from, to, subject, body, null);
             var response = await client.SendEmailAsync(email);
             if (response.StatusCode != HttpStatusCode.Accepted)
             {
-                logger.LogError($"Failed to send email {gameAdmin}. Error: {await response.Body.ReadAsStringAsync()}");                
-            }            
-        }        
+                logger.LogError($"Failed to send email {gameAdmin}. Error: {await response.Body.ReadAsStringAsync()}");
+            }
+        }
     }
 }

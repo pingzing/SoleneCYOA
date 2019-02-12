@@ -4,7 +4,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Solene.Database;
 using Solene.Models;
 using System;
 using System.Collections.Generic;
@@ -24,8 +23,7 @@ namespace Solene.Backend
                 return new BadRequestObjectResult("Request body cannot be empty.");
             }
 
-            string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
-            var dbClient = new SoleneTableClient(connectionString, log);
+            var dbClient = Database.GetDatabaseClient(log);
 
             log.LogInformation($"{DateTime.UtcNow}: CreatePlayer called.");
 
@@ -49,20 +47,13 @@ namespace Solene.Backend
             string playerId,
             ILogger log)
         {
-            if (String.IsNullOrWhiteSpace(playerId))
-            {
-                log.LogError($"{DateTime.UtcNow}: Player ID was null or empty.");
-                return new BadRequestObjectResult("Player ID must not be null or empty.");
-            }
-
-            if (!Guid.TryParse(playerId, out Guid playerGuidId))
+            if (!Validation.TryValidateGuid(playerId, out Guid playerGuidId))
             {
                 log.LogError($"Player ID ({playerId}) was not a valid GUID.");
                 return new BadRequestObjectResult("Invalid Player ID.");
             }
 
-            string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
-            var dbClient = new SoleneTableClient(connectionString, log);
+            var dbClient = Database.GetDatabaseClient(log);
 
             log.LogInformation($"{DateTime.UtcNow}: DeletePlayer called for player with ID {playerGuidId}.");
 
@@ -87,20 +78,13 @@ namespace Solene.Backend
             string playerId,
             ILogger log)
         {
-            if (String.IsNullOrWhiteSpace(playerId))
-            {
-                log.LogError($"{DateTime.UtcNow}: Player ID was null or empty.");
-                return new BadRequestObjectResult("Player ID must not be null or empty.");
-            }
-
-            if (!Guid.TryParse(playerId, out Guid playerGuidId))
+            if(!Validation.TryValidateGuid(playerId, out Guid playerGuidId))
             {
                 log.LogError($"Player ID ({playerId}) was not a valid GUID.");
                 return new BadRequestObjectResult("Invalid Player ID.");
             }
 
-            string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
-            var dbClient = new SoleneTableClient(connectionString, log);
+            var dbClient = Database.GetDatabaseClient(log);
 
             log.LogInformation($"{DateTime.UtcNow}: GetPlayer called for player with ID {playerGuidId}.");
 
@@ -118,8 +102,7 @@ namespace Solene.Backend
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "players")]HttpRequest req,
             ILogger log)
         {
-            string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
-            var dbClient = new SoleneTableClient(connectionString, log);
+            var dbClient = Database.GetDatabaseClient(log);
 
             List<Player> getAllPlayersResult = (await dbClient.GetAllPlayers())?.ToList();
             if (getAllPlayersResult == null)
@@ -135,8 +118,7 @@ namespace Solene.Backend
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "players-and-details")]HttpRequest req,
             ILogger log)
         {
-            string connectionString = Environment.GetEnvironmentVariable("SOLENE_CONNECTION_STRING", EnvironmentVariableTarget.Process);
-            var dbClient = new SoleneTableClient(connectionString, log);
+            var dbClient = Database.GetDatabaseClient(log);
 
             List<Task<IEnumerable<AdminQuestion>>> getQuestionsTasks = new List<Task<IEnumerable<AdminQuestion>>>();
             var getAllPlayersResult = (await dbClient.GetAllPlayers()).ToList();
@@ -159,13 +141,7 @@ namespace Solene.Backend
             string playerId,
             ILogger log)
         {
-            if (String.IsNullOrWhiteSpace(playerId))
-            {
-                log.LogError($"{DateTime.UtcNow}: Player ID was null or empty.");
-                return new BadRequestObjectResult("Player ID must not be null or empty.");
-            }
-
-            if (!Guid.TryParse(playerId, out Guid playerGuidId))
+            if (!Validation.TryValidateGuid(playerId, out Guid playerGuidId))
             {
                 log.LogError($"Player ID ({playerId}) was not a valid GUID.");
                 return new BadRequestObjectResult("Invalid Player ID.");
