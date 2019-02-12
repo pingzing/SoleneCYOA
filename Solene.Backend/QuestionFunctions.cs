@@ -57,12 +57,7 @@ namespace Solene.Backend
             // FCM is 4062 (for notification + data payload TOTAL)
             // WNS is 5KB total.
             string addedQuestionJson = JsonConvert.SerializeObject(addedQuestion);
-            string base64Question = null;
-            if (addedQuestionJson.Length < 2500)
-            {
-                base64Question = Convert.ToBase64String(Encoding.UTF8.GetBytes(addedQuestionJson));
-            }
-            await PushNotifications.SendPushNotification(addedQuestion.SequenceNumber, playerGuidId, question.Title, question.Text, base64Question, log);
+            await PushNotifications.SendPushNotification(addedQuestion.SequenceNumber, playerGuidId, question.Title, question.Text, addedQuestionJson, log);
 
             return new CreatedResult("", addedQuestion);
         }

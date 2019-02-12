@@ -13,6 +13,8 @@ using Solene.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,7 +64,7 @@ namespace Solene.MobileApp.Core
             {
                 string base64String = _launchedBase64Question;
                 _launchedBase64Question = null;
-                string questionJson = Encoding.UTF8.GetString(Convert.FromBase64String(base64String));
+                string questionJson = DecodeQuestionString(base64String);
                 Question launchedQuestion = JsonConvert.DeserializeObject<Question>(questionJson);
                 await profileService.AddQuestionToSavedProfile(launchedQuestion);
             }
@@ -93,6 +95,31 @@ namespace Solene.MobileApp.Core
             MainNavigationHost.ClearBackStack();
         }
 
+        protected override void OnSleep()
+        {
+            // Handle when your app sleeps
+        }
+
+        protected override void OnResume()
+        {
+
+        }
+
+        private string DecodeQuestionString(string base64String)
+        {
+            byte[] decompressedBytes;
+
+            using (var inputStream = new MemoryStream(Convert.FromBase64String(base64String)))            
+            using (var decompressorStream = new GZipStream(inputStream, CompressionMode.Decompress))                
+            using (var outStream = new MemoryStream())
+            {
+                decompressorStream.CopyTo(outStream);
+                decompressedBytes = outStream.ToArray();
+            }
+
+            return Encoding.UTF8.GetString(decompressedBytes);
+        }
+
         private async Task<MaybeResult<PlayerProfile, GenericErrorResult>> RepairProfile(Guid playerId)
         {
             // If we're in here, we're repairing a damaged profile
@@ -105,16 +132,6 @@ namespace Solene.MobileApp.Core
             }
 
             return getProfileResult;
-        }
-
-        protected override void OnSleep()
-        {
-            // Handle when your app sleeps
-        }
-
-        protected override void OnResume()
-        {
-
         }
     }
 }
