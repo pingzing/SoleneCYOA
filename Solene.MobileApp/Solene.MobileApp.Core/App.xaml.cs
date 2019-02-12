@@ -54,45 +54,76 @@ namespace Solene.MobileApp.Core
 
         protected override async void OnStart()
         {
-            await MainNavigationHost.NavigateToAsync(new Page(), false);
-            MainPage = MainNavigationHost;
+            AppCenter.Start($"android={Secrets.AndroidAppCenterKey};" +
+                $"uwp={Secrets.UwpAppCenterKey}",
+                typeof(Analytics), typeof(Crashes));
+
             var profileService = SimpleIoc.Default.GetInstance<IProfileService>();
+
+            await MainNavigationHost.NavigateToAsync(new Page(), false);
+            MainPage = MainNavigationHost;            
             var savedProfileNames = profileService.GetSavedProfileNames();
 
             // If we were launched with a question in notification, save it to the profile before we load up.
+            Question launchedQuestion = null;
             if (!string.IsNullOrWhiteSpace(_launchedBase64Question))
             {
                 string base64String = _launchedBase64Question;
                 _launchedBase64Question = null;
                 string questionJson = DecodeQuestionString(base64String);
-                Question launchedQuestion = JsonConvert.DeserializeObject<Question>(questionJson);
+                launchedQuestion = JsonConvert.DeserializeObject<Question>(questionJson);
                 await profileService.AddQuestionToSavedProfile(launchedQuestion);
             }
-
-            AppCenter.Start($"android={Secrets.AndroidAppCenterKey};" +
-                $"uwp={Secrets.UwpAppCenterKey}",
-                typeof(Analytics), typeof(Crashes));
-            if (Preferences.Get(PreferencesKeys.FirstCharacterCreationComplete, false))
-            {
-                if (savedProfileNames.Count() > 1)
-                {
-                    await MainNavigationHost.NavigateToAsync(new ProfileSelectPage(), false);
-                }
-                else
-                {
-                    var onlyProfile = await profileService.GetProfile(savedProfileNames.First().Id);
-                    if (onlyProfile.IsError)
-                    {
-                        onlyProfile = await RepairProfile(savedProfileNames.First().Id);
-                    }
-                    await MainNavigationHost.NavigateToAsync(new ProfileOverviewPage(onlyProfile.Unwrap()), false);
-                }
-            }
-            else
+            
+            if (!(Preferences.Get(PreferencesKeys.FirstCharacterCreationComplete, false)))
             {
                 await MainNavigationHost.NavigateToAsync(new PlayerNamePage(), false);
+                MainNavigationHost.ClearBackStack();
+                return;
             }
-            MainNavigationHost.ClearBackStack();
+            
+            if (savedProfileNames.Count() > 1)
+            {
+                await MainNavigationHost.NavigateToAsync(new ProfileSelectPage(), false);
+                MainNavigationHost.ClearBackStack();
+
+                if (launchedQuestion != null)
+                {
+                    var profile = await NavigateToProfile(launchedQuestion.PlayerId, profileService);
+                    await NavigateToLaunchedQuestion(launchedQuestion, profile);
+                }
+            }            
+            else
+            {
+                var profile = await NavigateToProfile(savedProfileNames.First().Id, profileService);
+                MainNavigationHost.ClearBackStack();
+
+                if (launchedQuestion != null)
+                {
+                    await NavigateToLaunchedQuestion(launchedQuestion, profile);
+                }
+            }            
+        }
+
+        private async Task<PlayerProfile> NavigateToProfile(Guid profileId, IProfileService profileService)
+        {
+            var onlyProfile = await profileService.GetProfile(profileId);
+            if (onlyProfile.IsError)
+            {
+                onlyProfile = await RepairProfile(profileId);
+            }
+            var playerProfile = onlyProfile.Unwrap();
+            await MainNavigationHost.NavigateToAsync(new ProfileOverviewPage(playerProfile), false);
+            return playerProfile;
+        }
+
+        private async Task NavigateToLaunchedQuestion(Question launchedQuestion, PlayerProfile profile)
+        {
+            await MainNavigationHost.NavigateToAsync(new QuestionPage(new ChosenQuestionRequest
+            {
+                ChosenIndex = (int)launchedQuestion.SequenceNumber - 1,
+                Profile = profile
+            }));
         }
 
         protected override void OnSleep()
@@ -120,6 +151,7 @@ namespace Solene.MobileApp.Core
             return Encoding.UTF8.GetString(decompressedBytes);
         }
 
+        // TODO: Move this to somewhere that gets executed anytime a profile gets opened.
         private async Task<MaybeResult<PlayerProfile, GenericErrorResult>> RepairProfile(Guid playerId)
         {
             // If we're in here, we're repairing a damaged profile

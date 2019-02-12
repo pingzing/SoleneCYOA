@@ -6,6 +6,7 @@ using Solene.Models;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
@@ -68,7 +69,7 @@ namespace Solene.MobileApp.UWP
                 object mainPageArgs = (args as LaunchActivatedEventArgs)?.Arguments;
                 rootFrame.Navigate(typeof(MainPage), mainPageArgs);
             }
-            else if(base64Question != null)
+            else if(!string.IsNullOrWhiteSpace(base64Question))
             {
                 // This happened because we clicked on a notification and the app is active
                 // Update the active profile, which will trigger the Messenger to fire an
@@ -76,7 +77,7 @@ namespace Solene.MobileApp.UWP
                 var profileService = SimpleIoc.Default.GetInstance<IProfileService>();
                 if (profileService != null)
                 {
-                    string questionJson = Encoding.UTF8.GetString(Convert.FromBase64String(base64Question));
+                    string questionJson = DecodeQuestionString(base64Question);
                     Question launchedQuestion = JsonConvert.DeserializeObject<Question>(questionJson);
                     await profileService.AddQuestionToSavedProfile(launchedQuestion);
                 }
@@ -95,6 +96,21 @@ namespace Solene.MobileApp.UWP
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
+        }
+
+        private string DecodeQuestionString(string base64String)
+        {
+            byte[] decompressedBytes;
+
+            using (var inputStream = new MemoryStream(Convert.FromBase64String(base64String)))
+            using (var decompressorStream = new GZipStream(inputStream, CompressionMode.Decompress))
+            using (var outStream = new MemoryStream())
+            {
+                decompressorStream.CopyTo(outStream);
+                decompressedBytes = outStream.ToArray();
+            }
+
+            return Encoding.UTF8.GetString(decompressedBytes);
         }
     }
 }
