@@ -3,6 +3,9 @@ using Microsoft.Extensions.Logging;
 using Solene.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Solene.Backend
@@ -11,16 +14,44 @@ namespace Solene.Backend
     {
         public static async Task SendPushNotification(uint sequenceNumber, 
             Guid userId,
-            string title, string body, string base64Question,
+            string title, string body, string questionJson,
             ILogger logger)
         {
+            // TODO: The proper way to do this would be to get the template that this notification will be using,
+            // and actually calculate how much space we have left over for the compressed question,
+            // but for now, just use a fairly conservative lowball value of 2500.
+            string compressedBase64Question = CompressAndBase64Question(questionJson, 2500);
+
             string connectionString = Environment.GetEnvironmentVariable("SOLENE_NOTIFICATION_CONNECTION_STRING", EnvironmentVariableTarget.Process);
-            NotificationHubClient hub = NotificationHubClient.CreateClientFromConnectionString(connectionString, "solene-mobile-app");
+            NotificationHubClient hub = NotificationHubClient.CreateClientFromConnectionString(connectionString, "solene-mobile-app");            
             NotificationOutcome result = await hub.SendTemplateNotificationAsync(new Dictionary<string, string>
-                { {"title", $"{sequenceNumber}: {title}" }, {"body", body }, {"question", base64Question} }, 
+                { {"title", $"{sequenceNumber}: {title}" }, {"body", body }, {"question", compressedBase64Question} }, 
                 userId.ToString("N"));            
 
             logger.LogInformation($"Notification sent to {userId}. Outcome of push ID {result.TrackingId}: {result.State}.");
+        }
+
+        private static string CompressAndBase64Question(string questionJson, uint maxSize)
+        {
+            byte[] compressedBytes;
+            var questionBytes = Encoding.UTF8.GetBytes(questionJson);
+            using (var inputStream = new MemoryStream(questionBytes))
+            using (var outputStream = new MemoryStream())
+            {
+                using (var compressionStream = new GZipStream(outputStream, CompressionLevel.Optimal))
+                {
+                    inputStream.CopyTo(compressionStream);
+                }
+                compressedBytes = outputStream.ToArray();
+            }
+
+            string base64String = Convert.ToBase64String(compressedBytes);
+            if (base64String.Length > maxSize)
+            {
+                return null;
+            }
+
+            return base64String;
         }
 
         public static async Task<bool> Register(Guid userId, 
