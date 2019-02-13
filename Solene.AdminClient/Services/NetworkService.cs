@@ -16,7 +16,7 @@ namespace Solene.AdminClient.Services
 
         static NetworkService()
         {
-            _httpClient.BaseAddress = new Uri("http://localhost:7071/api/");
+            _httpClient.BaseAddress = new Uri("https://solene.azurewebsites.net/api/");
         }
 
         public static async Task<Player> CreatePlayer(Player player)

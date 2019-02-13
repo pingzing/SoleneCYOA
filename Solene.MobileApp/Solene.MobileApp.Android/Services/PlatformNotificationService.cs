@@ -14,7 +14,7 @@ namespace Solene.MobileApp.Droid.Services
     public class PlatformNotificationService : FirebaseInstanceIdService, IPlatformNotificationSerice
     {
         private const string TAG = "SoleneFirebaseIIDService";
-        private const string NotificationChannel = "solene_android_notification_channel";
+        internal const string NotificationChannelId = "solene_android_notification_channel";
 
         private Context _appContext = Application.Context;        
         private TaskCompletionSource<string> _getFirebaseTokenTask = new TaskCompletionSource<string>();
@@ -29,7 +29,7 @@ namespace Solene.MobileApp.Droid.Services
 
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
             {
-                var channel = new NotificationChannel(NotificationChannel, "FCM Notifications", NotificationImportance.Default)
+                var channel = new NotificationChannel(NotificationChannelId, "FCM Notifications", NotificationImportance.Default)
                 {
                     Description = "Firebase cloud message appear in this channel."
                 };

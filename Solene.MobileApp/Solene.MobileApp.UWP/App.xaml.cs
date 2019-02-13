@@ -81,6 +81,8 @@ namespace Solene.MobileApp.UWP
                     Question launchedQuestion = JsonConvert.DeserializeObject<Question>(questionJson);
                     await profileService.AddQuestionToSavedProfile(launchedQuestion);
                 }
+            // TODO: Handle scenario where we get a toast notification the app is open, but user doesn't click on it.
+            // Once we do that, the above scenario will be obsolete.
             }
 
             Window.Current.Activate();

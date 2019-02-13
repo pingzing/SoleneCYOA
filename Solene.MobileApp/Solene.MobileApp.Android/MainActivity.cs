@@ -17,7 +17,10 @@ namespace Solene.MobileApp.Droid
         MainLauncher = true,
         ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]    
     public class MainActivity : Xamarin.Forms.Platform.Android.FormsAppCompatActivity
-    {        
+    {
+        private const string TAG = "MainActivity";
+        internal const int NotificationId = 100;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             TabLayoutResource = Resource.Layout.Tabbar;

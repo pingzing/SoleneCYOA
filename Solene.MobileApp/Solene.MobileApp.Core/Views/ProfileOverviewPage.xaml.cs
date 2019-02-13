@@ -1,11 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using Solene.MobileApp.Core.Messages;
 using Solene.MobileApp.Core.Models;
 using Solene.MobileApp.Core.ViewModels;
-using Solene.Models;
 using Xamarin.Forms;
 
 namespace Solene.MobileApp.Core.Views
