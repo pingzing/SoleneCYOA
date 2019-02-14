@@ -122,7 +122,7 @@ namespace Solene.MobileApp.Core
             // We should navigate to either the question in the toast notification,
             // OR, the latest unanswered question (in the unlikely scenario the user still has
             // an unanswered question and has just received a new question)
-            int targetQuestionIndex = profile.Questions.FindLastIndex(x => x.ChosenAnswer == null);
+            int targetQuestionIndex = profile.Questions.FindIndex(0, x => x.ChosenAnswer == null);
             await MainNavigationHost.NavigateToAsync(new QuestionPage(new ChosenQuestionRequest
             {
                 ChosenIndex = targetQuestionIndex,
