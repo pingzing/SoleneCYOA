@@ -4,6 +4,6 @@ open Solene.Models
 
 type AdminPlayerProfile = {
     PlayerInfo : Player
-    Questions : AdminQuestion list
+    Questions : AdminQuestion []
 }
 
