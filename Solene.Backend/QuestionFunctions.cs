@@ -20,6 +20,8 @@ namespace Solene.Backend
 {
     public static class QuestionFunctions
     {
+        private const int MaxBodyLength = 40;
+
         [FunctionName("AddQuestion")]
         public static async Task<IActionResult> AddQuestion(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "player/{playerId}/questions")]HttpRequest req,
@@ -51,13 +53,14 @@ namespace Solene.Backend
             {
                 return new BadRequestResult();
             }
-
-            // FCM and WNS both enforce size limits on data payloads. We're fudging this a bit because
-            // calculating the actual final size of the payload is tricky.
-            // FCM is 4062 (for notification + data payload TOTAL)
-            // WNS is 5KB total.
+            
             string addedQuestionJson = JsonConvert.SerializeObject(addedQuestion);
-            await PushNotifications.SendPushNotification(addedQuestion.SequenceNumber, playerGuidId, question.Title, question.Text, addedQuestionJson, log);
+            string questionBody = question.Text;
+            if (questionBody.Length > MaxBodyLength)
+            {
+                questionBody = $"{questionBody.Substring(0, MaxBodyLength)}...";
+            }
+            await PushNotifications.SendPushNotification(addedQuestion.SequenceNumber, playerGuidId, question.Title, questionBody, addedQuestionJson, log);
 
             return new CreatedResult("", addedQuestion);
         }
