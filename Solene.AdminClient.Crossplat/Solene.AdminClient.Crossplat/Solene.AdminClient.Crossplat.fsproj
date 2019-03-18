@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="NetworkService.fs" />
     <Compile Include="AdminPlayerProfile.fs" />
     <Compile Include="AddQuestionControl.fs" />
     <Compile Include="MasterPage.fs" />
@@ -24,6 +25,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Solene.Models\Solene.Models.csproj" />
-    <ProjectReference Include="..\..\Solene.SimpleParser\Solene.SimpleParser.csproj" />
   </ItemGroup>
 </Project>

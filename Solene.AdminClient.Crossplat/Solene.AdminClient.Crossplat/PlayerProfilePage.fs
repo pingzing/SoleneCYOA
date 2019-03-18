@@ -14,7 +14,7 @@ module PlayerProfilePage =
     }
 
     type Msg = 
-    | AddQuestion of AdminQuestion
+    | AddQuestion of AdminQuestion    
 
     let update msg (model: Model) =
         match msg with 

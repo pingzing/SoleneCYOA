@@ -8,38 +8,41 @@ open Xamarin.Forms
 open Xamarin.Forms.Internals
 
 module App = 
-    let inline (|?) (a: 'a option) b = if a.IsSome then a.Value else b
 
     type Model = { 
         Profiles : AdminPlayerProfile list
         SelectedProfile : AdminPlayerProfile option
+        PlayerProfileModel : PlayerProfilePage.Model       
     }
 
-    type Msg = 
-    | ProfileMsg of PlayerProfilePage.Msg
+    type Msg =     
     | ListViewSelectedItemChanged of int option
+    | PlayerProfileMsg of PlayerProfilePage.Msg
 
-    let initModel = { 
-        SelectedProfile = None 
-        Profiles = []
-    }
+    let init () = 
+        let playerProfileInitModel, playerProfileInitCmd = PlayerProfilePage.init ()
 
-    let init () = initModel, Cmd.none
+        let initModel = { 
+            SelectedProfile = None 
+            Profiles = []        
+        }
+
+        initModel, Cmd.none
 
     let update msg model =
         match msg with
         | ListViewSelectedItemChanged index -> {
             model with SelectedProfile = 
                         index |> Option.map (fun idx -> List.item idx model.Profiles)}, Cmd.none
-        | ProfileMsg profileMsg -> 
-            let nextProfileModle = PlayerProfilePage
+        | PlayerProfileMsg msg -> 
+            
             
 
     let view (model: Model) dispatch =
         View.MasterDetailPage(
             masterBehavior=MasterBehavior.SplitOnLandscape,
             title = "Solene Admin Client",
-            isPresented = (Device.Info.CurrentOrientation.IsPortrait() && (Option.isSome model.SelectedMasterIndex)),
+            isPresented = (Device.Info.CurrentOrientation.IsPortrait() && (Option.isSome model.SelectedProfile)),
             master = 
                 View.ContentPage(title="Players",
                     content = 
@@ -47,7 +50,7 @@ module App =
                                                 View.Label "Item 2";],
                             itemSelected = (fun index -> dispatch(ListViewSelectedItemChanged index)))),
             detail = 
-                View.ContentPage(content = View.Label ((model.SelectedMasterIndex |? -1).ToString()) )
+                PlayerProfilePage.view { Player = model.SelectedProfile.Value.PlayerInfo; Questions = model.SelectedProfile.Value.Questions } (PlayerProfileMsg >> dispatch)
         )   
     // Note, this declaration is needed if you enable LiveUpdate
     let program = Program.mkProgram init update view
