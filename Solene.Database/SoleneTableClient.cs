@@ -209,6 +209,24 @@ namespace Solene.Database
             return true;
         }
 
+        public async Task<bool> SetPlayerVisibility(Guid playerGuidId, bool isPublic)
+        {
+            var table = _tableClient.GetTableReference(TableNames.Player);
+            var entity = new DynamicTableEntity(PartitionKeys.Player, playerGuidId.ToString("N"))
+            {
+                ETag = "*",
+            };
+            entity.Properties.Add(nameof(PlayerEntity.IsPublic), new EntityProperty(isPublic));
+            TableOperation mergeOperation = TableOperation.Merge(entity);
+            TableResult result = await table.ExecuteAsync(mergeOperation);
+            if (result.HttpStatusCode != 204)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public async Task<TableResult> DeletePlayer(Guid playerId)
         {
             var table = _tableClient.GetTableReference(TableNames.Player);

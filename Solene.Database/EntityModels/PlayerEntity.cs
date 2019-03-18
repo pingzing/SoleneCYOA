@@ -1,7 +1,6 @@
 ﻿using Microsoft.Azure.Cosmos.Table;
 using Solene.Models;
 using System;
-using System.Collections.Generic;
 
 namespace Solene.Database.EntityModels
 {
@@ -14,11 +13,13 @@ namespace Solene.Database.EntityModels
             PartitionKey = PartitionKeys.Player;
             RowKey = player.Id.ToString("N");
             Name = player.Name;
-            Gender = player.Gender;            
+            Gender = player.Gender;
+            IsPublic = player.IsPublic;
         }
 
         public string Name { get; set; }
-        public string Gender { get; set; }        
+        public string Gender { get; set; }
+        public bool IsPublic { get; set; }
 
         public Player ToPlayer()
         {
@@ -27,6 +28,7 @@ namespace Solene.Database.EntityModels
                 Gender = Gender,
                 Id = Guid.Parse(RowKey),
                 Name = Name,
+                IsPublic = IsPublic,
             };
         }
     }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Solene.Models;
 using System;
@@ -135,6 +136,37 @@ namespace Solene.Backend
             });
         }
 
+        [FunctionName("GetPublicPlayers")]
+        public static async Task<ActionResult<IEnumerable<PublicPlayerAndQuestions>>> GetPublicPlayers(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "public-players")]HttpRequest req,
+            ILogger log)
+        {
+            var dbClient = Database.GetDatabaseClient(log);
+
+            IEnumerable<Task<PublicPlayerAndQuestions>> getPlayerTasks = 
+                (await dbClient.GetAllPlayers())
+                    .Where(player => player.IsPublic)
+                    .Select(async player =>
+                    {
+                        var questions = await dbClient.GetPlayerQuestions(player.Id);
+                        return new PublicPlayerAndQuestions
+                        {
+                            Gender = player.Gender,
+                            Name = player.Name,
+                            Questions = questions.Select(q => new PublicQuestion
+                            {
+                                ChosenAnswer = q.ChosenAnswer,
+                                PrefilledAnswers = q.PrefilledAnswers,
+                                SequenceNumber = q.SequenceNumber,
+                                Text = q.Text,
+                                Title = q.Title
+                            }).ToArray()
+                        };
+                    });
+
+            return await Task.WhenAll(getPlayerTasks);
+        }
+
         [FunctionName("RegisterPush")]
         public static async Task<IActionResult> RegisterPushNotifications(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "player/{playerId}/push")]HttpRequest req,
@@ -161,6 +193,38 @@ namespace Solene.Backend
             }
 
             return new CreatedResult("", "");
+        }
+
+        [FunctionName("SetVisibility")]
+        public static async Task<ActionResult> SetVisibility(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "player/{playerId}/visibility")]HttpRequest req,
+            string playerId,
+            ILogger log)
+        {
+            var dbClient = Database.GetDatabaseClient(log);
+            if (!Validation.TryValidateGuid(playerId, out Guid playerGuidId))
+            {
+                log.LogError($"Player ID ({playerId}) was not a valid GUID.");
+                return new BadRequestObjectResult("Invalid Player ID.");
+            }
+
+            if (!req.Query.TryGetValue("public", out StringValues publicVal))
+            {
+                return new BadRequestResult();
+            }
+
+            if (!bool.TryParse(publicVal, out bool newIsPublic))
+            {
+                return new BadRequestResult();
+            }
+
+            bool success = await dbClient.SetPlayerVisibility(playerGuidId, newIsPublic);
+            if (!success)
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
+            return new OkResult();
         }
 
         private static IEnumerable<Question> GetStartingQuestions()
