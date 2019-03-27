@@ -54,6 +54,7 @@ namespace Solene.MobileApp.Core.ViewModels
         public RelayCommand ImportProfileCommand { get; private set; }
         public RelayCommand NewCharacterCommand { get; private set; }
         public RelayCommand CopyIdCommand { get; private set; }
+        public RelayCommand GoToSettingsCommand { get; }
 
         public ProfileOverviewViewModel(INavigationService navService,
             INetworkService networkService,
@@ -65,6 +66,7 @@ namespace Solene.MobileApp.Core.ViewModels
             ImportProfileCommand = new RelayCommand(ImportProfileClicked);
             NewCharacterCommand = new RelayCommand(NewCharacterClicked);
             CopyIdCommand = new RelayCommand(CopyIdClicked);
+            GoToSettingsCommand = new RelayCommand(GoToSettingsClicked);
             _networkService = networkService;
             _profileService = profileService;
             _notificationService = notificationService;
@@ -155,6 +157,11 @@ namespace Solene.MobileApp.Core.ViewModels
         private async void CopyIdClicked()
         {
             await Clipboard.SetTextAsync(_profile.PlayerInfo.Id.ToString("N"));
+        }
+
+        private async void GoToSettingsClicked()
+        {
+            await _navigationService.NavigateToViewModelAsync<SettingsViewModel>(_profile);
         }
     }
 }

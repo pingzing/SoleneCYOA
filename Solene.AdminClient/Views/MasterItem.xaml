@@ -30,7 +30,14 @@
             <TextBlock x:Name="NameTextBlock" Grid.Column="0" Text="{x:Bind BackingProfile.PlayerInfo.Name}" Style="{ThemeResource ListTitleStyle}"/>
             <TextBlock x:Name="DateTextBlock" Grid.Column="1" Text="{x:Bind LastUpdated.ToString('g', x:Null)}" HorizontalAlignment="Right"/>
         </Grid>
-        <TextBlock x:Name="GenderTextBlock" Text="{x:Bind BackingProfile.PlayerInfo.Gender}" Style="{StaticResource ListSubTitleStyle}"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="GenderTextBlock" Text="{x:Bind BackingProfile.PlayerInfo.Gender}" Style="{StaticResource ListSubTitleStyle}"/>
+            <TextBlock Grid.Column="1" Text="Public" Visibility="{x:Bind BackingProfile.PlayerInfo.IsPublic}"/>
+        </Grid>
         <TextBlock x:Name="IdTextBlock" Text="{x:Bind BackingProfile.PlayerInfo.Id}" Style="{ThemeResource ListCaptionStyle}"/>
         <StackPanel.ContextFlyout>
             <MenuFlyout>
