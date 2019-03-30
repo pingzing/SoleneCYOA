@@ -23,6 +23,7 @@ namespace Solene.MobileApp.Core.Services
         Task<MaybeResult<Player, GenericErrorResult>> GetPlayer(Guid playerId);
         Task<bool> SimulateDeveloperAnswer(Guid id);
         Task<MaybeResult<PlayerProfile, GenericErrorResult>> GetPlayerProfile(Guid playerId);
+        Task<bool> SetProfileVisibility(Guid id, bool newVisibility);
     }
 
     public class NetworkService : INetworkService
@@ -120,6 +121,18 @@ namespace Solene.MobileApp.Core.Services
             return NetworkMaybeResult.Success(profile);
         }
 
+        public async Task<bool> SetProfileVisibility(Guid id, bool newVisibility)
+        {
+            var response = await _httpClient.PostAsync($"player/{id.ToString("N")}/visibility?public={newVisibility}", new StringContent(""));
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.WriteLine($"Failed to set profile visibility: {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");
+                return false;
+            }
+
+            return true;
+        }
+
         private async Task<HttpResponseMessage> PostAsJsonAsync<T>(string requestUri, T value)
         {
             // Android doesn't seem to understand the PostAsJsonAsync extension method, and always sends an empty body
@@ -152,6 +165,8 @@ namespace Solene.MobileApp.Core.Services
                     return $"code={Consts.Secrets.AnswerQuestionFunctionCode}";
                 case nameof(SimulateDeveloperAnswer):
                     return $"code={Consts.Secrets.SimulateDeveloperResponseFunctionCode}";
+                case nameof(SetProfileVisibility):
+                    return $"code={Consts.Secrets.SetProfileVisibility}";
                 default:
                     throw new ArgumentOutOfRangeException($"No function code found for {functionName}");
             }

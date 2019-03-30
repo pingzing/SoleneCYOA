@@ -17,7 +17,14 @@
     </ContentPage.Resources>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Order="Secondary" Text="Settings" Command="{Binding GoToSettingsCommand}"/>
+        <ToolbarItem Text="Settings" Command="{Binding GoToSettingsCommand}">
+            <ToolbarItem.Order>
+                <OnPlatform x:TypeArguments="ToolbarItemOrder">
+                    <On Platform="iOS" Value="Primary"/>
+                    <On Platform="UWP, Android" Value="Secondary"/>
+                </OnPlatform>
+            </ToolbarItem.Order>
+        </ToolbarItem>
     </ContentPage.ToolbarItems>
 
     <Grid>
