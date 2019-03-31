@@ -81,7 +81,17 @@ namespace Solene.MobileApp.Core.ViewModels
 
         public async Task<bool> SetProfileVisibility(bool newIsPublic)
         {
-            return await _networkService.SetProfileVisibility(_profile.PlayerInfo.Id, newIsPublic);
+            bool success = await _networkService.SetProfileVisibility(_profile.PlayerInfo.Id, newIsPublic);
+            if (!success)
+            {
+                _messenger.Send(new LocalToastNotificationArgs("Failed to set profile visibility. Unable to communicate with the server."));
+                return false;
+            }
+
+            _profile.PlayerInfo.IsPublic = newIsPublic;
+            await _profileService.SaveProfile(_profile);
+
+            return true;
         }
     }
 }
