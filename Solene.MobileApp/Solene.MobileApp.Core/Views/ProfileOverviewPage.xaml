@@ -17,10 +17,14 @@
     </ContentPage.Resources>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Order="Secondary" Text="Import profile" Command="{Binding ImportProfileCommand}"/>
-        <ToolbarItem Order="Secondary" Text="Refresh" Command="{Binding RefreshCommand}"/>
-        <ToolbarItem Order="Secondary" Text="Create new character" Command="{Binding NewCharacterCommand}"/>
-        <ToolbarItem Order="Secondary" Text="Copy profile ID" Command="{Binding CopyIdCommand}"/>
+        <ToolbarItem Text="Settings" Command="{Binding GoToSettingsCommand}">
+            <ToolbarItem.Order>
+                <OnPlatform x:TypeArguments="ToolbarItemOrder">
+                    <On Platform="iOS" Value="Primary"/>
+                    <On Platform="UWP, Android" Value="Secondary"/>
+                </OnPlatform>
+            </ToolbarItem.Order>
+        </ToolbarItem>
     </ContentPage.ToolbarItems>
 
     <Grid>

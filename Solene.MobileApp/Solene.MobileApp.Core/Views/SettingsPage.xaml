@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Solene.MobileApp.Core.Views.SettingsPage"
+             xmlns:ctls="clr-namespace:Solene.MobileApp.Core.Controls"
+             
+             Title="Settings"
+             BindingContext="{Binding Source={StaticResource Locator}, Path=Settings}">
+    <Grid RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        
+        <!--Header-->
+        <Label x:Name="ProfileNameLabel" 
+               Grid.Row="0"
+               Margin="10, 0, 0, 0"
+               Text="{Binding ProfileName}"
+               Style="{DynamicResource SubtitleStyle}"/>
+        <Label x:Name="ProfileGenderLabel"
+               Grid.Row="1"
+               Margin="10, 0, 0, 0"
+               Text="{Binding ProfileGender}"
+               FontSize="Small"/>
+        <Grid Grid.Row="2"
+              Margin="10, 0, 10, 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Label x:Name="ProfileIdLabel"
+                   Grid.Column="0"
+                   Text="{Binding ProfileIdString}"                   
+                   FontSize="Small"
+                   TextColor="#99FFFFFF"
+                   VerticalOptions="CenterAndExpand"/>
+
+            <Button x:Name="CopyButton"
+                    Grid.Column="1"
+                    Command="{Binding CopyIdCommand}"
+                    HorizontalOptions="EndAndExpand"
+                    Text="Copy ID"/>
+
+        </Grid>
+
+        <!--Content-->
+        <ScrollView Grid.Row="3" Margin="0, 20, 0, 0">
+            <StackLayout Margin="10, 0, 10, 0">
+                <Button x:Name="CreateNewProfileButton" 
+                        HorizontalOptions="FillAndExpand" 
+                        Command="{Binding NewProfileCommand}"
+                        Text="Create new profile"/>
+                <Button x:Name="ImportProfileButton" 
+                        HorizontalOptions="FillAndExpand" 
+                        Command="{Binding ImportProfileCommand}"
+                        Text="Import existing profile"/>
+                <Grid HorizontalOptions="FillAndExpand">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Text="Make adventure public" 
+                           VerticalOptions="CenterAndExpand">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="PublicLabel_Tapped"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Switch x:Name="IsPublicSwitch" 
+                            HorizontalOptions="End" 
+                            Grid.Column="1"
+                            Toggled="PublicSwitch_Toggled"
+                            IsToggled="{Binding IsProfilePublic}"/>
+                </Grid>
+            </StackLayout>
+            
+        </ScrollView>
+        
+        <!--Notification box-->
+        <ctls:LocalToastNotifier x:Name="Notifier" Grid.Row="3"/>
+    </Grid>
+</ContentPage>

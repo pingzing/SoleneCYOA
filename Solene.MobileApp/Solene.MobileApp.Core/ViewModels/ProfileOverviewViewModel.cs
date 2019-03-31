@@ -4,12 +4,9 @@ using Solene.MobileApp.Core.Messages;
 using Solene.MobileApp.Core.Models;
 using Solene.MobileApp.Core.Mvvm;
 using Solene.MobileApp.Core.Services;
-using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Xamarin.Essentials;
 
 namespace Solene.MobileApp.Core.ViewModels
 {
@@ -43,7 +40,7 @@ namespace Solene.MobileApp.Core.ViewModels
             set => Set(ref _isLoading, value);
         }
 
-        private ObservableCollection<QuestionViewModel> _questions = new ObservableCollection<QuestionViewModel>();        
+        private ObservableCollection<QuestionViewModel> _questions = new ObservableCollection<QuestionViewModel>();
         public ObservableCollection<QuestionViewModel> Questions
         {
             get => _questions;
@@ -51,9 +48,8 @@ namespace Solene.MobileApp.Core.ViewModels
         }
 
         public RelayCommand RefreshCommand { get; private set; }
-        public RelayCommand ImportProfileCommand { get; private set; }
-        public RelayCommand NewCharacterCommand { get; private set; }
-        public RelayCommand CopyIdCommand { get; private set; }
+
+        public RelayCommand GoToSettingsCommand { get; }
 
         public ProfileOverviewViewModel(INavigationService navService,
             INetworkService networkService,
@@ -62,9 +58,7 @@ namespace Solene.MobileApp.Core.ViewModels
             IMessenger messengerService) : base(navService)
         {
             RefreshCommand = new RelayCommand(RefreshClicked);
-            ImportProfileCommand = new RelayCommand(ImportProfileClicked);
-            NewCharacterCommand = new RelayCommand(NewCharacterClicked);
-            CopyIdCommand = new RelayCommand(CopyIdClicked);
+            GoToSettingsCommand = new RelayCommand(GoToSettingsClicked);
             _networkService = networkService;
             _profileService = profileService;
             _notificationService = notificationService;
@@ -113,7 +107,7 @@ namespace Solene.MobileApp.Core.ViewModels
             if (updatedProfileResult.IsOk)
             {
                 var updatedProfileQuestions = updatedProfileResult.Unwrap().Questions;
-                for(int i = 0; i < Questions.Count; i++)
+                for (int i = 0; i < Questions.Count; i++)
                 {
                     Questions[i].ChosenAnswer = updatedProfileQuestions[i].ChosenAnswer;
                 }
@@ -134,27 +128,17 @@ namespace Solene.MobileApp.Core.ViewModels
                 || !_profile.Questions.SequenceEqual(latestQuestions))
             {
                 _profile.Questions = latestQuestions;
-                await _profileService.SaveProfile(_profile);                
+                await _profileService.SaveProfile(_profile);
                 Questions = new ObservableCollection<QuestionViewModel>(
                     _profile.Questions.Select(x => new QuestionViewModel(x)));
             }
-            IsLoading = false;            
+            IsLoading = false;
             _messengerService.Send(new QuestionListRefreshed());
         }
 
-        private async void ImportProfileClicked()
+        private async void GoToSettingsClicked()
         {
-            await _navigationService.NavigateToViewModelAsync<ImportProfileViewModel>();
-        }
-
-        private async void NewCharacterClicked()
-        {
-            await _navigationService.NavigateToViewModelAsync<PlayerNameViewModel>();
-        }
-
-        private async void CopyIdClicked()
-        {
-            await Clipboard.SetTextAsync(_profile.PlayerInfo.Id.ToString("N"));
+            await _navigationService.NavigateToViewModelAsync<SettingsViewModel>(_profile);
         }
     }
 }

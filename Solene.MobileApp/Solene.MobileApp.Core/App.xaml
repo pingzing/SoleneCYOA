@@ -9,6 +9,7 @@
             <Style TargetType="Button">
                 <Setter Property="BackgroundColor" Value="Purple"/>
             </Style>
+            <Color x:Key="SolenePurple">#FF800080</Color>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

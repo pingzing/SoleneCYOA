@@ -23,7 +23,7 @@ namespace Solene.Backend
             string compressedBase64Question = CompressAndBase64Question(questionJson, 2500);
 
             string connectionString = Environment.GetEnvironmentVariable("SOLENE_NOTIFICATION_CONNECTION_STRING", EnvironmentVariableTarget.Process);
-            NotificationHubClient hub = NotificationHubClient.CreateClientFromConnectionString(connectionString, "solene-mobile-app");            
+            NotificationHubClient hub = NotificationHubClient.CreateClientFromConnectionString(connectionString, "solene-mobile-app", true);            
             NotificationOutcome result = await hub.SendTemplateNotificationAsync(new Dictionary<string, string>
                 { {"title", $"{sequenceNumber}: {title}" }, {"body", body }, {"question", compressedBase64Question} }, 
                 userId.ToString("N"));            
