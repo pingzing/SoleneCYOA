@@ -7,7 +7,8 @@ Param(
     [String]$getPlayerQuestionsFunctionCode,
     [String]$answerQuestionFunctionCode, 
     [String]$registerPushNotificationFunctionCode,
-    [String]$simulateDeveloperResponseFunctionCode
+    [String]$simulateDeveloperResponseFunctionCode,
+    [String]$setProfileVisibilityFunctionCode
 )
 
 #Main
@@ -20,5 +21,6 @@ $secretsContent = $secretsContent.Replace("<GetPlayerQuestionsFunctionCodeReplac
 $secretsContent = $secretsContent.Replace("<AnswerQuestionFunctionCodeReplaceMe>", $answerQuestionFunctionCode);
 $secretsContent = $secretsContent.Replace("<RegisterPushNotificationsCodeReplaceMe>", $registerPushNotificationFunctionCode);
 $secretsContent = $secretsContent.Replace("<SimulateDeveloperResponseFunctionCodeReplaceMe>", $simulateDeveloperResponseFunctionCode);
+$secretsContent = $secretsContent.Replace("<SetProfileVisibilityReplaceMe>", $setProfileVisibilityFunctionCode);
 Set-Content "./Solene.MobileApp/Solene.MobileApp.Core/Consts/Secrets.cs" $secretsContent;
 Write-Host "Contents of Secrets.cs filled in with keys.";

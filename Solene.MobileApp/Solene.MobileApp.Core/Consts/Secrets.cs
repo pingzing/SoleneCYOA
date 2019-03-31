@@ -10,7 +10,6 @@
     /// </summary>
     public static class Secrets
     {
-
         // <UwpReplaceMe>
         public static string UwpAppCenterKey => "<UwpReplaceMe>";
 
@@ -24,5 +23,6 @@
         public static string AnswerQuestionFunctionCode => "<AnswerQuestionFunctionCodeReplaceMe>";
         public static string RegisterPushNotificationsCode => "<RegisterPushNotificationsCodeReplaceMe>";
         public static string SimulateDeveloperResponseFunctionCode => "<SimulateDeveloperResponseFunctionCodeReplaceMe>";
+        public static string SetProfileVisibility => "<SetProfileVisibilityReplaceMe>";
     }
 }
