@@ -16,7 +16,7 @@ namespace Solene.Backend
     public static class PlayerFunctions
     {
         [FunctionName("CreatePlayer")]
-        public static async Task<IActionResult> CreatePlayer([HttpTrigger(AuthorizationLevel.Function, "post", Route = "player")]HttpRequest req, ILogger log)
+        public static async Task<IActionResult> CreatePlayer([HttpTrigger(AuthorizationLevel.Function, "post", Route = "/api/player")]HttpRequest req, ILogger log)
         {
             if (req.Headers.ContentLength == 0 || req.Headers?.ContentLength == null)
             {
@@ -44,7 +44,7 @@ namespace Solene.Backend
 
         [FunctionName("DeletePlayer")]
         public static async Task<IActionResult> DeletePlayer(
-            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "player/{playerId}")]HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "/api/player/{playerId}")]HttpRequest req,
             string playerId,
             ILogger log)
         {
@@ -75,7 +75,7 @@ namespace Solene.Backend
 
         [FunctionName("GetPlayer")]
         public static async Task<IActionResult> GetPlayer(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "player/{playerId}")]HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "/api/player/{playerId}")]HttpRequest req,
             string playerId,
             ILogger log)
         {
@@ -100,7 +100,7 @@ namespace Solene.Backend
 
         [FunctionName("GetAllPlayers")]
         public static async Task<IActionResult> GetAllPlayers(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "players")]HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "/api/players")]HttpRequest req,
             ILogger log)
         {
             var dbClient = Database.GetDatabaseClient(log);
@@ -116,7 +116,7 @@ namespace Solene.Backend
 
         [FunctionName("GetAllPlayersAndDetails")]
         public static async Task<IActionResult> GetAllPlayersAndDetails(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "players-and-details")]HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "/api/players-and-details")]HttpRequest req,
             ILogger log)
         {
             var dbClient = Database.GetDatabaseClient(log);
@@ -138,7 +138,7 @@ namespace Solene.Backend
 
         [FunctionName("GetPublicPlayers")]
         public static async Task<ActionResult<IEnumerable<PublicPlayerAndQuestions>>> GetPublicPlayers(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "public-players")]HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "/api/public-players")]HttpRequest req,
             ILogger log)
         {
             var dbClient = Database.GetDatabaseClient(log);
@@ -169,7 +169,7 @@ namespace Solene.Backend
 
         [FunctionName("RegisterPush")]
         public static async Task<IActionResult> RegisterPushNotifications(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "player/{playerId}/push")]HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "/api/player/{playerId}/push")]HttpRequest req,
             string playerId,
             ILogger log)
         {
@@ -197,7 +197,7 @@ namespace Solene.Backend
 
         [FunctionName("SetVisibility")]
         public static async Task<ActionResult> SetVisibility(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "player/{playerId}/visibility")]HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "/api/player/{playerId}/visibility")]HttpRequest req,
             string playerId,
             ILogger log)
         {

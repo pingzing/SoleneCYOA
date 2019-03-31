@@ -123,7 +123,7 @@ namespace Solene.MobileApp.Core.Services
 
         public async Task<bool> SetProfileVisibility(Guid id, bool newVisibility)
         {
-            var response = await _httpClient.PostAsync($"player/{id.ToString("N")}/visibility?public={newVisibility}", new StringContent(""));
+            var response = await _httpClient.PostAsync($"player/{id.ToString("N")}/visibility?{GetFunctionCode()}&public={newVisibility}", new StringContent(""));
             if (!response.IsSuccessStatusCode)
             {
                 Debug.WriteLine($"Failed to set profile visibility: {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");

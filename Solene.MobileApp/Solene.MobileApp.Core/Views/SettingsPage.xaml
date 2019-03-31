@@ -28,8 +28,8 @@
         <Grid Grid.Row="2"
               Margin="10, 0, 10, 0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition />
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <Label x:Name="ProfileIdLabel"
@@ -37,6 +37,8 @@
                    Text="{Binding ProfileIdString}"                   
                    FontSize="Small"
                    TextColor="#99FFFFFF"
+                   MaxLines="2"
+                   LineBreakMode="CharacterWrap"
                    VerticalOptions="CenterAndExpand"/>
 
             <Button x:Name="CopyButton"
@@ -44,7 +46,6 @@
                     Command="{Binding CopyIdCommand}"
                     HorizontalOptions="EndAndExpand"
                     Text="Copy ID"/>
-
         </Grid>
 
         <!--Content-->

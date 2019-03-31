@@ -24,7 +24,7 @@ namespace Solene.Backend
 
         [FunctionName("AddQuestion")]
         public static async Task<IActionResult> AddQuestion(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "player/{playerId}/questions")]HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "/api/player/{playerId}/questions")]HttpRequest req,
             string playerId,
             ILogger log)
         {
@@ -67,7 +67,7 @@ namespace Solene.Backend
 
         [FunctionName("GetPlayerQuestions")]
         public static async Task<IActionResult> GetPlayerQuestions(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "player/{playerId}/questions")]HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "/api/player/{playerId}/questions")]HttpRequest req,
             string playerId,
             ILogger log)
         {
@@ -98,7 +98,7 @@ namespace Solene.Backend
 
         [FunctionName("UpdateQuestion")]
         public static async Task<IActionResult> UpdateQuestion(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "question/{questionId}")]HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "/api/question/{questionId}")]HttpRequest req,
             string questionId,
             ILogger log)
         {
@@ -125,7 +125,7 @@ namespace Solene.Backend
 
         [FunctionName("AnswerQuestion")]
         public static async Task<IActionResult> AnswerQuestion(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "question/answer/{questionId}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "/api/question/answer/{questionId}")] HttpRequest req,
             string questionId,
             ILogger log)
         {
@@ -154,7 +154,7 @@ namespace Solene.Backend
 
         [FunctionName("SimulateDeveloperResponse")]
         public static async Task<IActionResult> SimulateDeveloperResponse(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "question/{playerId}/simulateDeveloper")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "/api/question/{playerId}/simulateDeveloper")] HttpRequest req,
             string playerId,
             ILogger log)
         {
@@ -186,7 +186,7 @@ namespace Solene.Backend
 
         [FunctionName("DeleteOrphans")]
         public static async Task<IActionResult> DeleteOrphans(
-            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "question/orphans")]HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "/api/question/orphans")]HttpRequest req,
             ILogger log)
         {
             var dbClient = Database.GetDatabaseClient(log);
@@ -236,8 +236,8 @@ namespace Solene.Backend
             string body = $"Name:{player.Name}\r\n" +
                 $"ID: {question.PlayerId}\r\n" +
                 $"Gender: {player.Gender}\r\n" +
-                $"Question: {question.SequenceNumber}. {question.Title}: {question.Text}\r\n" +
-                $"'{question.ChosenAnswer}'";
+                $"Question: {question.SequenceNumber}. {question.Title}: {question.Text.Replace("\n\n", "\r\n")}\r\n\r\n" +
+                $"Answer:'{question.ChosenAnswer}'";
             var email = MailHelper.CreateSingleEmail(from, to, subject, body, null);
             var response = await client.SendEmailAsync(email);
             if (response.StatusCode != HttpStatusCode.Accepted)
