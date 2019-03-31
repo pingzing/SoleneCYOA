@@ -76,6 +76,9 @@
                             Toggled="PublicSwitch_Toggled"
                             IsToggled="{Binding IsProfilePublic}"/>
                 </Grid>
+                <Label Text="If this option is enabled, your adventure will be publicly visible at https://solene.azurewebsites.net."
+                       FontSize="Micro"
+                       LineBreakMode="WordWrap"/>
             </StackLayout>
             
         </ScrollView>
