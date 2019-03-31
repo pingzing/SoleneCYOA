@@ -22,8 +22,7 @@ namespace Solene.MobileApp.Core.Views
             InitializeComponent();
             _viewModel = BindingContext as SettingsViewModel;
             _viewModel.Parameter = profile;
-            _messenger = SimpleIoc.Default.GetInstance<IMessenger>();
-            _messenger.Register<SettingsPageCopyIdClicked>(this, CopyIdClicked);
+            _messenger = SimpleIoc.Default.GetInstance<IMessenger>();            
         }
 
         private async void PublicSwitch_Toggled(object sender, ToggledEventArgs e)
@@ -54,24 +53,10 @@ namespace Solene.MobileApp.Core.Views
             if (!success)
             {
                 IsPublicSwitch.IsToggled = false;
-                await ShowNotification("Failed to set profile visibility. Unable to communicate with the server.");
+                await Notifier.ShowNotification("Failed to set profile visibility. Unable to communicate with the server.");
             }
             _publicToggledProcessing = false;
             IsPublicSwitch.IsEnabled = true;
-        }
-
-        private async void CopyIdClicked(SettingsPageCopyIdClicked _)
-        {
-            await ShowNotification("Profile ID copied to clipboard!");
-        }
-
-        private async Task ShowNotification(string text)
-        {
-            // TODO: Turn this and its UI into a control that listens to messages broadcast by IMessenger.
-            NotificationText.Text = text;
-            await NotificationArea.TranslateTo(0, 0, 333, Easing.CubicOut);
-            await Task.Delay(3000);
-            await NotificationArea.TranslateTo(0, 50, 333, Easing.CubicIn);
         }
     }
 }

@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Solene.MobileApp.Core.Controls.LocalToastNotifier"
+             IsVisible="False">
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <x:Double x:Key="ControlHeight">50</x:Double>
+            <x:Double x:Key="TextOffset">20</x:Double>
+            <x:Double x:Key="NegativeTextOffset">-20</x:Double>
+        </ResourceDictionary>
+    </ContentView.Resources>
+    <Grid x:Name="NotificationArea" 
+              BackgroundColor="{StaticResource SolenePurple}"
+              HeightRequest="{StaticResource ControlHeight}" 
+              TranslationY="{StaticResource ControlHeight}" 
+              VerticalOptions="End">
+        <Label x:Name="NotificationText" 
+               Margin="10, 0, 10, 0"
+               Text="" 
+               LineBreakMode="WordWrap"
+               MaxLines="2"
+               VerticalOptions="CenterAndExpand"
+               TranslationX="{StaticResource NegativeTextOffset}"/>
+    </Grid>
+</ContentView>

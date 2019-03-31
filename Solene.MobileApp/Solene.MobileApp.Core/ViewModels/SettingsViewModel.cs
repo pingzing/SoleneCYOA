@@ -66,7 +66,7 @@ namespace Solene.MobileApp.Core.ViewModels
         private async void CopyIdClicked()
         {
             await Clipboard.SetTextAsync(_profile.PlayerInfo.Id.ToString("N"));
-            _messenger.Send(new SettingsPageCopyIdClicked());
+            _messenger.Send(new LocalToastNotificationArgs { Text = "Profile ID copied to clipboard." });
         }
 
         private async void NewProfileClicked()

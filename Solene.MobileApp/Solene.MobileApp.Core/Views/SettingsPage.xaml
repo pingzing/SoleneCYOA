@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Solene.MobileApp.Core.Views.SettingsPage"
+             xmlns:ctls="clr-namespace:Solene.MobileApp.Core.Controls"
              
              Title="Settings"
              BindingContext="{Binding Source={StaticResource Locator}, Path=Settings}">
@@ -40,7 +41,7 @@
 
             <Button x:Name="CopyButton"
                     Grid.Column="1"
-                    Command="{Binding CopyProfileIdCommand}"
+                    Command="{Binding CopyIdCommand}"
                     HorizontalOptions="EndAndExpand"
                     Text="Copy ID"/>
 
@@ -79,18 +80,6 @@
         </ScrollView>
         
         <!--Notification box-->
-        <Grid x:Name="NotificationArea" 
-              BackgroundColor="{StaticResource SolenePurple}"
-              Grid.Row="3" 
-              HeightRequest="50" 
-              TranslationY="50" 
-              VerticalOptions="End">
-            <Label x:Name="NotificationText" 
-                   Margin="10, 0, 10, 0"
-                   Text="" 
-                   LineBreakMode="WordWrap"
-                   MaxLines="2"
-                   VerticalOptions="CenterAndExpand"/>
-        </Grid>
+        <ctls:LocalToastNotifier x:Name="Notifier" Grid.Row="3"/>
     </Grid>
 </ContentPage>
