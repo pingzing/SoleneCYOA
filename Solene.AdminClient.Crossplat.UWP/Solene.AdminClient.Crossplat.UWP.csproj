@@ -158,7 +158,7 @@
     <PackageReference Include="Xamarin.Forms" Version="3.4.0.1029999" />
     <PackageReference Include="Fabulous.Core" Version="0.32.0" />
     <PackageReference Include="Fabulous.LiveUpdate" Version="0.32.0" />
-    <PackageReference Include="FSharp.Core" Version="4.5.2" />
+    <PackageReference Include="FSharp.Core" Version="4.6.2" />
     <PackageReference Include="Fabulous.CustomControls" Version="0.32.0" />
     <PackageReference Include="Xamarin.Plugin.FilePicker">
       <Version>2.0.135</Version>

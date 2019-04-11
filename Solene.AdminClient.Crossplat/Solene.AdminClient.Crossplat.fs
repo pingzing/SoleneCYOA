@@ -18,7 +18,8 @@ module App =
     type Msg = 
     | ListViewSelectedItemChanged of int option
     | AddQuestion of AdminQuestion
-    | GetInitialProfiles of Model
+    | UpdateProfiles of Model
+    | GetRemoteProfiles
 
     let getAdminPlayerProfiles : Async<AdminPlayerProfile[]> = 
          async {
@@ -36,17 +37,18 @@ module App =
     let getProfileQuestions (selectedProfile: AdminPlayerProfile option) =
         selectedProfile |> Option.fold (fun _ profile -> profile.Questions) [||]
 
-    let getInitialProfiles : Cmd<Msg> =         
-       Cmd.ofAsyncMsg (async {
-        let! profiles = getAdminPlayerProfiles
-        return GetInitialProfiles {Profiles=profiles; SelectedProfile=Option.None}
-       })
+    let getInitialProfiles : Cmd<Msg> =
+       Cmd.ofMsg (UpdateProfiles {Profiles=[||]; SelectedProfile=Option.None})
 
     let init () : Model * Cmd<Msg> = {Profiles=[||]; SelectedProfile=Option.None}, getInitialProfiles
 
     let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         match msg with
-        | GetInitialProfiles initialModel -> initialModel, Cmd.none
+        | UpdateProfiles initialModel -> initialModel, Cmd.none
+        | GetRemoteProfiles -> model, Cmd.ofAsyncMsg(async {
+                let! profiles = getAdminPlayerProfiles
+                return UpdateProfiles { Profiles = profiles; SelectedProfile = Option.None }
+            })
         | ListViewSelectedItemChanged index -> {
             model with SelectedProfile = 
                         index |> Option.map (fun idx -> Array.item idx model.Profiles)}, Cmd.none
@@ -64,13 +66,17 @@ module App =
             master = 
                 View.ContentPage(title="Players",
                     content = 
-                        View.ListView(items = [ for profile in model.Profiles do
-                                                yield View.StackLayout(children=
-                                                    [View.Label profile.PlayerInfo.Name
-                                                     //View.Label (profile.Questions.[profile.Questions.Length - 1].UpdatedTimestamp.ToString("g"))
-                                                     View.Label profile.PlayerInfo.Gender
-                                                     View.Label (profile.PlayerInfo.Id.ToString())])],
-                            itemSelected = (fun index -> dispatch(ListViewSelectedItemChanged index)))),
+                        View.StackLayout(children = [
+                            View.Button("LoadProfiles", command = (fun () -> dispatch (GetRemoteProfiles)));
+                            View.ListView(items = [ for profile in model.Profiles do
+                               yield View.StackLayout(children=
+                                   [View.Label profile.PlayerInfo.Name
+                                    //View.Label (profile.Questions.[profile.Questions.Length - 1].UpdatedTimestamp.ToString("g"))
+                                    View.Label profile.PlayerInfo.Gender
+                                    View.Label (profile.PlayerInfo.Id.ToString())])],
+                            itemSelected = (fun index -> dispatch(ListViewSelectedItemChanged index)));
+                        ])
+                ),
             detail = 
                  View.ContentPage(
                     title = "Player View",

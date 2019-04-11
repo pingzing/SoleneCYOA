@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -6,11 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-<<<<<<< HEAD:Solene.AdminClient.Crossplat/Solene.AdminClient.Crossplat/Solene.AdminClient.Crossplat.fsproj
-=======
     <Compile Include="NullCoalescing.fs" />
     <Compile Include="FunctionCodes.fs" />
->>>>>>> 727e799298954c339b7a69e81d0097de5622e0f2:Solene.AdminClient.Crossplat/Solene.AdminClient.Crossplat.fsproj
     <Compile Include="NetworkService.fs" />
     <Compile Include="AdminPlayerProfile.fs" />
     <Compile Include="AddQuestionControl.fs" />
@@ -23,17 +20,12 @@
     <PackageReference Include="Fabulous.Core" Version="0.32.0" />
     <PackageReference Include="Fabulous.CustomControls" Version="0.32.0" />
     <PackageReference Include="Fabulous.LiveUpdate" Version="0.32.0" />
-    <PackageReference Include="FSharp.Core" Version="4.5.2" />
-    <PackageReference Include="Xamarin.Plugin.FilePicker" Version="2.0.135" />
-    <PackageReference Update="FSharp.Core" Version="4.5.2" /> <!-- workaround for VSMac bug https://github.com/mono/monodevelop/pull/5137 --> 
+    <PackageReference Include="FSharp.Core" Version="4.6.2" />
+    <PackageReference Include="Xamarin.Plugin.FilePicker" Version="2.0.135" />    
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
   <ItemGroup>
-<<<<<<< HEAD:Solene.AdminClient.Crossplat/Solene.AdminClient.Crossplat/Solene.AdminClient.Crossplat.fsproj
-    <ProjectReference Include="..\..\Solene.Models\Solene.Models.csproj" />
-=======
     <ProjectReference Include="..\Solene.Models\Solene.Models.csproj" />
     <ProjectReference Include="..\Solene.SimpleParser\Solene.SimpleParser.csproj" />
->>>>>>> 727e799298954c339b7a69e81d0097de5622e0f2:Solene.AdminClient.Crossplat/Solene.AdminClient.Crossplat.fsproj
   </ItemGroup>
 </Project>
