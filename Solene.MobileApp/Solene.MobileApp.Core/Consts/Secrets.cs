@@ -1,6 +1,5 @@
 ﻿namespace Solene.MobileApp.Core.Consts
 {
-
     /// <summary>
     /// This file contains the secret keys.
     /// It should be marked as 'git update-index --skip-worktree' in git, allowing it to be
@@ -10,7 +9,6 @@
     /// </summary>
     public static class Secrets
     {
-
         // <UwpReplaceMe>
         public static string UwpAppCenterKey => "<UwpReplaceMe>";
 
@@ -24,5 +22,6 @@
         public static string AnswerQuestionFunctionCode => "<AnswerQuestionFunctionCodeReplaceMe>";
         public static string RegisterPushNotificationsCode => "<RegisterPushNotificationsCodeReplaceMe>";
         public static string SimulateDeveloperResponseFunctionCode => "<SimulateDeveloperResponseFunctionCodeReplaceMe>";
+        public static string SetProfileVisibility => "<SetProfileVisibilityReplaceMe>";
     }
 }
