@@ -10,10 +10,6 @@ module FunctionCodes =
     [<Literal>]
     let defaultKey = "defaultKey"
 
-    let memoize (f: 'a -> 'b) =
-        let cache = System.Collections.Concurrent.ConcurrentDictionary<'a, 'b>()
-        fun x -> cache.GetOrAdd(x, f)
-
     let memoizeAsync f =
         let cache = System.Collections.Concurrent.ConcurrentDictionary<'a, Task<'b>>()
         fun x ->
@@ -21,13 +17,15 @@ module FunctionCodes =
 
     let openFileAsync = async {
         let tcs = new TaskCompletionSource<Async<Abstractions.FileData>>()
+
         Device.BeginInvokeOnMainThread(fun () ->     
-            let fileResult = CrossFilePicker.Current.PickFile() |> Async.AwaitTask
-            tcs.SetResult(fileResult)
+            async {
+                let fileResult = CrossFilePicker.Current.PickFile() |> Async.AwaitTask
+                tcs.SetResult(fileResult)
+            }   |> Async.StartImmediate         
         )
         let! data = tcs.Task |> Async.AwaitTask
-        let! data = data
-        return data
+        return! data
     }
 
     type Codes() =  
