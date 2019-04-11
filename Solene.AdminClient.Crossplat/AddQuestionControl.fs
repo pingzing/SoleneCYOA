@@ -22,5 +22,5 @@ module AddQuestionControl =
             {model with title = question}
 
     let view (model: Model) dispatch =
-        View.Grid()
+        View.Label("PLACEHOLDER FOR ADD QUESTION CONTROL")
 

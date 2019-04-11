@@ -2,16 +2,43 @@
 
 open Plugin.FilePicker
 open System
+open System.Threading.Tasks
+open Xamarin.Forms
 
-type FunctionCodes () =
+module FunctionCodes =   
 
-    static let instance: Lazy<FunctionCodes> = new Lazy<FunctionCodes>(fun () -> 
-        async {
-            let! pickedFile = CrossFilePicker.Current.PickFile() |> Async.AwaitTask
+    [<Literal>]
+    let defaultKey = "defaultKey"
+
+    let memoize (f: 'a -> 'b) =
+        let cache = System.Collections.Concurrent.ConcurrentDictionary<'a, 'b>()
+        fun x -> cache.GetOrAdd(x, f)
+
+    let memoizeAsync f =
+        let cache = System.Collections.Concurrent.ConcurrentDictionary<'a, Task<'b>>()
+        fun x ->
+            cache.GetOrAdd(x, fun x -> f(x) |> Async.StartAsTask) |> Async.AwaitTask
+
+    let openFileAsync = async {
+        let tcs = new TaskCompletionSource<Async<Abstractions.FileData>>()
+        Device.BeginInvokeOnMainThread(fun () ->     
+            let fileResult = CrossFilePicker.Current.PickFile() |> Async.AwaitTask
+            tcs.SetResult(fileResult)
+        )
+        let! data = tcs.Task |> Async.AwaitTask
+        let! data = data
+        return data
+    }
+
+    type Codes() =  
+        static let openFileKeyed key = openFileAsync
+        static let getIoData = memoizeAsync openFileKeyed defaultKey
+        static let readFile key = async {
+            let! pickedFile = getIoData
             if pickedFile = null then ()
             let contents = System.Text.Encoding.UTF8.GetString(pickedFile.DataArray)
             let lines = contents.Split([|Environment.NewLine|], StringSplitOptions.RemoveEmptyEntries)  
-            return FunctionCodes(
+            return Codes(
                 CreatePlayerFunctionCode=lines.[0],
                 DeletePlayerFunctionCode=lines.[1],
                 GetPlayerFunctionCode=lines.[2],
@@ -19,18 +46,15 @@ type FunctionCodes () =
                 GetPlayerQuestionsFunctionCode=lines.[4],
                 AddQuestionFunctionCode=lines.[5],
                 GetAllPlayersAndQuestionsFunctionCode=lines.[6])
-        }|> Async.RunSynchronously)
+        }
 
-    static member Instance = instance
+        static let codes = memoizeAsync readFile defaultKey
+        static member Instance = codes
 
-    member val public CreatePlayerFunctionCode = "" with get, set
-    member val public DeletePlayerFunctionCode = "" with get, set
-    member val public GetPlayerFunctionCode = "" with get, set
-    member val public GetAllPlayersFunctionCode = "" with get, set
-    member val public GetPlayerQuestionsFunctionCode = "" with get, set
-    member val public AddQuestionFunctionCode = "" with get, set
-    member val public GetAllPlayersAndQuestionsFunctionCode = "" with get, set
-
-
-        
-
+        member val public CreatePlayerFunctionCode = "" with get, set
+        member val public DeletePlayerFunctionCode = "" with get, set
+        member val public GetPlayerFunctionCode = "" with get, set
+        member val public GetAllPlayersFunctionCode = "" with get, set
+        member val public GetPlayerQuestionsFunctionCode = "" with get, set
+        member val public AddQuestionFunctionCode = "" with get, set
+        member val public GetAllPlayersAndQuestionsFunctionCode = "" with get, set

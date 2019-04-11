@@ -1,7 +1,6 @@
 ﻿// Copyright 2018 Fabulous contributors. See LICENSE.md for license.
 namespace Solene.AdminClient.Crossplat
 
-open System.Diagnostics
 open Fabulous.Core
 open Fabulous.DynamicViews
 open Xamarin.Forms
@@ -9,6 +8,8 @@ open Xamarin.Forms.Internals
 open Solene.Models
 
 module App =     
+
+    let inline last (arr:_[]) = arr.[arr.Length - 1]
 
     type Model = { 
         Profiles : AdminPlayerProfile []
@@ -21,34 +22,41 @@ module App =
     | UpdateProfiles of Model
     | GetRemoteProfiles
 
-    let getAdminPlayerProfiles : Async<AdminPlayerProfile[]> = 
-         async {
-            let! allProfiles = NetworkService.getAllProfiles
-            return allProfiles.AllPlayers 
-                |> Array.map (fun profile -> {
-                    PlayerInfo=profile; 
-                    Questions=allProfiles.AllQuestions 
-                        |> Array.filter (fun question -> question.PlayerId = profile.Id)})
-         }
+    let getAdminPlayerProfiles : Async<AdminPlayerProfile[]> = async {
+        let! allProfiles = NetworkService.getAllProfiles
+        return allProfiles.AllPlayers 
+            |> Array.map (fun profile -> {
+                PlayerInfo=profile; 
+                Questions=allProfiles.AllQuestions 
+                    |> Array.filter (fun question -> question.PlayerId = profile.Id)})
+        }
 
     let getProfileName (selectedProfile: AdminPlayerProfile option) =
         selectedProfile |> Option.fold (fun _ profile -> profile.PlayerInfo.Name) ""
+
+    let getProfileId (selectedProfile: AdminPlayerProfile option) =
+        selectedProfile |> Option.fold (fun _ profile -> profile.PlayerInfo.Id.ToString()) ""
 
     let getProfileQuestions (selectedProfile: AdminPlayerProfile option) =
         selectedProfile |> Option.fold (fun _ profile -> profile.Questions) [||]
 
     let getInitialProfiles : Cmd<Msg> =
-       Cmd.ofMsg (UpdateProfiles {Profiles=[||]; SelectedProfile=Option.None})
+       Cmd.ofMsg (UpdateProfiles {Profiles=[||]; SelectedProfile=Option.None;})
 
-    let init () : Model * Cmd<Msg> = {Profiles=[||]; SelectedProfile=Option.None}, getInitialProfiles
+    let init () : Model * Cmd<Msg> = {Profiles=[||]; SelectedProfile=Option.None;}, getInitialProfiles
 
     let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         match msg with
-        | UpdateProfiles initialModel -> initialModel, Cmd.none
+        | UpdateProfiles updatedModel -> updatedModel, Cmd.none
         | GetRemoteProfiles -> model, Cmd.ofAsyncMsg(async {
-                let! profiles = getAdminPlayerProfiles
-                return UpdateProfiles { Profiles = profiles; SelectedProfile = Option.None }
-            })
+            let! remoteProfiles = getAdminPlayerProfiles
+            let remoteProfiles = remoteProfiles                                 
+                                |> Array.map (fun profile -> 
+                                    {Questions = profile.Questions |> Array.sortBy (fun q -> 
+                                        q.SequenceNumber); PlayerInfo = profile.PlayerInfo})
+                                |> Array.sortByDescending (fun profile -> (last profile.Questions).UpdatedTimestamp)
+            return UpdateProfiles {Profiles = remoteProfiles; SelectedProfile = Option.None;}
+        })
         | ListViewSelectedItemChanged index -> {
             model with SelectedProfile = 
                         index |> Option.map (fun idx -> Array.item idx model.Profiles)}, Cmd.none
@@ -69,32 +77,46 @@ module App =
                         View.StackLayout(children = [
                             View.Button("LoadProfiles", command = (fun () -> dispatch (GetRemoteProfiles)));
                             View.ListView(items = [ for profile in model.Profiles do
-                               yield View.StackLayout(children=
-                                   [View.Label profile.PlayerInfo.Name
-                                    //View.Label (profile.Questions.[profile.Questions.Length - 1].UpdatedTimestamp.ToString("g"))
-                                    View.Label profile.PlayerInfo.Gender
-                                    View.Label (profile.PlayerInfo.Id.ToString())])],
-                            itemSelected = (fun index -> dispatch(ListViewSelectedItemChanged index)));
+                                                    yield View.StackLayout(spacing = 0.0, padding = 5.0, children = [
+                                                            View.StackLayout(orientation = StackOrientation.Horizontal, children = [
+                                                                View.Label profile.PlayerInfo.Name
+                                                                View.Label ((last profile.Questions).UpdatedTimestamp.ToString("g"))
+                                                            ])
+                                                            View.Label profile.PlayerInfo.Gender
+                                                            View.Label (profile.PlayerInfo.Id.ToString(), textColor = Color.SlateGray)
+                                                       ])
+                                                  ],
+                                        itemSelected = (fun index -> dispatch(ListViewSelectedItemChanged index)));
                         ])
                 ),
             detail = 
                  View.ContentPage(
-                    title = "Player View",
+                    title = getProfileName model.SelectedProfile,
                     content = View.Grid(
                         rowdefs=["auto"; "*"],
+                        rowSpacing = 0.0,
                         children = [
-                            // InfoBar
-                            View.Label(getProfileName model.SelectedProfile).GridRow(0);
+                            // InfoBar                            
+                            View.Label(getProfileId model.SelectedProfile, fontSize = 16, margin = Thickness(5.0)).GridRow(0);
                             // List of items with footer 
-                            View.ListView(
+                            View.ListView(                                
                                 selectionMode = ListViewSelectionMode.None,
                                 items = [for question in getProfileQuestions model.SelectedProfile do
-                                            yield View.StackLayout(children = [
-                                                View.Label (question.SequenceNumber.ToString());
-                                                View.Label question.Title;
-                                                View.Label question.Text;]
-                                            )],
-                                footer = AddQuestionControl.view {title=""} (AddQuestion >> dispatch)
+                                            yield View.StackLayout(spacing = 0.0, padding = Thickness(10.0, 0.0), children = [
+                                                View.StackLayout([View.Label (question.SequenceNumber.ToString()); View.Label question.Title;], orientation = StackOrientation.Horizontal);
+                                                View.Label(question.Id.ToString("N"), fontSize = 12);
+                                                View.Label question.Text;
+                                                View.Label(question.ChosenAnswer, textColor = Color.Orange, fontAttributes = FontAttributes.Bold);
+                                                View.FlexLayout(
+                                                    direction = FlexDirection.Row,
+                                                    wrap = FlexWrap.Wrap,
+                                                    children = [for option in question.PrefilledAnswers do
+                                                                    yield View.Button(option, isEnabled = false, margin = Thickness(0.0, 0.0, 5.0, 0.0))
+                                                ]);
+                                                View.BoxView(color = Color.Gray, horizontalOptions = LayoutOptions.FillAndExpand, heightRequest = 1.0, margin = Thickness(0.0, 5.0))
+                                            ])
+                                        ],
+                                footer = "AddQuestionControl placeholder"//AddQuestionControl.view {title=""} (AddQuestion >> dispatch)
                             ).GridRow(1);
                         ])
                 )
