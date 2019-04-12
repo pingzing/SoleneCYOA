@@ -22,11 +22,14 @@ module NetworkService =
                     Query=sprintf "code=%s" code)
         uri.Uri
 
+    let deserializeWithConverter value =
+        JsonConvert.DeserializeObject<PlayersAndDetails>(value)
+
     let getAllProfiles = async {
         let! codes = FunctionCodes.Codes.Instance
         let u = url "players-and-details" codes.GetAllPlayersAndQuestionsFunctionCode 
         let! result = u.ToString()
                         |> Http.AsyncRequestString
-                        |> mapAsync JsonConvert.DeserializeObject<PlayersAndDetails>
+                        |> mapAsync deserializeWithConverter
         return result;
     }                

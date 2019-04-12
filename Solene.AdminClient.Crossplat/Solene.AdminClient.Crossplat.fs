@@ -6,6 +6,9 @@ open Fabulous.DynamicViews
 open Xamarin.Forms
 open Xamarin.Forms.Internals
 open Solene.Models
+open Solene.SimpleParser
+open Newtonsoft.Json
+open System
 
 module App =     
 
@@ -43,6 +46,16 @@ module App =
     let getInitialProfiles : Cmd<Msg> =
        Cmd.ofMsg (UpdateProfiles {Profiles=[||]; SelectedProfile=Option.None;})
 
+    // Realistically, this should be returning a FormattedString, or at worst a Span [], but
+    // the Fabulous wrapper around Label expects Label's formattedText to be a ViewElement 
+    // of type FormattedString, which itself expects an array of ViewElements (which can _probably_ only be Spans).
+    let formatBodyText (inputBody: string) =        
+        Parser.ArrangeText(inputBody)        
+            |> Seq.map (fun x -> 
+                    let fontAttributes: FontAttributes = enum (int x.Formatting)
+                    View.Span(text = x.Text, fontAttributes = fontAttributes))   
+            |> Seq.toArray
+
     let init () : Model * Cmd<Msg> = {Profiles=[||]; SelectedProfile=Option.None;}, getInitialProfiles
 
     let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
@@ -52,8 +65,19 @@ module App =
             let! remoteProfiles = getAdminPlayerProfiles
             let remoteProfiles = remoteProfiles                                 
                                 |> Array.map (fun profile -> 
-                                    {Questions = profile.Questions |> Array.sortBy (fun q -> 
-                                        q.SequenceNumber); PlayerInfo = profile.PlayerInfo})
+                                    {Questions = profile.Questions 
+                                                |> Array.sortBy (fun q -> q.SequenceNumber) 
+                                                |> Array.map (fun q -> new AdminQuestion(
+                                                                        Id = q.Id,
+                                                                        PlayerId = q.PlayerId,
+                                                                        Title = q.Title,                                                                        
+                                                                        Text = q.Text.Replace("\\n", Environment.NewLine),
+                                                                        PrefilledAnswers = q.PrefilledAnswers,
+                                                                        SequenceNumber = q.SequenceNumber,
+                                                                        ChosenAnswer = q.ChosenAnswer,
+                                                                        UpdatedTimestamp = q.UpdatedTimestamp
+                                                ) );
+                                    PlayerInfo = profile.PlayerInfo})
                                 |> Array.sortByDescending (fun profile -> (last profile.Questions).UpdatedTimestamp)
             return UpdateProfiles {Profiles = remoteProfiles; SelectedProfile = Option.None;}
         })
@@ -76,17 +100,20 @@ module App =
                     content = 
                         View.StackLayout(children = [
                             View.Button("LoadProfiles", command = (fun () -> dispatch (GetRemoteProfiles)));
-                            View.ListView(items = [ for profile in model.Profiles do
-                                                    yield View.StackLayout(spacing = 0.0, padding = 5.0, children = [
-                                                            View.StackLayout(orientation = StackOrientation.Horizontal, children = [
-                                                                View.Label profile.PlayerInfo.Name
-                                                                View.Label ((last profile.Questions).UpdatedTimestamp.ToString("g"))
-                                                            ])
-                                                            View.Label profile.PlayerInfo.Gender
-                                                            View.Label (profile.PlayerInfo.Id.ToString(), textColor = Color.SlateGray)
-                                                       ])
-                                                  ],
-                                        itemSelected = (fun index -> dispatch(ListViewSelectedItemChanged index)));
+                            View.ListView(
+                                hasUnevenRows = true, 
+                                itemSelected = (fun index -> dispatch(ListViewSelectedItemChanged index)),
+                                items = [ for profile in model.Profiles do
+                                            yield View.StackLayout(spacing = 0.0, padding = 5.0, children = [
+                                                    View.StackLayout(orientation = StackOrientation.Horizontal, children = [
+                                                        View.Label profile.PlayerInfo.Name
+                                                        View.Label ((last profile.Questions).UpdatedTimestamp.ToString("g"))
+                                                    ])
+                                                    View.Label profile.PlayerInfo.Gender
+                                                    View.Label (profile.PlayerInfo.Id.ToString(), textColor = Color.SlateGray)
+                                            ])
+                                        ]
+                                );
                         ])
                 ),
             detail = 
@@ -96,16 +123,17 @@ module App =
                         rowdefs=["auto"; "*"],
                         rowSpacing = 0.0,
                         children = [
-                            // InfoBar                            
+                            // Top player info bar
                             View.Label(getProfileId model.SelectedProfile, fontSize = 16, margin = Thickness(5.0)).GridRow(0);
                             // List of items with footer 
-                            View.ListView(                                
+                            View.ListView( 
+                                hasUnevenRows = true,
                                 selectionMode = ListViewSelectionMode.None,
                                 items = [for question in getProfileQuestions model.SelectedProfile do
                                             yield View.StackLayout(spacing = 0.0, padding = Thickness(10.0, 0.0), children = [
                                                 View.StackLayout([View.Label (question.SequenceNumber.ToString()); View.Label question.Title;], orientation = StackOrientation.Horizontal);
                                                 View.Label(question.Id.ToString("N"), fontSize = 12);
-                                                View.Label question.Text;
+                                                View.Label(formattedText = View.FormattedString(formatBodyText question.Text));
                                                 View.Label(question.ChosenAnswer, textColor = Color.Orange, fontAttributes = FontAttributes.Bold);
                                                 View.FlexLayout(
                                                     direction = FlexDirection.Row,
@@ -127,7 +155,7 @@ module App =
 type App () as app = 
     inherit Application ()
 
-    let runner = 
+    let runner =        
         App.program
 #if DEBUG
         |> Program.withConsoleTrace

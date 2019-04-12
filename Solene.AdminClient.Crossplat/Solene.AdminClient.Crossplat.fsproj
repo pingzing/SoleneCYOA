@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="QuestionJsonConverter.fs" />
     <Compile Include="NullCoalescing.fs" />
     <Compile Include="FunctionCodes.fs" />
     <Compile Include="NetworkService.fs" />

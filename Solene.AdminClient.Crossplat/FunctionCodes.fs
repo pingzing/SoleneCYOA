@@ -33,7 +33,7 @@ module FunctionCodes =
         static let getIoData = memoizeAsync openFileKeyed defaultKey
         static let readFile key = async {
             let! pickedFile = getIoData
-            if pickedFile = null then ()
+            if pickedFile = null then () // do something? send angry Msg?
             let contents = System.Text.Encoding.UTF8.GetString(pickedFile.DataArray)
             let lines = contents.Split([|Environment.NewLine|], StringSplitOptions.RemoveEmptyEntries)  
             return Codes(
