@@ -33,11 +33,11 @@ namespace Solene.MobileApp.Core.Services
         public NetworkService()
         {
             _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri("https://solene.azurewebsites.net/api/");
+            _httpClient.BaseAddress = new Uri("http://localhost:7071/api/");//"https://solene.azurewebsites.net/api/");
         }
 
         public async Task<MaybeResult<Player, GenericErrorResult>> CreatePlayer(Player player)
-        {            
+        {
             var response = await PostAsJsonAsync($"player?{GetFunctionCode()}", player);
             if (!response.IsSuccessStatusCode)
             {
@@ -74,7 +74,7 @@ namespace Solene.MobileApp.Core.Services
             var questionsList = JsonConvert.DeserializeObject<List<Question>>(await response.Content.ReadAsStringAsync())
                 .OrderBy(x => x.SequenceNumber)
                 .ToList();
-            return NetworkMaybeResult.Success(questionsList);            
+            return NetworkMaybeResult.Success(questionsList);
         }
 
         public async Task<MaybeResult<bool, GenericErrorResult>> RegisterPushNotifications(Guid id, PushRegistrationRequest pushRegistration)
@@ -137,7 +137,7 @@ namespace Solene.MobileApp.Core.Services
         {
             // Android doesn't seem to understand the PostAsJsonAsync extension method, and always sends an empty body
             // unless we send it up manually. Shrug. Not gonna troubleshoot that Nuget mess...
-            if(Device.RuntimePlatform == Device.Android)
+            if (Device.RuntimePlatform == Device.Android)
             {
                 var content = new ObjectContent<T>(value, new JsonMediaTypeFormatter());
                 string contentString = await content.ReadAsStringAsync();
